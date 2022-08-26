@@ -22,8 +22,6 @@ jobs:
       
     - name: Build
       run: dotnet build -c Release -o out
-      
-    - name: Create release 
 
   update-version:
     name: Update version
@@ -34,6 +32,7 @@ jobs:
       semver: ${{steps.VERSION.outputs.semver}}
       nuget: ${{steps.VERSION.outputs.nuget}}
       applicable: ${{steps.VERSION.outputs.applicable}}
+      
     steps:
       - name: Setup .NET 6
         uses: actions/setup-dotnet@v2
@@ -68,6 +67,7 @@ jobs:
           echo '::set-output name=semver::${{env.GitVersion_LegacySemVer}}'
           echo '::set-output name=nuget::${{env.GitVersion_NuGetPreReleaseTagV2}}'
           echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
+          
       - name: Apply changes
         if: ${{ steps.VERSION.outputs.applicable == 'true' || steps.extract_branch.outputs.branch == 'main' }}
         uses: EndBug/add-and-commit@v6.2.0
