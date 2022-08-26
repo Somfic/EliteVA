@@ -44,8 +44,8 @@
         <Compile Include="Proxy\Audio\VoiceAttackSpeech.cs" />
         <Compile Include="Proxy\Commands\VoiceAttackCommand.cs" />
         <Compile Include="Proxy\Commands\VoiceAttackCommands.cs" />
-        <Compile Include="Proxy\Log\VoiceAttackColor.cs" />
-        <Compile Include="Proxy\Log\VoiceAttackLog.cs" />
+        <Compile Include="Proxy\Logging\VoiceAttackColor.cs" />
+        <Compile Include="Proxy\Logging\VoiceAttackLog.cs" />
         <Compile Include="Proxy\Options\VoiceAttackOptions.cs" />
         <Compile Include="Proxy\Paths\VoiceAttackPaths.cs" />
         <Compile Include="Proxy\Process\VoiceAttackActiveWindow.cs" />

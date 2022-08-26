@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using EliteVA.Proxy;
-using EliteVA.Proxy.Log;
+using EliteVA.Proxy.Logging;
 using EliteVA.WebSocket;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

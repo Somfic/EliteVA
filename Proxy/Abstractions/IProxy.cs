@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EliteVA.Proxy.Audio;
 using EliteVA.Proxy.Commands;
-using EliteVA.Proxy.Log;
+using EliteVA.Proxy.Logging;
 using EliteVA.Proxy.Options;
 using EliteVA.Proxy.Paths;
 using EliteVA.Proxy.Variables;

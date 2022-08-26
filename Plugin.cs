@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.WebSockets;
 using EliteVA.Proxy;
-using EliteVA.Proxy.Log;
+using EliteVA.Proxy.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
