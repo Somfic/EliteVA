@@ -30,6 +30,7 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: ${{ needs.update-version.outputs.nuget }}
         files: dist/EliteVA.dll
       
     
