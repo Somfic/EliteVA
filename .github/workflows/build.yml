@@ -25,7 +25,14 @@ jobs:
       run: nuget restore EliteVA.sln
       
     - name: Build
-      run: msbuild.exe EliteVA.sln
+      run: msbuild.exe EliteVA.sln /p:OutputPath=dist /p:Configuration=Releas
+      
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/EliteVA.dll
+      
+    
 
   update-version:
     name: Update version
