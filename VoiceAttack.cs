@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.WebSockets;
+using System.Threading.Tasks;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace EliteVA;
 
-public class Plugin
+public class VoiceAttack
 {
+    public static VoiceAttackProxy Proxy { get; private set; }
+    
     private static IHost Host { get; set; }
 
     public static Guid VA_Id() => new("189a4e44-caf1-459b-b62e-fabc60a12986");
@@ -20,7 +23,7 @@ public class Plugin
 
     public static void VA_Init1(dynamic vaProxy)
     {
-        var proxy = new VoiceAttackProxy(vaProxy);
+        Proxy = new VoiceAttackProxy(vaProxy);
             
         try
         {
@@ -28,8 +31,8 @@ public class Plugin
         }
         catch (Exception ex)
         {
-            proxy.Log.Write("Could not initialize EliteVA: " + ex.ToString(), VoiceAttackColor.Red);
-            proxy.Log.Write(ex.InnerException.ToString(), VoiceAttackColor.Yellow);
+            Proxy.Log.Write("Could not initialize EliteVA: " + ex, VoiceAttackColor.Red);
+            Proxy.Log.Write((ex.InnerException ?? ex).ToString(), VoiceAttackColor.Yellow);
         }
     }
 
@@ -39,7 +42,7 @@ public class Plugin
 
     public static void VA_Invoke1(dynamic vaProxy)
     {
-        Host.Services.GetRequiredService<ProxyHolder>().Set(new VoiceAttackProxy(vaProxy));
+        Proxy = new VoiceAttackProxy(vaProxy);
     }
 
     private static void Initialize(dynamic vaProxy)
@@ -47,18 +50,16 @@ public class Plugin
         Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
             .ConfigureServices(s =>
             {
-                s.AddSingleton<EliteVA>();
-                s.AddSingleton<ClientWebSocket>();
-                s.AddSingleton<ProxyHolder>();
+                s.AddSingleton<Plugin>();
+                s.AddEliteApi();
             })
             .ConfigureLogging(l =>
             {
                 l.SetMinimumLevel(LogLevel.Information);
             })
             .Build();
-
-        Host.Services.GetRequiredService<ProxyHolder>().Set(new VoiceAttackProxy(vaProxy));
-        var eliteva = Host.Services.GetRequiredService<EliteVA>();
-        eliteva.Run().GetAwaiter().GetResult();
+        
+        var eliteva = Host.Services.GetRequiredService<Plugin>();
+        eliteva.Initialize().GetAwaiter().GetResult();
     }
 }

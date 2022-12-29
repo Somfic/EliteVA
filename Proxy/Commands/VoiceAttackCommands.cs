@@ -96,10 +96,9 @@ namespace EliteVA.Proxy.Commands
         /// <param name="runSync">Whether to wait until the command has fully executed, before continuing</param>
         /// <param name="runAsSubCommand">Whether to run this command as a sub-command</param>
         /// <returns></returns>
-        public Task Invoke(string commandName, bool runSync = false, bool runAsSubCommand = false)
+        public void Invoke(string commandName, bool runSync = false, bool runAsSubCommand = false)
         {
             _proxy.Command.Execute(commandName, runSync, runAsSubCommand);
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -118,18 +117,18 @@ namespace EliteVA.Proxy.Commands
         /// Check whether a command exists in the profile
         /// </summary>
         /// <param name="commandName">The name of the command</param>
-        public Task<bool> Exists(string commandName)
+        public bool Exists(string commandName)
         {
-            return Task.FromResult(_proxy.Command.Exists(commandName));
+            return _proxy.Command.Exists(commandName);
         }
 
         /// <summary>
         /// Check whether a command exists in the profile
         /// </summary>
         /// <param name="identifier">The identifier of the command</param>
-        public Task<bool> Exists(Guid identifier)
+        public bool Exists(Guid identifier)
         {
-            return Task.FromResult(_proxy.Command.Exists(identifier));
+            return _proxy.Command.Exists(identifier);
         }
 
         /// <summary>

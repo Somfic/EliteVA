@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using EliteVA.Proxy.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace EliteVA.Proxy.Variables
 {
@@ -9,14 +11,14 @@ namespace EliteVA.Proxy.Variables
     {
         private readonly dynamic _proxy;
 
-        private Dictionary<(string category, string name), string> _setVariables;
+        private readonly List<(string category, string name, string value)> _setVariables;
 
-        public IReadOnlyDictionary<(string category, string name), string> SetVariables => _setVariables;
+        public IReadOnlyList<(string category, string name, string value)> SetVariables => _setVariables;
 
         internal VoiceAttackVariables(dynamic vaProxy)
         {
             _proxy = vaProxy;
-            _setVariables = new Dictionary<(string, string), string>();
+            _setVariables = new List<(string, string, string)>();
         }
 
         /// <summary>
@@ -39,32 +41,34 @@ namespace EliteVA.Proxy.Variables
         /// <param name="code">The type of variable</param>
         public void Set(string category, string name, object value, TypeCode code)
         {
+            
+            
             switch (code)
             {
                 case TypeCode.Boolean:
-                    SetBoolean(category, name, (bool) Convert.ChangeType(value, typeof(bool)));
+                    SetBoolean(category, name, bool.Parse(value.ToString()));
                     break;
 
                 case TypeCode.DateTime:
-                    SetDate(category, name, (DateTime) Convert.ChangeType(value, typeof(DateTime)));
+                    SetDate(category, name, DateTime.Parse(value.ToString().Trim('"')));
                     break;
 
                 case TypeCode.Single:
                 case TypeCode.Decimal:
                 case TypeCode.Double:
-                    SetDecimal(category, name, (decimal) Convert.ChangeType(value, typeof(decimal)));
+                    SetDecimal(category, name, decimal.Parse(value.ToString()));
                     break;
 
                 case TypeCode.Char:
                 case TypeCode.String:
-                    SetText(category, name, (string) Convert.ChangeType(value, typeof(string)));
+                    SetText(category, name, value.ToString().Trim('"'));
                     break;
 
                 case TypeCode.Byte:
                 case TypeCode.Int16:
                 case TypeCode.UInt16:
                 case TypeCode.SByte:
-                    SetShort(category, name, (short) Convert.ChangeType(value, typeof(short)));
+                    SetShort(category, name, short.Parse(value.ToString()));
                     break;
 
                 case TypeCode.Int32:
@@ -73,11 +77,11 @@ namespace EliteVA.Proxy.Variables
                 case TypeCode.UInt64:
                     try
                     {
-                        SetInt(category, name, (int) Convert.ChangeType(value, typeof(int)));
+                        SetInt(category, name, int.Parse(value.ToString()));
                     }
                     catch (OverflowException)
                     {
-                        SetDecimal(category, name, (decimal) Convert.ChangeType(value, typeof(decimal)));
+                        SetDecimal(category, name, decimal.Parse(value.ToString()));
                     } 
                     break;
 
@@ -214,8 +218,14 @@ namespace EliteVA.Proxy.Variables
 
         private void SetVariable(string category, string name, string value)
         {
-            if (_setVariables.ContainsKey((category, name))) { _setVariables[(category, name)] = value; }
-            else { _setVariables.Add((category, name), value); }
+            // Newest entries are at the bottom
+            var index = _setVariables.FindIndex(x => x.category == category && x.name == name);
+            if (index >= 0)
+            {
+                _setVariables.RemoveAt(index);
+            }
+
+            _setVariables.Insert(0, (category, name, value));
         }
     }
 }
