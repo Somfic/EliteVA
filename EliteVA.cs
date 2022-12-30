@@ -14,6 +14,9 @@ namespace EliteVA;
 
 public class Plugin
 {
+    private string Dir => new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName ??
+                          Directory.GetCurrentDirectory();
+    
     private readonly IEliteDangerousApi _api;
     public VoiceAttackProxy Proxy => VoiceAttack.Proxy;
 
@@ -22,8 +25,72 @@ public class Plugin
         _api = api;
     }
 
+    async Task WriteMapping(string name)
+    {
+      
+    }
+
     public async Task Initialize()
     {
+        _api.Bindings.OnBindings(bindings =>
+        {
+            try
+            {
+                if (!File.Exists(Path.Combine(Dir, "layout.yml")))
+                {
+                    using var stream = Assembly.GetExecutingAssembly()
+                        .GetManifestResourceStream($"EliteVA.Mappings.default.yml");
+                    using var reader = new StreamReader(stream);
+                    var content = reader.ReadToEnd();
+
+                    // Write the resource to disk
+                    File.WriteAllText(Path.Combine(Dir, "layout.yml"), content);
+                }
+
+                var layout = File.ReadAllText(Path.Combine(Dir, "layout.yml"));
+
+                // Parse the layout: key: value
+                var parsed = layout.Split('\n')
+                    .Where(x => x.Contains(":"))
+                    .Select(x => x.Split(':'))
+                    .ToDictionary(x => x[0].Trim(), x => x[1].Contains("#") ? x[1].Substring(x[1].IndexOf('#')).Trim() : x[1].Trim());
+                
+                // Set keyboard keys
+                foreach (var binding in bindings)
+                {
+                    string key;
+
+                    if (binding.Primary is { Device: "Keyboard" })
+                        key = binding.Primary.Value.Key;
+
+                    else if (binding.Secondary is { Device: "Keyboard" })
+                        key = binding.Secondary.Value.Key;
+
+                    else
+                        continue;
+
+                    key = key.Replace("Key_", "");
+                    var keycode = parsed.FirstOrDefault(x => x.Key == key).Value ?? "NOT_SET";
+
+                    if (keycode == "NOT_SET")
+                    {
+                        Proxy.Log.Write($"Key '{key}' is not set in the layout.yml file and cannot be added", VoiceAttackColor.Yellow);
+                        continue;
+                    }
+
+                    Proxy.Variables.Set("Keybindings", $"EliteAPI.{binding.Name}", $"[{keycode}]", TypeCode.String);
+                }
+                
+                var variables = Proxy.Variables.SetVariables.Where(x => x.category == "Keybindings").Select(x => $"{x.name}: {x.value}");
+                File.WriteAllLines(Path.Combine(Dir, "keybindings variables.txt"), variables);
+                
+            } catch (Exception ex)
+            {
+                Proxy.Log.Write($"Error: {ex}", VoiceAttackColor.Red);
+            }
+
+        });
+        
         _api.Events.OnAny(e =>
         {
             try
@@ -40,7 +107,7 @@ public class Plugin
                     Proxy.Variables.Set("Events", $"EliteAPI.{path.Path}", JToken.Parse(value));
                 }
 
-                var rawVariables = Proxy.Variables.SetVariables.Select(x => $"{x.name}: {x.value}");
+                var rawVariables = Proxy.Variables.SetVariables.Where(x => x.category == "Events").Select(x => $"{x.name}: {x.value}");
                 var lastName = "";
                 var variables = new List<string>();
                 foreach (var variable in rawVariables)
@@ -57,7 +124,7 @@ public class Plugin
                 }
 
                 // Get the path to the plugin's folder
-                File.WriteAllLines(Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName ?? Directory.GetCurrentDirectory(), "variables.txt"), variables);
+                File.WriteAllLines(Path.Combine(Dir, "event variables.txt"), variables);
                 
                 var command = $"((EliteAPI.{e.Event}))";
                 if (Proxy.Commands.Exists(command))
@@ -70,6 +137,7 @@ public class Plugin
         });
         
         await _api.StartAsync();
+        Proxy.Log.Write("EliteVA is running", VoiceAttackColor.Green);
     }
 }
 

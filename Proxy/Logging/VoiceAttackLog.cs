@@ -16,19 +16,17 @@ namespace EliteVA.Proxy.Logging
         /// </summary>
         /// <param name="content">The log message</param>
         /// <param name="color">The log color</param>
-        public Task Write(string content, VoiceAttackColor color)
+        public void Write(string content, VoiceAttackColor color)
         {
             _proxy.WriteToLog(content, color.ToString());
-            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Clears the VoiceAttack log
         /// </summary>
-        public Task Clear()
+        public void Clear()
         {
             _proxy.ClearLog();
-            return Task.CompletedTask;
         }
     }
 }
