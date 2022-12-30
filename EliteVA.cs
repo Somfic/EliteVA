@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EliteAPI.Abstractions;
 using EliteAPI.Events;
@@ -41,19 +42,28 @@ public class Plugin
         
         var config = File.ReadAllText(Path.Combine(Dir, "config.yml"))
             .Split('\n')
-            .Where(x => x.Contains(":") && !x.Trim().StartsWith("#"))
-            .Select(x => x.Split(':'))
-            .ToDictionary(x => x[0].Trim(), x => x[1].Contains("#") ? x[1].Substring(x[1].IndexOf('#')).Trim() : x[1].Trim());
+            .Select(x => Regex.Match(x, "^([^#]+?):([^#]+)"))
+            .Where(x => x.Success)
+            .ToDictionary(x => x.Groups[1].Value.Trim(), x => x.Groups[2].Value.Trim().Replace("\"", ""));
 
         if (config.ContainsKey("journalsPath"))
+        {
+            Proxy.Log.Write("Setting journals path to " + config["journalsPath"], VoiceAttackColor.Pink);
             _api.Config.JournalsPath = config["journalsPath"];
-        
+        }
+
         if (config.ContainsKey("optionsPath"))
+        {
+            Proxy.Log.Write("Setting options path to " + config["optionsPath"], VoiceAttackColor.Pink);
             _api.Config.OptionsPath = config["optionsPath"];
-        
+        }
+
         if (config.ContainsKey("journalPattern"))
+        {
+            Proxy.Log.Write("Setting journal pattern to " + config["journalPattern"], VoiceAttackColor.Pink);
             _api.Config.JournalPattern = config["journalPattern"];
-        
+        }
+
         _api.Config.Apply();
 
         _api.Bindings.OnBindings((bindings, c) =>
