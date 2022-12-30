@@ -25,13 +25,35 @@ public class Plugin
         _api = api;
     }
 
-    async Task WriteMapping(string name)
-    {
-      
-    }
-
     public async Task Initialize()
     {
+        if(!File.Exists(Path.Combine(Dir, "config.yml")))
+        {
+            using var stream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream($"EliteVA.config.yml");
+            using var reader = new StreamReader(stream);
+            var content = reader.ReadToEnd();
+            
+            File.WriteAllText(Path.Combine(Dir, "config.yml"), content);
+        }
+        
+        var config = File.ReadAllText(Path.Combine(Dir, "config.yml"))
+            .Split('\n')
+            .Where(x => x.Contains(":") && !x.Trim().StartsWith("#"))
+            .Select(x => x.Split(':'))
+            .ToDictionary(x => x[0].Trim(), x => x[1].Contains("#") ? x[1].Substring(x[1].IndexOf('#')).Trim() : x[1].Trim());
+
+        if (config.ContainsKey("journalsPath"))
+            _api.Config.JournalsPath = config["journalsPath"];
+        
+        if (config.ContainsKey("optionsPath"))
+            _api.Config.OptionsPath = config["optionsPath"];
+        
+        if (config.ContainsKey("journalPattern"))
+            _api.Config.JournalPattern = config["journalPattern"];
+        
+        _api.Config.Apply();
+
         _api.Bindings.OnBindings(bindings =>
         {
             try
@@ -39,7 +61,7 @@ public class Plugin
                 if (!File.Exists(Path.Combine(Dir, "layout.yml")))
                 {
                     using var stream = Assembly.GetExecutingAssembly()
-                        .GetManifestResourceStream($"EliteVA.Mappings.default.yml");
+                        .GetManifestResourceStream($"EliteVA.layout.yml");
                     using var reader = new StreamReader(stream);
                     var content = reader.ReadToEnd();
 
@@ -47,11 +69,9 @@ public class Plugin
                     File.WriteAllText(Path.Combine(Dir, "layout.yml"), content);
                 }
 
-                var layout = File.ReadAllText(Path.Combine(Dir, "layout.yml"));
-
-                // Parse the layout: key: value
-                var parsed = layout.Split('\n')
-                    .Where(x => x.Contains(":"))
+                var layout = File.ReadAllText(Path.Combine(Dir, "layout.yml"))
+                    .Split('\n')
+                    .Where(x => x.Contains(":") && !x.Trim().StartsWith("#"))
                     .Select(x => x.Split(':'))
                     .ToDictionary(x => x[0].Trim(), x => x[1].Contains("#") ? x[1].Substring(x[1].IndexOf('#')).Trim() : x[1].Trim());
                 
@@ -70,7 +90,7 @@ public class Plugin
                         continue;
 
                     key = key.Replace("Key_", "");
-                    var keycode = parsed.FirstOrDefault(x => x.Key == key).Value ?? "NOT_SET";
+                    var keycode = layout.FirstOrDefault(x => x.Key == key).Value ?? "NOT_SET";
 
                     if (keycode == "NOT_SET")
                     {
@@ -137,7 +157,6 @@ public class Plugin
         });
         
         await _api.StartAsync();
-        Proxy.Log.Write("EliteVA is running", VoiceAttackColor.Green);
     }
 }
 

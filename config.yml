@@ -1,0 +1,12 @@
+﻿##  EliteVA configuration
+##
+##  Remove the # from a line to configure the plugin 
+
+#  Path of the Journals directory
+# journalsPath: "C:\Users\%USERNAME%\Saved Games\Frontier Developments\Elite Dangerous"
+
+#  Path of the Options directory
+# optionsPath: "C:\Users\%USERNAME%\AppData\Local\Frontier Developments\Elite Dangerous"
+
+#  Pattern to filter Journal files
+# journalPattern: "Journal.*.log"
