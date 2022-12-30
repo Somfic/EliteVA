@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using EliteAPI.Abstractions;
+using EliteAPI.Events;
+using EliteAPI.Events.Status.Ship;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Logging;
 using Newtonsoft.Json;
@@ -54,7 +56,7 @@ public class Plugin
         
         _api.Config.Apply();
 
-        _api.Bindings.OnBindings(bindings =>
+        _api.Bindings.OnBindings((bindings, c) =>
         {
             try
             {
@@ -98,11 +100,8 @@ public class Plugin
                         continue;
                     }
 
-                    Proxy.Variables.Set("Keybindings", $"EliteAPI.{binding.Name}", $"[{keycode}]", TypeCode.String);
+                    Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, $"EliteAPI.{binding.Name}", $"[{keycode}]", TypeCode.String);
                 }
-                
-                var variables = Proxy.Variables.SetVariables.Where(x => x.category == "Keybindings").Select(x => $"{x.name}: {x.value}");
-                File.WriteAllLines(Path.Combine(Dir, "keybindings variables.txt"), variables);
                 
             } catch (Exception ex)
             {
@@ -110,12 +109,21 @@ public class Plugin
             }
 
         });
+
+        _api.Events.On<FileheaderEvent>((e, c) =>
+        {
+            Proxy.Log.Write($"Processing {new FileInfo(c.SourceFile).Name}", VoiceAttackColor.Green);
+        });
         
-        _api.Events.OnAny(e =>
+        _api.Events.OnAnyJson((e, c) =>
         {
             try
-            { 
-                var paths = _api.EventParser.ToPaths(e);
+            {
+                var paths = _api.EventParser.ToPaths(e).ToList();
+
+                var eventName = paths.First(x => x.Path.EndsWith(".event")).Value;
+
+               
                 
                 foreach (var path in paths)
                 {
@@ -124,10 +132,48 @@ public class Plugin
                     if (string.IsNullOrWhiteSpace(value))
                         value = "\"\"";
 
-                    Proxy.Variables.Set("Events", $"EliteAPI.{path.Path}", JToken.Parse(value));
+                    Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, $"EliteAPI.{path.Path}".Replace("..", "."), JToken.Parse(value));
                 }
 
-                var rawVariables = Proxy.Variables.SetVariables.Where(x => x.category == "Events").Select(x => $"{x.name}: {x.value}");
+                if (!c.IsRaisedDuringCatchup)
+                {
+                    var command = $"((EliteAPI.{eventName}))";
+                    if (Proxy.Commands.Exists(command))
+                        Proxy.Commands.Invoke(command);
+                }
+
+                WriteVariables();
+            }
+            catch (Exception ex)
+            {
+                Proxy.Log.Write($"Error while trying to process event: {ex}", VoiceAttackColor.Red);
+            }
+        });
+        
+        _api.Events.On<StatusEvent>((e, c) =>
+        {
+            var json = JsonConvert.SerializeObject(e);
+            json = json.Replace("Status", "");
+            _api.Events.Invoke(json, c);
+        });
+        
+        await _api.StartAsync();
+    }
+
+    public void WriteVariables()
+    {
+        var groups = Proxy.Variables.SetVariables.GroupBy(x => x.category);
+
+        if(!Directory.Exists(Path.Combine(Dir, "Variables")))
+            Directory.CreateDirectory(Path.Combine(Dir, "Variables"));
+        
+        foreach (var group in groups)
+        {
+            var source = new FileInfo(group.Key).Name.Split('.').First();
+            
+            if (source == "Journal")
+            {
+                var rawVariables = Proxy.Variables.SetVariables.Where(x => x.category.StartsWith("Journal")).Select(x => $"{x.name}: {x.value}");
                 var lastName = "";
                 var variables = new List<string>();
                 foreach (var variable in rawVariables)
@@ -143,59 +189,14 @@ public class Plugin
                     variables.Add(variable);
                 }
 
-                // Get the path to the plugin's folder
-                File.WriteAllLines(Path.Combine(Dir, "event variables.txt"), variables);
-                
-                var command = $"((EliteAPI.{e.Event}))";
-                if (Proxy.Commands.Exists(command))
-                    Proxy.Commands.Invoke(command);
+                File.WriteAllLines(Path.Combine(Dir, "Variables", source) + ".txt", variables);
             }
-            catch (Exception ex)
+            else
             {
-                Proxy.Log.Write($"Error while trying to process {e.Event} event: {ex}", VoiceAttackColor.Red);
+                var variables = group.Select(x => $"{x.name}: {x.value}").ToList();
+                variables.Insert(0, $" ###  {group.First().category}  ### ");
+                File.WriteAllLines(Path.Combine(Dir, "Variables",  source) + ".txt", variables);
             }
-        });
-        
-        await _api.StartAsync();
-    }
-}
-
-public static class Helper
-{
-    public static TypeCode FromJTokenType(this JTokenType jToken){
-        switch (jToken)
-        {   
-            case JTokenType.Undefined:
-            case JTokenType.Raw:
-            case JTokenType.Null:
-            case JTokenType.String:
-            case JTokenType.None:
-            case JTokenType.Object:
-            case JTokenType.Array:
-            case JTokenType.Constructor:
-            case JTokenType.Property:
-            case JTokenType.Comment:
-            case JTokenType.Guid:
-            case JTokenType.Bytes:
-            case JTokenType.Uri:
-                return TypeCode.String;
-
-            case JTokenType.Integer:
-                return TypeCode.Int64;
-
-            case JTokenType.Float:
-                return TypeCode.Decimal;
-
-            case JTokenType.Boolean:
-                return TypeCode.Boolean;
-
-            case JTokenType.Date:
-            case JTokenType.TimeSpan:
-                return TypeCode.DateTime;
-
-            default:
-                throw new ArgumentOutOfRangeException(nameof(jToken), jToken, null);
         }
-        
     }
 }
