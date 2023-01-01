@@ -47,7 +47,9 @@ internal class VoiceAttackLogger : ILogger
                 throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
         }
         
-        _proxy.Log.Write($"EliteVA: {formatter(state, exception)}", color);
+        var exceptionMessage = exception != null ? $"\n{exception?.Message}" : string.Empty;
+        
+        _proxy.Log.Write($"EliteVA: {formatter(state, exception)}{exceptionMessage}", color);
     }
 
     public bool IsEnabled(LogLevel logLevel)

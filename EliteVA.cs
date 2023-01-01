@@ -6,10 +6,12 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EliteAPI.Abstractions;
+using EliteAPI.Abstractions.Bindings.Models;
 using EliteAPI.Events;
 using EliteAPI.Events.Status.Ship;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Logging;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,12 +21,14 @@ public class Plugin
 {
     private string Dir => new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName ??
                           Directory.GetCurrentDirectory();
-    
+
+    private readonly ILogger<Plugin> _log;
     private readonly IEliteDangerousApi _api;
     public VoiceAttackProxy Proxy => VoiceAttack.Proxy;
 
-    public Plugin(IEliteDangerousApi api)
+    public Plugin(ILogger<Plugin> log, IEliteDangerousApi api)
     {
+        _log = log;
         _api = api;
     }
 
@@ -48,19 +52,19 @@ public class Plugin
 
         if (config.ContainsKey("journalsPath"))
         {
-            Proxy.Log.Write("Setting journals path to " + config["journalsPath"], VoiceAttackColor.Pink);
+            _log.LogInformation("Setting journals path to {JournalsPath}", config["journalsPath"]);
             _api.Config.JournalsPath = config["journalsPath"];
         }
 
         if (config.ContainsKey("optionsPath"))
         {
-            Proxy.Log.Write("Setting options path to " + config["optionsPath"], VoiceAttackColor.Pink);
+            _log.LogInformation("Setting options path to {OptionsPath}", config["optionsPath"]);
             _api.Config.OptionsPath = config["optionsPath"];
         }
 
         if (config.ContainsKey("journalPattern"))
         {
-            Proxy.Log.Write("Setting journal pattern to " + config["journalPattern"], VoiceAttackColor.Pink);
+            _log.LogInformation("Setting journal pattern to {JournalPattern}", config["journalPattern"]);
             _api.Config.JournalPattern = config["journalPattern"];
         }
 
@@ -88,41 +92,36 @@ public class Plugin
                     .ToDictionary(x => x[0].Trim(), x => x[1].Contains("#") ? x[1].Substring(x[1].IndexOf('#')).Trim() : x[1].Trim());
                 
                 // Set keyboard keys
-                foreach (var binding in bindings)
+                foreach (var b in bindings.Where(x => x.Primary?.Device == "Keyboard" || x.Secondary?.Device == "Keyboard"))
                 {
-                    string key;
+                    IPrimarySecondaryBinding binding = b.Primary?.Device == "Keyboard" ? b.Primary! : b.Secondary!;
 
-                    if (binding.Primary is { Device: "Keyboard" })
-                        key = binding.Primary.Value.Key;
+                    var keycode = $"[{GetKeyCode(binding.Key, layout)}]";
 
-                    else if (binding.Secondary is { Device: "Keyboard" })
-                        key = binding.Secondary.Value.Key;
-
-                    else
-                        continue;
-
-                    key = key.Replace("Key_", "");
-                    var keycode = layout.FirstOrDefault(x => x.Key == key).Value ?? "NOT_SET";
-
-                    if (keycode == "NOT_SET")
+                    foreach (var bindingModifier in binding.Modifiers)
                     {
-                        Proxy.Log.Write($"Key '{key}' is not set in the layout.yml file and cannot be added", VoiceAttackColor.Yellow);
-                        continue;
+                        if (bindingModifier.Device != "Keyboard")
+                        {
+                            _log.LogWarning("Modifier for binding '{Binding}' is not a keyboard modifier and cannot be added", b.Name);
+                            continue;
+                        }
+                        
+                        keycode = $"[{GetKeyCode(bindingModifier.Key, layout)}]{keycode}";
                     }
 
-                    Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, $"EliteAPI.{binding.Name}", $"[{keycode}]", TypeCode.String);
+                    Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, $"EliteAPI.{b.Name}", $"[{keycode}]", TypeCode.String);
                 }
                 
             } catch (Exception ex)
             {
-                Proxy.Log.Write($"Error: {ex}", VoiceAttackColor.Red);
+                _log.LogError(ex, "Failed to set bindings");
             }
 
         });
 
         _api.Events.On<FileheaderEvent>((e, c) =>
         {
-            Proxy.Log.Write($"Processing {new FileInfo(c.SourceFile).Name}", VoiceAttackColor.Green);
+            _log.LogInformation("Processing {JournalFile}", new FileInfo(c.SourceFile).Name);
         });
         
         _api.Events.OnAnyJson((e, c) =>
@@ -132,8 +131,6 @@ public class Plugin
                 var paths = _api.EventParser.ToPaths(e).ToList();
 
                 var eventName = paths.First(x => x.Path.EndsWith(".event")).Value;
-
-               
                 
                 foreach (var path in paths)
                 {
@@ -156,18 +153,29 @@ public class Plugin
             }
             catch (Exception ex)
             {
-                Proxy.Log.Write($"Error while trying to process event: {ex}", VoiceAttackColor.Red);
+                _log.LogError(ex, "Failed to process event");
             }
         });
         
         _api.Events.On<StatusEvent>((e, c) =>
         {
             var json = JsonConvert.SerializeObject(e);
-            json = json.Replace("Status", "");
+            json = json.Replace("Status", "VoiceAttackStatus");
             _api.Events.Invoke(json, c);
         });
         
         await _api.StartAsync();
+    }
+    
+    public string GetKeyCode(string key, IDictionary<string, string> layout)
+    {
+        key = key.Replace("Key_", "");
+        var keycode = layout.FirstOrDefault(x => x.Key == key).Value ?? $"NOT_SET({key})";
+
+        if (keycode == "NOT_SET")
+            _log.LogWarning("Key '{Key}' is not set in the layout.yml file and cannot be added", key);
+
+        return keycode;
     }
 
     public void WriteVariables()

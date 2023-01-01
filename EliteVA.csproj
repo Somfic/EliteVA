@@ -62,13 +62,13 @@
         <HintPath>packages\Costura.Fody.5.7.0\lib\netstandard1.0\Costura.dll</HintPath>
       </Reference>
       <Reference Include="EliteAPI, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-        <HintPath>packages\EliteAPI.3.1.0-alpha0012\lib\netstandard2.0\EliteAPI.dll</HintPath>
+        <HintPath>packages\EliteAPI.3.1.0-alpha0015\lib\netstandard2.0\EliteAPI.dll</HintPath>
       </Reference>
       <Reference Include="EliteAPI.Abstractions, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-        <HintPath>packages\EliteAPI.Abstractions.3.1.0-alpha0012\lib\netstandard2.0\EliteAPI.Abstractions.dll</HintPath>
+        <HintPath>packages\EliteAPI.Abstractions.3.1.0-alpha0015\lib\netstandard2.0\EliteAPI.Abstractions.dll</HintPath>
       </Reference>
       <Reference Include="EliteAPI.Events, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-        <HintPath>packages\EliteAPI.Events.3.1.0-alpha0012\lib\netstandard2.0\EliteAPI.Events.dll</HintPath>
+        <HintPath>packages\EliteAPI.Events.3.1.0-alpha0015\lib\netstandard2.0\EliteAPI.Events.dll</HintPath>
       </Reference>
       <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
         <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.7.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
