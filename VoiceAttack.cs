@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Logging;
+using EliteVA.Proxy.Logging.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -56,6 +57,7 @@ public class VoiceAttack
             .ConfigureLogging(l =>
             {
                 l.SetMinimumLevel(LogLevel.Information);
+                l.AddProvider(new VoiceAttackLoggerProvider(vaProxy));
             })
             .Build();
         
