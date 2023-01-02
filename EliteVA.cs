@@ -84,17 +84,8 @@ public class Plugin
                 // Set keyboard keys
                 foreach (var b in bindings)
                 {
-                    
-                    // Skip is primary and secondary are both not keyboard devices
                     if (b.Primary?.Device != "Keyboard" && b.Secondary?.Device != "Keyboard")
-                    {
-                        _log.LogError("Skipping {Name}: {Json}", b.Name, JsonConvert.SerializeObject(b));
                         continue;
-                    }
-                    else
-                    {
-                        _log.LogInformation("Processing {Name}", b.Name);
-                    }
 
                     IPrimarySecondaryBinding binding = b.Primary?.Device == "Keyboard" ? b.Primary! : b.Secondary!;
 
