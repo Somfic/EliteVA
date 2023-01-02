@@ -32,23 +32,28 @@ public class Plugin
         _api = api;
     }
 
-    public async Task Initialize()
+    private IDictionary<string, string> ReadYml(string name)
     {
-        if(!File.Exists(Path.Combine(Dir, "config.yml")))
+        if(!File.Exists(Path.Combine(Dir, $"{name}.yml")))
         {
             using var stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream($"EliteVA.config.yml");
+                .GetManifestResourceStream($"EliteVA.{name}.yml");
             using var reader = new StreamReader(stream);
             var content = reader.ReadToEnd();
             
-            File.WriteAllText(Path.Combine(Dir, "config.yml"), content);
+            File.WriteAllText(Path.Combine(Dir, $"{name}.yml"), content);
         }
         
-        var config = File.ReadAllText(Path.Combine(Dir, "config.yml"))
+        return File.ReadAllText(Path.Combine(Dir, $"{name}.yml"))
             .Split('\n')
             .Select(x => Regex.Match(x, "^([^#]+?):([^#]+)"))
             .Where(x => x.Success)
             .ToDictionary(x => x.Groups[1].Value.Trim(), x => x.Groups[2].Value.Trim().Replace("\"", ""));
+    }
+    
+    public async Task Initialize()
+    {
+        var config = ReadYml("config");
 
         if (config.ContainsKey("journalsPath"))
         {
@@ -74,31 +79,28 @@ public class Plugin
         {
             try
             {
-                if (!File.Exists(Path.Combine(Dir, "layout.yml")))
-                {
-                    using var stream = Assembly.GetExecutingAssembly()
-                        .GetManifestResourceStream($"EliteVA.layout.yml");
-                    using var reader = new StreamReader(stream);
-                    var content = reader.ReadToEnd();
-
-                    // Write the resource to disk
-                    File.WriteAllText(Path.Combine(Dir, "layout.yml"), content);
-                }
-
-                var layout = File.ReadAllText(Path.Combine(Dir, "layout.yml"))
-                    .Split('\n')
-                    .Where(x => x.Contains(":") && !x.Trim().StartsWith("#"))
-                    .Select(x => x.Split(':'))
-                    .ToDictionary(x => x[0].Trim(), x => x[1].Contains("#") ? x[1].Substring(x[1].IndexOf('#')).Trim() : x[1].Trim());
+                var layout = ReadYml("layout");
                 
                 // Set keyboard keys
-                foreach (var b in bindings.Where(x => x.Primary?.Device == "Keyboard" || x.Secondary?.Device == "Keyboard"))
+                foreach (var b in bindings)
                 {
+                    
+                    // Skip is primary and secondary are both not keyboard devices
+                    if (b.Primary?.Device != "Keyboard" && b.Secondary?.Device != "Keyboard")
+                    {
+                        _log.LogError("Skipping {Name}: {Json}", b.Name, JsonConvert.SerializeObject(b));
+                        continue;
+                    }
+                    else
+                    {
+                        _log.LogInformation("Processing {Name}", b.Name);
+                    }
+
                     IPrimarySecondaryBinding binding = b.Primary?.Device == "Keyboard" ? b.Primary! : b.Secondary!;
 
                     var keycode = $"[{GetKeyCode(binding.Key, layout)}]";
 
-                    foreach (var bindingModifier in binding.Modifiers)
+                    foreach (var bindingModifier in binding.Modifiers.Reverse())
                     {
                         if (bindingModifier.Device != "Keyboard")
                         {
@@ -109,8 +111,10 @@ public class Plugin
                         keycode = $"[{GetKeyCode(bindingModifier.Key, layout)}]{keycode}";
                     }
 
-                    Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, $"EliteAPI.{b.Name}", $"[{keycode}]", TypeCode.String);
+                    Proxy.Variables.Set("Bindings", $"EliteAPI.{b.Name}", keycode, TypeCode.String);
                 }
+                
+                WriteVariables();
                 
             } catch (Exception ex)
             {
