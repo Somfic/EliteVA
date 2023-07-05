@@ -53,9 +53,8 @@ jobs:
       run: xcopy "bin\Release\net472\" "dist" /Y /I
       
     - name: Zip dist folder
-      uses: montudor/action-zip@v1
-      with:
-        args: zip -qq -r v${{ needs.update-version.outputs.semver }}.zip dist
+      run: |
+        7z a -r -tzip v${{ needs.update-version.outputs.semver }}.zip dist
       
     - name: Release
       uses: softprops/action-gh-release@v1
