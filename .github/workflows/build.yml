@@ -30,8 +30,11 @@ jobs:
     - name: Build
       run: dotnet build -c Release
       
+    - name: Make dist
+      run: mkdir dist
+      
     - name: Copy to dist
-      run: cp EliteVA/bin/Release/net472/ dist
+      run: cp bin/Release/net472/ dist
       
     - name: Add Costura.Fody
       run: dotnet add package Constura.Fody
@@ -40,13 +43,18 @@ jobs:
       run: dotnet build -c Release
       
     - name: Copy to dist
-      run: cp EliteVA/bin/Release/net472/ dist
+      run: cp bin/Release/net472/ dist
+      
+    - name: Zip dist folder
+      uses: montudor/action-zip@v1
+      with:
+        args: zip -qq -r v${{ needs.update-version.outputs.semver }}.zip dist
       
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ needs.update-version.outputs.semver }}
-        files: dist/*
+        files: v${{ needs.update-version.outputs.semver }}.zip
 
   update-version:
     name: Update version
