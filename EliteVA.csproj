@@ -8,7 +8,7 @@
     <LangVersion>latest</LangVersion>
     <AssemblyVersion>0.1.8.0</AssemblyVersion>
     <FileVersion>0.1.8.0</FileVersion>
-    <InformationalVersion>0.1.8+24.Branch.main.Sha.5fd66ff43083bd78f4ecdedba588697293d5756d</InformationalVersion>
+    <InformationalVersion>0.1.8+28.Branch.main.Sha.6eda13e8d378fe88cb571e6c780dfafcd3279ffb</InformationalVersion>
     <Version>0.1.8</Version>
   </PropertyGroup>
   <ItemGroup>
