@@ -22,16 +22,29 @@ jobs:
     - name: Restore Packages
       run: nuget restore EliteVA.sln
       
+    - name: Remove Costura.Fody
+      run: nuget remove package Constura.Fody
+      
     - name: Build
-      run: msbuild.exe EliteVA.sln /p:OutputPath=dist /p:Configuration=Release
+      run: dotnet build -c Release
+      
+    - name: Copy to dist
+      run: cp EliteVA/bin/Release/net472/ dist
+      
+    - name: Add Costura.Fody
+      run: nuget add package Constura.Fody
+      
+    - name: Build
+      run: dotnet build -c Release
+      
+    - name: Copy to dist
+      run: cp EliteVA/bin/Release/net472/ dist
       
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ needs.update-version.outputs.semver }}
-        files: dist/EliteVA.dll
-      
-    
+        files: dist/*
 
   update-version:
     name: Update version
