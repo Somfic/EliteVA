@@ -1,26 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <AssemblyName>EliteVA</AssemblyName>
-        <RootNamespace>EliteVA</RootNamespace>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <PackageReference Include="EliteAPI" Version="3.1.0-alpha0071" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="7.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="layout.yml">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="EliteVA.ini">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>EliteVA</AssemblyName>
+    <RootNamespace>EliteVA</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <AssemblyVersion>0.1.7.0</AssemblyVersion>
+    <FileVersion>0.1.7.0</FileVersion>
+    <InformationalVersion>0.1.7+2.Branch.main.Sha.6c7cb0d802cb5166d98cfa9614c4bcc263b11159</InformationalVersion>
+    <Version>0.1.7</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="EliteAPI" Version="3.1.0-alpha0071" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="7.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="layout.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EliteVA.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
