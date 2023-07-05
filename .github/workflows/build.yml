@@ -13,6 +13,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       
+    - name: Setup .NET 6
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+      
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
       
@@ -20,10 +25,10 @@ jobs:
       uses: NuGet/setup-nuget@v1
       
     - name: Restore Packages
-      run: nuget restore EliteVA.sln
+      run: dotnet restore
       
     - name: Remove Costura.Fody
-      run: nuget remove package Constura.Fody
+      run: dotnet remove package Constura.Fody
       
     - name: Build
       run: dotnet build -c Release
@@ -32,7 +37,7 @@ jobs:
       run: cp EliteVA/bin/Release/net472/ dist
       
     - name: Add Costura.Fody
-      run: nuget add package Constura.Fody
+      run: dotnet add package Constura.Fody
       
     - name: Build
       run: dotnet build -c Release
