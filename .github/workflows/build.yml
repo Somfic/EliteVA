@@ -34,7 +34,7 @@ jobs:
       run: mkdir dist
       
     - name: Copy to dist
-      run: copy /Y "bin\Release\net472\" "dist"
+      run: xcopy "bin\Release\net472\" "dist" /Y /I
       
     - name: Add Costura.Fody
       run: dotnet add package Costura.Fody
@@ -43,7 +43,7 @@ jobs:
       run: dotnet build -c Release
       
     - name: Copy to dist
-      run: copy /Y "bin\Release\net472\" "dist"
+      run: xcopy "bin\Release\net472\" "dist" /Y /I
       
     - name: Zip dist folder
       uses: montudor/action-zip@v1
