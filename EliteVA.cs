@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using EliteAPI.Abstractions;
 using EliteAPI.Abstractions.Bindings.Models;
 using EliteAPI.Abstractions.Events;
+using EliteAPI.Abstractions.Status;
 using EliteAPI.Events;
 using EliteAPI.Events.Status.Ship;
+using EliteAPI.Events.Status.Ship.Events;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Logging;
 using Microsoft.Extensions.Configuration;
@@ -113,6 +115,7 @@ public class Plugin
             {
                 var paths = _api.EventParser.ToPaths(e).ToList();
                 InvokePaths(paths, c);
+                WriteVariables();
             });
         }
         else
@@ -121,27 +124,39 @@ public class Plugin
             {
                 var paths = _api.EventParser.ToPaths(e).ToList();
                 InvokePaths(paths, c);
+                WriteVariables();
             });
         }
         
         _api.Events.On<StatusEvent>((e, c) =>
         {
-            var json = _api.EventParser.ToJson(e);
-            json = json.Replace("Status", "Ship");
-            _api.Events.Invoke(json, c);
+            var paths = _api.EventParser.ToPaths(e).Select(x => new EventPath(x.Path.Replace("Status.", ""), x.Value)).ToArray();
+
+            foreach (var path in paths)
+            {
+                InvokePaths(new [] { path }, c, path.Path);
+            }
+            
+            WriteVariables();
         });
         
         _api.Events.Register<ShipEvent>();
 
         await _api.StartAsync();
     }
-
-    private void InvokePaths(ICollection<EventPath> paths, EventContext c)
+    
+    private void InvokePaths(ICollection<EventPath> paths, EventContext c, string? eventName = null)
     {
         try
         {
-            var eventName = paths.First(x => x.Path.EndsWith(".event")).Value;
-                
+            if (eventName == null)
+            {
+                eventName = paths.First(x => x.Path.EndsWith(".event")).Value;
+
+                if (eventName.EndsWith("Status"))
+                    return;
+            }
+
             foreach (var path in paths)
             {
                 var value = path.Value;
@@ -158,12 +173,10 @@ public class Plugin
                 if (Proxy.Commands.Exists(command))
                     Proxy.Commands.Invoke(command);
             }
-
-            WriteVariables();
         }
         catch (Exception ex)
         {
-            _log.LogError(ex, "Failed to process event");
+            _log.LogError(ex, ex.StackTrace);
         }
     }
     
