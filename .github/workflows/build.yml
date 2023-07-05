@@ -13,6 +13,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       
+    - name: Set up 7-Zip
+      run: |
+        $url = 'https://www.7-zip.org/a/7z1900-x64.exe'
+        $installer = "$env:TEMP\7z-installer.exe"
+        Invoke-WebRequest -Uri $url -OutFile $installer
+        Start-Process -Wait -FilePath $installer
+      
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v2
       with:
