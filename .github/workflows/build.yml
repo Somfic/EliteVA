@@ -37,7 +37,7 @@ jobs:
       run: cp bin/Release/net472/ dist
       
     - name: Add Costura.Fody
-      run: dotnet add package Constura.Fody
+      run: dotnet add package Costura.Fody
       
     - name: Build
       run: dotnet build -c Release
