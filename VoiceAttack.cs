@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Logging;
 using EliteVA.Proxy.Logging.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ public class VoiceAttack
     public static void VA_Init1(dynamic vaProxy)
     {
         Proxy = new VoiceAttackProxy(vaProxy);
-            
+        
         try
         {
             Initialize(vaProxy);
@@ -58,6 +59,9 @@ public class VoiceAttack
             {
                 l.SetMinimumLevel(LogLevel.Information);
                 l.AddProvider(new VoiceAttackLoggerProvider(vaProxy));
+            }).ConfigureAppConfiguration(config =>
+            {
+                config.AddIniFile(Path.Combine(Plugin.Dir, "EliteVA.ini"), false);
             })
             .Build();
         
