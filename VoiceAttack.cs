@@ -27,15 +27,17 @@ public class VoiceAttack
     public static void VA_Init1(dynamic vaProxy)
     {
         Proxy = new VoiceAttackProxy(vaProxy);
-        
+        var version = typeof(Plugin).Assembly.GetName().Version;
+        Proxy.Log.Write($"Starting EliteVA v{version}", VoiceAttackColor.Green);
+
         try
         {
             Initialize(vaProxy);
         }
         catch (Exception ex)
         {
-            Proxy.Log.Write("Could not initialize EliteVA: " + ex, VoiceAttackColor.Red);
-            Proxy.Log.Write((ex.InnerException ?? ex).ToString(), VoiceAttackColor.Yellow);
+            Proxy.Log.Write("Could not start EliteVA: " + ex.Message, VoiceAttackColor.Red);
+            Proxy.Log.Write("See the log file for more details", VoiceAttackColor.Red);
         }
     }
 
