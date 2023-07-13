@@ -46,17 +46,17 @@ jobs:
               run: xcopy "bin\Release\net472\" "dist" /Y /I
 
             - name: Zip dist
-              uses: a7ul/tar-action@v1.1.0
+              uses: thedoctor0/zip-release@0.7.1
               with:
-                  command: c
-                  files: dist/*
-                  outPath: EliteVA.tar.gz
+                  type: "zip"
+                  filename: "EliteVA.zip"
+                  path: "dist/*"
 
             - name: Release
               uses: softprops/action-gh-release@v1
               with:
                   tag_name: ${{ needs.update-version.outputs.semver }}
-                  files: EliteVA.tar.gz
+                  files: EliteVA.zip
 
     update-version:
         name: Update version
