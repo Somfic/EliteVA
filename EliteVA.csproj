@@ -12,6 +12,7 @@
     <Version>0.1.8</Version>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="EliteAPI" Version="3.0.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="7.0.0" />
@@ -29,16 +30,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FileLogger" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="EliteAPI">
-      <HintPath>..\EliteAPI\EliteAPI\bin\Debug\netstandard2.0\EliteAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="EliteAPI.Abstractions">
-      <HintPath>..\EliteAPI\EliteAPI\bin\Debug\netstandard2.0\EliteAPI.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="EliteAPI.Events">
-      <HintPath>..\EliteAPI\EliteAPI\bin\Debug\netstandard2.0\EliteAPI.Events.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>
