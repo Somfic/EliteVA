@@ -49,7 +49,7 @@ jobs:
               uses: a7ul/tar-action@v1.1.0
               with:
                   command: c
-                  files: dist/
+                  files: dist/*
                   outPath: EliteVA.tar.gz
 
             - name: Release
