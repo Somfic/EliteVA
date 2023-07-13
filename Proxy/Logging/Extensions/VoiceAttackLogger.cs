@@ -14,7 +14,7 @@ internal class VoiceAttackLogger : ILogger
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception, string> formatter)
     {
-        if(logLevel <= LogLevel.Information)
+        if(logLevel is LogLevel.None or LogLevel.Trace or LogLevel.Debug)
             return;
         
         VoiceAttackColor color;

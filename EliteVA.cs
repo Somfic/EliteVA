@@ -9,6 +9,7 @@ using EliteAPI.Abstractions;
 using EliteAPI.Abstractions.Bindings.Models;
 using EliteAPI.Abstractions.Events;
 using EliteAPI.Abstractions.Status;
+using EliteAPI.Bindings;
 using EliteAPI.Events;
 using EliteAPI.Events.Status.Ship;
 using EliteAPI.Events.Status.Ship.Events;
@@ -66,6 +67,8 @@ public class Plugin
         {
             try
             {
+                _log.LogInformation("Applying {BindingsFile} keybindings", new FileInfo(c.SourceFile).Name);
+                
                 var layout = ReadYml("layout");
                 
                 // Set keyboard keys
@@ -105,7 +108,7 @@ public class Plugin
         {
             _log.LogInformation("Processing {JournalFile}", new FileInfo(c.SourceFile).Name);
         });
-
+        
         var isCurated = _config.GetSection("EliteAPI").GetValue("Mode", "curated") == "curated";
         _log.LogCritical(isCurated ? "Running in curated event mode" : "Running in raw event mode");
 
