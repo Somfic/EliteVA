@@ -106,7 +106,7 @@ public class Plugin
             _log.LogInformation("Processing {JournalFile}", new FileInfo(c.SourceFile).Name);
         });
 
-        var isCurated = _config.GetSection("EliteAPI").GetValue("Mode", "raw") == "curated";
+        var isCurated = _config.GetSection("EliteAPI").GetValue("Mode", "curated") == "curated";
         _log.LogCritical(isCurated ? "Running in curated event mode" : "Running in raw event mode");
 
         if (isCurated)
@@ -127,19 +127,20 @@ public class Plugin
                 WriteVariables();
             });
         }
-        
+
         _api.Events.On<StatusEvent>((e, c) =>
         {
-            var paths = _api.EventParser.ToPaths(e).Select(x => new EventPath(x.Path.Replace("Status.", ""), x.Value)).ToArray();
+            var paths = _api.EventParser.ToPaths(e).Select(x => new EventPath(x.Path.Replace("Status.", ""), x.Value))
+                .ToArray();
 
             foreach (var path in paths)
             {
-                InvokePaths(new [] { path }, c, path.Path);
+                InvokePaths(new[] { path }, c, path.Path);
             }
-            
+
             WriteVariables();
         });
-        
+
         _api.Events.Register<ShipEvent>();
 
         await _api.StartAsync();
@@ -151,7 +152,7 @@ public class Plugin
         {
             if (eventName == null)
             {
-                eventName = paths.First(x => x.Path.EndsWith(".event")).Value;
+                eventName = paths.First(x => x.Path.EndsWith(".Event")).Value;
 
                 if (eventName.EndsWith("Status"))
                     return;
