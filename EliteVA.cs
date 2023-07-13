@@ -67,7 +67,11 @@ public class Plugin
         {
             try
             {
-                _log.LogInformation("Applying {BindingsFile} keybindings", new FileInfo(c.SourceFile).Name);
+                var bindsName = new FileInfo(c.SourceFile).Name;
+                if (!bindsName.EndsWith(".binds"))
+                    bindsName = "standard";
+
+                _log.LogInformation("Applying {BindingsFile} keybindings", bindsName);
                 
                 var layout = ReadYml("layout");
                 

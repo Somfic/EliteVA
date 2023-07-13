@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace EliteVA;
 
@@ -38,6 +39,9 @@ public class VoiceAttack
         {
             Proxy.Log.Write("Could not start EliteVA: " + ex.Message, VoiceAttackColor.Red);
             Proxy.Log.Write("See the log file for more details", VoiceAttackColor.Red);
+            
+            File.WriteAllText(Path.Combine(Plugin.Dir, "Logs", "EliteVA.startup.log"), JsonConvert.SerializeObject(ex, Formatting.Indented));
+            throw;
         }
     }
 
