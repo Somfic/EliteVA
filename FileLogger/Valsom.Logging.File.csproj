@@ -8,10 +8,10 @@
     <RepositoryUrl>https://github.com/Valsom/Logging.File</RepositoryUrl>
     <PackageTags>File Logging ILogger</PackageTags>
     <PackageProjectUrl>https://github.com/Valsom/Logging.File</PackageProjectUrl>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <FileVersion>0.1.0.0</FileVersion>
-    <InformationalVersion>0.1.0+35.Branch.main.Sha.85340a07556bdd59d7bf1daafa56105a72fa0448</InformationalVersion>
-    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.9.0</AssemblyVersion>
+    <FileVersion>0.1.9.0</FileVersion>
+    <InformationalVersion>0.1.9+4.Branch.main.Sha.0b3558b85342bddf212375d22f31913708f0ba33</InformationalVersion>
+    <Version>0.1.9</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\Users\somfi\Documents\GitHub\Valsom\Logging.File\Valsom.Logging.File\Valsom.Logging.File.xml</DocumentationFile>
