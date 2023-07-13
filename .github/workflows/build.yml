@@ -1,112 +1,112 @@
 name: .NET
 
 on:
-  push:
-    branches: [ "main" ]
+    push:
+        branches: ["main"]
 
 jobs:
-  release:
-    needs: [update-version]
-    runs-on: windows-latest
+    release:
+        needs: [update-version]
+        runs-on: windows-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
-    - name: Setup .NET 6
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '6.0.x'
-      
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1
-      
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1
-      
-    - name: Restore Packages
-      run: dotnet restore
-      
-    - name: Build
-      run: dotnet build -c Release
-      
-    - name: Make dist
-      run: mkdir dist
-      
-    - name: Copy to dist
-      run: xcopy "bin\Release\net472\" "dist" /Y /I
-      
-    - name: Add Costura.Fody
-      run: dotnet add package Costura.Fody
-      
-    - name: Build
-      run: dotnet build -c Release
-      
-    - name: Copy to dist
-      run: xcopy "bin\Release\net472\" "dist" /Y /I
-      
-    - name: Zip dist
-      uses: a7ul/tar-action@v1.1.0
-      with:
-        command: c
-        files: dist
-        outPath: v${{ needs.update-version.outputs.semver }}.tar.gz
-      
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ needs.update-version.outputs.semver }}
-        files: v${{ needs.update-version.outputs.semver }}.tar.gz
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-  update-version:
-    name: Update version
-    if: ${{ github.event_name != 'pull_request' }}
-    runs-on: ubuntu-latest
-    outputs:
-      label: ${{steps.VERSION.outputs.label}}
-      semver: ${{steps.VERSION.outputs.semver}}
-      nuget: ${{steps.VERSION.outputs.nuget}}
-      applicable: ${{steps.VERSION.outputs.applicable}}
-      
-    steps:
-      - name: Setup .NET 6
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: '6.0.x'
+            - name: Setup .NET 6
+              uses: actions/setup-dotnet@v2
+              with:
+                  dotnet-version: "6.0.x"
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
+            - name: Setup MSBuild
+              uses: microsoft/setup-msbuild@v1
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+            - name: Setup NuGet
+              uses: NuGet/setup-nuget@v1
 
-      - name: Setup GitVersion
-        run: dotnet tool install --global GitVersion.Tool
+            - name: Restore Packages
+              run: dotnet restore
 
-      - name: Fetch for GitVersion
-        run: git fetch --tags --unshallow
+            - name: Build
+              run: dotnet build -c Release
 
-      - name: Fetch main for GitVersion
-        if: github.ref != 'refs/heads/main'
-        run: git branch --create-reflog main origin/main
+            - name: Make dist
+              run: mkdir dist
 
-      - name: Update version
-        run: dotnet-gitversion /updateprojectfiles /updateassemblyinfo /output buildserver
+            - name: Copy to dist
+              run: xcopy "bin\Release\net472\" "dist" /Y /I
 
-      - name: Set job output
-        id: VERSION
-        run: |
-          echo '::set-output name=label::${{env.GitVersion_PreReleaseLabel}}'
-          echo '::set-output name=semver::${{env.GitVersion_LegacySemVer}}'
-          echo '::set-output name=nuget::${{env.GitVersion_NuGetPreReleaseTagV2}}'
-          echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
-          
-      - name: Apply changes
-        if: ${{ steps.VERSION.outputs.applicable == 'true' || steps.extract_branch.outputs.branch == 'main' }}
-        uses: EndBug/add-and-commit@v6.2.0
-        with:
-          author_name: github-actions[bot]
-          author_email: github-actions[bot]@users.noreply.github.com
-          message: "Bumped version to ${{env.GitVersion_LegacySemVer}}"
+            - name: Add Costura.Fody
+              run: dotnet add package Costura.Fody
+
+            - name: Build
+              run: dotnet build -c Release
+
+            - name: Copy to dist
+              run: xcopy "bin\Release\net472\" "dist" /Y /I
+
+            - name: Zip dist
+              uses: a7ul/tar-action@v1.1.0
+              with:
+                  command: c
+                  files: dist/**
+                  outPath: EliteVA.tar.gz
+
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: ${{ needs.update-version.outputs.semver }}
+                  files: EliteVA.tar.gz
+
+    update-version:
+        name: Update version
+        if: ${{ github.event_name != 'pull_request' }}
+        runs-on: ubuntu-latest
+        outputs:
+            label: ${{steps.VERSION.outputs.label}}
+            semver: ${{steps.VERSION.outputs.semver}}
+            nuget: ${{steps.VERSION.outputs.nuget}}
+            applicable: ${{steps.VERSION.outputs.applicable}}
+
+        steps:
+            - name: Setup .NET 6
+              uses: actions/setup-dotnet@v2
+              with:
+                  dotnet-version: "6.0.x"
+
+            - name: Extract branch name
+              shell: bash
+              run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+              id: extract_branch
+
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Setup GitVersion
+              run: dotnet tool install --global GitVersion.Tool
+
+            - name: Fetch for GitVersion
+              run: git fetch --tags --unshallow
+
+            - name: Fetch main for GitVersion
+              if: github.ref != 'refs/heads/main'
+              run: git branch --create-reflog main origin/main
+
+            - name: Update version
+              run: dotnet-gitversion /updateprojectfiles /updateassemblyinfo /output buildserver
+
+            - name: Set job output
+              id: VERSION
+              run: |
+                  echo '::set-output name=label::${{env.GitVersion_PreReleaseLabel}}'
+                  echo '::set-output name=semver::${{env.GitVersion_LegacySemVer}}'
+                  echo '::set-output name=nuget::${{env.GitVersion_NuGetPreReleaseTagV2}}'
+                  echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
+
+            - name: Apply changes
+              if: ${{ steps.VERSION.outputs.applicable == 'true' || steps.extract_branch.outputs.branch == 'main' }}
+              uses: EndBug/add-and-commit@v6.2.0
+              with:
+                  author_name: github-actions[bot]
+                  author_email: github-actions[bot]@users.noreply.github.com
+                  message: "Bumped version to ${{env.GitVersion_LegacySemVer}}"
