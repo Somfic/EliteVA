@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Somfic</Authors>
+    <Company>Valsom</Company>
+    <Description>A file logger implementation for ILogger</Description>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Valsom/Logging.File</RepositoryUrl>
+    <PackageTags>File Logging ILogger</PackageTags>
+    <PackageProjectUrl>https://github.com/Valsom/Logging.File</PackageProjectUrl>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <InformationalVersion>0.1.0+35.Branch.main.Sha.85340a07556bdd59d7bf1daafa56105a72fa0448</InformationalVersion>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\somfi\Documents\GitHub\Valsom\Logging.File\Valsom.Logging.File\Valsom.Logging.File.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+</Project>

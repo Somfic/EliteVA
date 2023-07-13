@@ -12,8 +12,11 @@ internal class VoiceAttackLogger : ILogger
         _proxy = proxy; 
     }
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception, string> formatter)
     {
+        if(logLevel <= LogLevel.Information)
+            return;
+        
         VoiceAttackColor color;
         
         switch (logLevel)

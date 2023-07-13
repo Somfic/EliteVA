@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using EliteVA.FileLogger;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Logging;
 using EliteVA.Proxy.Logging.Extensions;
@@ -49,6 +50,10 @@ public class VoiceAttack
 
     private static void Initialize(dynamic vaProxy)
     {
+        var loggingPath = Path.Combine(Plugin.Dir, "Logs");
+        if (!Directory.Exists(loggingPath))
+            Directory.CreateDirectory(loggingPath);
+            
         Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
             .ConfigureServices(s =>
             {
@@ -57,8 +62,9 @@ public class VoiceAttack
             })
             .ConfigureLogging(l =>
             {
-                l.SetMinimumLevel(LogLevel.Information);
+                l.SetMinimumLevel(LogLevel.Trace);
                 l.AddProvider(new VoiceAttackLoggerProvider(vaProxy));
+                l.AddFile("EliteVA", loggingPath);
             }).ConfigureAppConfiguration(config =>
             {
                 config.AddIniFile(Path.Combine(Plugin.Dir, "EliteVA.ini"), false);

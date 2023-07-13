@@ -1,12 +1,12 @@
 taskkill /IM "voiceattack.exe" /F
 
-dotnet remove package Costura.Fody
-
 rm -r "D:\SteamLibrary\steamapps\common\VoiceAttack\Apps\EliteVA"
 mkdir "D:\SteamLibrary\steamapps\common\VoiceAttack\Apps\EliteVA"
 
 rm -r "D:\SteamLibrary\steamapps\common\VoiceAttack\Shared\Assemblies\EliteVA"
 mkdir "D:\SteamLibrary\steamapps\common\VoiceAttack\Shared\Assemblies\EliteVA"
+
+dotnet remove package Costura.Fody
 
 dotnet clean
 dotnet build -c Release
