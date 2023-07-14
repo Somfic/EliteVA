@@ -173,8 +173,8 @@ public class Plugin
                     
                 if (string.IsNullOrWhiteSpace(value))
                     value = "\"\"";
-
-                Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, $"EliteAPI.{path.Path}".Replace("..", "."), JToken.Parse(value));
+                
+                Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, $"EliteAPI.{path.Path}".Replace("..", "."), value, JToken.Parse(value).Type);
             }
 
             if (!c.IsRaisedDuringCatchup)

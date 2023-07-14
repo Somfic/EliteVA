@@ -4,6 +4,7 @@ using EliteVA.Proxy.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace EliteVA.Proxy.Variables;
 
@@ -27,9 +28,9 @@ public class VoiceAttackVariables
     /// <typeparam name="T">The type of variable</typeparam>
     /// <param name="name">The name of the variable</param>
     /// <param name="value">The value of the variable</param>
-    public void Set<T>(string category, string name, T value)
+    public void Set(string category, string name, JToken value)
     {
-        var code = Convert.GetTypeCode(value);
+        var code = value.Type;
         Set(category, name, value, code);
     }
 
@@ -41,8 +42,7 @@ public class VoiceAttackVariables
     /// <param name="code">The type of variable</param>
     public void Set(string category, string name, object value, TypeCode code)
     {
-            
-            
+        
         switch (code)
         {
             case TypeCode.Boolean:
@@ -84,13 +84,46 @@ public class VoiceAttackVariables
                     SetDecimal(category, name, decimal.Parse(value.ToString()));
                 } 
                 break;
-
-            case TypeCode.Object:
-                var newCode = Convert.GetTypeCode(value);
-                Set(category, name, value, newCode);
+        }
+    }
+    
+    /// <summary>
+    /// Set a variable
+    /// </summary>
+    /// <param name="name">The name of the variable</param>
+    /// <param name="value">The value of the variable</param>
+    /// <param name="code">The type of variable</param>
+    public void Set(string category, string name, object value, JTokenType code)
+    {
+        
+        switch (code)
+        {
+            case JTokenType.Boolean:
+                SetBoolean(category, name, bool.Parse(value.ToString()));
                 break;
 
-            case TypeCode.Empty:
+            case JTokenType.Date:
+            case JTokenType.TimeSpan:
+                SetDate(category, name, DateTime.Parse(value.ToString().Trim('"')));
+                break;
+                
+            case JTokenType.Float:
+                SetDecimal(category, name, decimal.Parse(value.ToString(), System.Globalization.NumberStyles.Float));
+                break;
+
+            case JTokenType.String:
+                SetText(category, name, value.ToString().Trim('"'));
+                break;
+
+            case JTokenType.Integer:
+                try
+                {
+                    SetInt(category, name, int.Parse(value.ToString()));
+                }
+                catch (OverflowException)
+                {
+                    SetDecimal(category, name, decimal.Parse(value.ToString(), System.Globalization.NumberStyles.Float));
+                } 
                 break;
         }
     }
