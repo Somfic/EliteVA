@@ -6,10 +6,10 @@
     <AssemblyName>EliteVA</AssemblyName>
     <RootNamespace>EliteVA</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <AssemblyVersion>0.1.15.0</AssemblyVersion>
-    <FileVersion>0.1.15.0</FileVersion>
-    <InformationalVersion>0.1.15+2.Branch.main.Sha.1b2b31154a06bc5a75f14f4f697c0201e2b54a2e</InformationalVersion>
-    <Version>0.1.15</Version>
+    <AssemblyVersion>0.1.16.0</AssemblyVersion>
+    <FileVersion>0.1.16.0</FileVersion>
+    <InformationalVersion>0.1.16+2.Branch.main.Sha.dba0f0f985d5eae65519fd0d1b4b9af71d42008e</InformationalVersion>
+    <Version>0.1.16</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EliteAPI" Version="3.0.8" />
