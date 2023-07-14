@@ -113,7 +113,7 @@ public class Plugin
             _log.LogInformation("Processing {JournalFile}", new FileInfo(c.SourceFile).Name);
         });
         
-        var isCurated = _config.GetSection("EliteAPI").GetValue("Mode", "curated") == "curated";
+        var isCurated = _config.GetSection("EliteAPI").GetValue("Mode", "raw") == "curated";
         _log.LogCritical(isCurated ? "Running in curated event mode" : "Running in raw event mode");
 
         if (isCurated)
