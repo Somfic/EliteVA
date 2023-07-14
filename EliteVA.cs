@@ -163,7 +163,7 @@ public class Plugin
             {
                 eventName = paths.First(x => x.Path.EndsWith(".Event", StringComparison.InvariantCultureIgnoreCase)).Value;
 
-                if (eventName.EndsWith("Status"))
+                if (c.SourceFile.EndsWith("Status.json") && eventName.Contains("Status"))
                     return;
             }
 
