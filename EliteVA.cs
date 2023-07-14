@@ -60,6 +60,8 @@ public class Plugin
     
     public async Task Initialize()
     {
+        ClearVariables();
+        
         await _api.InitialiseAsync();
         _api.Config.Apply();
 
@@ -159,7 +161,7 @@ public class Plugin
         {
             if (eventName == null)
             {
-                eventName = paths.First(x => x.Path.EndsWith(".Event")).Value;
+                eventName = paths.First(x => x.Path.EndsWith(".Event", StringComparison.InvariantCultureIgnoreCase)).Value;
 
                 if (eventName.EndsWith("Status"))
                     return;
@@ -199,6 +201,15 @@ public class Plugin
         return keycode;
     }
 
+    public void ClearVariables()
+    {
+        if (!Directory.Exists(Path.Combine(Dir, "Variables")))
+            return;
+        
+        foreach (var file in Directory.GetFiles(Path.Combine(Dir, "Variables")))
+            File.Delete(file);
+    }
+    
     public void WriteVariables()
     {
         var groups = Proxy.Variables.SetVariables.GroupBy(x => x.category);
