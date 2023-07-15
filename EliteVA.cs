@@ -171,7 +171,6 @@ public class Plugin
             if (paths.Any(x => x.Path.Contains("[0]")))
             {
                 var array = $"EliteAPI.{paths.First(x => x.Path.Contains("[0]")).Path.Split(new[] {"[0]"}, StringSplitOptions.None)[0]}";
-                _log.LogInformation("Clearing array {Array}", array);
                 Proxy.Variables.ClearStartingWith(array);
             }
 
