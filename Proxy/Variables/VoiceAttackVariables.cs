@@ -12,7 +12,7 @@ public class VoiceAttackVariables
 {
     private readonly dynamic _proxy;
 
-    private readonly List<(string category, string name, string value)> _setVariables;
+    private List<(string category, string name, string value)> _setVariables;
 
     public IReadOnlyList<(string category, string name, string value)> SetVariables => _setVariables;
 
@@ -20,6 +20,11 @@ public class VoiceAttackVariables
     {
         _proxy = vaProxy;
         _setVariables = new List<(string, string, string)>();
+    }
+    
+    public void ClearStartingWith(string name)
+    {
+        _setVariables = _setVariables.Where(x => !x.name.Split(':')[1].StartsWith(name)).ToList();
     }
 
     /// <summary>
