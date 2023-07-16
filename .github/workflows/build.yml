@@ -86,16 +86,14 @@ jobs:
             - name: Copy to dist
               run: echo F|xcopy "Profile.vap" "dist\EliteVA v${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
-            - name: Zip dist
-              uses: thedoctor0/zip-release@0.7.1
+            - name: Create release artifact
+              uses: actions/upload-artifact@v2
               with:
-                  type: "zip"
-                  filename: "EliteVA.zip"
-                  path: "dist/*"
+                  name: EliteVA
+                  path: dist/*
 
-            - name: Release
-              uses: softprops/action-gh-release@v1
-              with:
-                  tag_name: ${{ steps.VERSION.outputs.semver }}
-                  files: EliteVA.zip
+            - uses: ncipollo/release-action@v1
+                with:
+                  artifacts: "EliteVA"
+                  tag: ${{ steps.VERSION.outputs.semver }}
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
