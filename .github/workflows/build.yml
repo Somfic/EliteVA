@@ -91,7 +91,7 @@ jobs:
               with:
                   type: "zip"
                   filename: "EliteVA.zip"
-                  path: "EliteVA v${{ steps.VERSION.outputs.semver }}/*"
+                  path: "'EliteVA v${{ steps.VERSION.outputs.semver }}/*'"
 
             - name: Release
               uses: softprops/action-gh-release@v1
