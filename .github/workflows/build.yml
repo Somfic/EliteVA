@@ -63,10 +63,10 @@ jobs:
               run: dotnet build -c Release
 
             - name: Make dist
-              run: mkdir EliteVA v${{ steps.VERSION.outputs.semver }}
+              run: mkdir "EliteVA v${{ steps.VERSION.outputs.semver }}"
 
             - name: Make plugin
-              run: mkdir EliteVA v${{ steps.VERSION.outputs.semver }}\plugin
+              run: mkdir "EliteVA v${{ steps.VERSION.outputs.semver }}\plugin"
 
             - name: Copy to EliteVA v${{ steps.VERSION.outputs.semver }}
               run: xcopy "bin\Release\net472\" "EliteVA v${{ steps.VERSION.outputs.semver }}\plugin" /Y /I
