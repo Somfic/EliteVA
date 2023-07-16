@@ -21,9 +21,6 @@ jobs:
               with:
                   dotnet-version: "6.0.x"
 
-            - name: Checkout code
-              uses: actions/checkout@v2
-
             - name: Setup GitVersion
               run: dotnet tool install --global GitVersion.Tool
 
