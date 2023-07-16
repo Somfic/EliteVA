@@ -179,6 +179,7 @@ public class Plugin
             return;
         
         Proxy.Commands.Invoke(command);
+        WriteCommands();
     }
     
     private void InvokePaths(ICollection<EventPath> paths, EventContext c, string? eventName = null)
@@ -275,6 +276,14 @@ public class Plugin
                 File.WriteAllLines(Path.Combine(Dir, "Variables",  source) + ".txt", variables);
             }
         }
+    }
+    
+    public void WriteCommands()
+    {
+        var commands = Proxy.Commands.InvokedCommands.Select(x => $"{x.timestamp.ToLongTimeString()}: {x.command}").ToList();
+        commands.Reverse();
+        commands.Insert(0, " ###  Commands  ### ");
+        File.WriteAllLines(Path.Combine(Dir, "Variables", "Commands.txt"), commands);
     }
 }
 readonly struct ShipEvent : IEvent
