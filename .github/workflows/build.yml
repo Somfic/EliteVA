@@ -84,7 +84,7 @@ jobs:
               run: dotnet run --project ProfileGenerator -c Release
 
             - name: Copy to dist
-              run: xcopy "Profile.vap" "dist\EliteVA v${{ steps.VERSION.outputs.semver }}.vap" /Y /I
+              run: echo F|xcopy "Profile.vap" "dist\EliteVA v${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
             - name: Zip dist
               uses: thedoctor0/zip-release@0.7.1
