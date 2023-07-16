@@ -65,11 +65,8 @@ jobs:
             - name: Make EliteVA-${{ steps.VERSION.outputs.semver }}
               run: mkdir "EliteVA-${{ steps.VERSION.outputs.semver }}"
 
-            - name: Make EliteVA-${{ steps.VERSION.outputs.semver }}\plugin
-              run: mkdir "EliteVA-${{ steps.VERSION.outputs.semver }}\plugin"
-
             - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
-              run: xcopy "bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}\plugin" /Y /I
+              run: xcopy "bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
 
             - name: Add Costura.Fody
               run: dotnet add package Costura.Fody
@@ -77,25 +74,27 @@ jobs:
             - name: Build
               run: dotnet build -c Release
 
-            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}\plugin
-              run: xcopy "bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}\plugin" /Y /I
+            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
+              run: xcopy "bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
 
             - name: Generate profile
               run: dotnet run --project ProfileGenerator -c Release
 
             - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}\EliteVA-${{ steps.VERSION.outputs.semver }}.vap
-              run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}\EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
+              run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
             - name: Zip dist
               uses: thedoctor0/zip-release@0.7.1
               with:
                   type: "zip"
-                  filename: "EliteVA.zip"
-                  path: "'EliteVA-${{ steps.VERSION.outputs.semver }}/*'"
+                  filename: "EliteVA-${{ steps.VERSION.outputs.semver }}.zip"
+                  path: "EliteVA-${{ steps.VERSION.outputs.semver }}/*"
 
             - name: Release
               uses: softprops/action-gh-release@v1
               with:
                   tag_name: ${{ steps.VERSION.outputs.semver }}
-                  files: EliteVA.zip
+                  files: |
+                      EliteVA-${{ steps.VERSION.outputs.semver }}.zip
+                      EliteVA-${{ steps.VERSION.outputs.semver }}.vap
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
