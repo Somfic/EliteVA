@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>EliteVA</AssemblyName>
@@ -27,8 +28,15 @@
     <None Update="EliteVA.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Remove="ProfileGenerator\**" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FileLogger" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ProfileGenerator\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="ProfileGenerator\**" />
   </ItemGroup>
 </Project>

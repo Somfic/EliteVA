@@ -10,7 +10,7 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
-              
+
             - name: Extract branch name
               shell: bash
               run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -37,18 +37,18 @@ jobs:
             - name: Set job output
               id: VERSION
               run: |
-                echo '::set-output name=label::${{env.GitVersion_PreReleaseLabel}}'
-                echo '::set-output name=semver::${{env.GitVersion_LegacySemVer}}'
-                echo '::set-output name=nuget::${{env.GitVersion_NuGetPreReleaseTagV2}}'
-                echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
+                  echo '::set-output name=label::${{env.GitVersion_PreReleaseLabel}}'
+                  echo '::set-output name=semver::${{env.GitVersion_LegacySemVer}}'
+                  echo '::set-output name=nuget::${{env.GitVersion_NuGetPreReleaseTagV2}}'
+                  echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
 
             - name: Apply changes
               if: ${{ steps.VERSION.outputs.applicable == 'true' || steps.extract_branch.outputs.branch == 'main' }}
               uses: EndBug/add-and-commit@v6.2.0
               with:
-                author_name: github-actions[bot]
-                author_email: github-actions[bot]@users.noreply.github.com
-                message: "Bumped version to ${{env.GitVersion_LegacySemVer}}"
+                  author_name: github-actions[bot]
+                  author_email: github-actions[bot]@users.noreply.github.com
+                  message: "Bumped version to ${{env.GitVersion_LegacySemVer}}"
 
             - name: Setup MSBuild
               uses: microsoft/setup-msbuild@v1
@@ -65,8 +65,11 @@ jobs:
             - name: Make dist
               run: mkdir dist
 
+            - name: Make plugin
+              run: mkdir dist\plugin
+
             - name: Copy to dist
-              run: xcopy "bin\Release\net472\" "dist" /Y /I
+              run: xcopy "bin\Release\net472\" "dist\plugin" /Y /I
 
             - name: Add Costura.Fody
               run: dotnet add package Costura.Fody
@@ -75,7 +78,13 @@ jobs:
               run: dotnet build -c Release
 
             - name: Copy to dist
-              run: xcopy "bin\Release\net472\" "dist" /Y /I
+              run: xcopy "bin\Release\net472\" "dist\plugin" /Y /I
+
+            - name: Generate profile
+              run: dotnet run --project ProfileGenerator -c Release
+
+            - name: Copy to dist
+              run: xcopy "Profile.vap" "dist\EliteVA v${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
             - name: Zip dist
               uses: thedoctor0/zip-release@0.7.1
