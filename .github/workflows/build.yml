@@ -93,7 +93,7 @@ jobs:
                   path: dist/*
 
             - uses: ncipollo/release-action@v1
-                with:
+              with:
                   artifacts: "EliteVA"
                   tag: ${{ steps.VERSION.outputs.semver }}
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
