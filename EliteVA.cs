@@ -125,6 +125,13 @@ public class Plugin
                 var paths = _api.EventParser.ToPaths(e).ToList();
                 InvokePaths(paths, c);
                 WriteVariables();
+
+                var eventName = e.Event;
+
+                if (e is IStatusEvent)
+                    eventName = $"Status.{eventName}";
+                
+                TriggerEvent(eventName, c);
             });
         }
         else
@@ -134,6 +141,8 @@ public class Plugin
                 var paths = _api.EventParser.ToPaths(e).ToList();
                 InvokePaths(paths, c);
                 WriteVariables();
+                var eventName = paths.First(x => x.Path.EndsWith(".Event", StringComparison.InvariantCultureIgnoreCase)).Value;
+                TriggerEvent(eventName, c);
             });
         }
 
@@ -153,6 +162,23 @@ public class Plugin
         _api.Events.Register<ShipEvent>();
 
         await _api.StartAsync();
+    }
+    
+    private void TriggerEvent(string eventName, EventContext c)
+    {
+        // Transform EliteAPI.FuelStatus into EliteAPI.Status.Fuel
+        eventName = eventName.Replace("\"", "");
+        eventName = Regex.Replace(eventName, @"([A-Za-z]+)Status", "Status.$1");
+
+        if (c.IsRaisedDuringCatchup) 
+            return;
+        
+        var command = $"((EliteAPI.{eventName}))";
+
+        if (!Proxy.Commands.Exists(command)) 
+            return;
+        
+        Proxy.Commands.Invoke(command);
     }
     
     private void InvokePaths(ICollection<EventPath> paths, EventContext c, string? eventName = null)
@@ -184,13 +210,6 @@ public class Plugin
                 
                 Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, $"EliteAPI.{path.Path}".Replace("..", "."), value, JToken.Parse(value).Type);
             }
-
-            if (!c.IsRaisedDuringCatchup)
-            {
-                var command = $"((EliteAPI.{eventName}))";
-                if (Proxy.Commands.Exists(command))
-                    Proxy.Commands.Invoke(command);
-            }
         }
         catch (Exception ex)
         {
@@ -217,7 +236,7 @@ public class Plugin
         foreach (var file in Directory.GetFiles(Path.Combine(Dir, "Variables")))
             File.Delete(file);
     }
-    
+
     public void WriteVariables()
     {
         var groups = Proxy.Variables.SetVariables.GroupBy(x => x.category);
