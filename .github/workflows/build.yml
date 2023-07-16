@@ -63,13 +63,13 @@ jobs:
               run: dotnet build -c Release
 
             - name: Make dist
-              run: mkdir dist
+              run: mkdir EliteVA v${{ steps.VERSION.outputs.semver }}
 
             - name: Make plugin
-              run: mkdir dist\plugin
+              run: mkdir EliteVA v${{ steps.VERSION.outputs.semver }}\plugin
 
-            - name: Copy to dist
-              run: xcopy "bin\Release\net472\" "dist\plugin" /Y /I
+            - name: Copy to EliteVA v${{ steps.VERSION.outputs.semver }}
+              run: xcopy "bin\Release\net472\" "EliteVA v${{ steps.VERSION.outputs.semver }}\plugin" /Y /I
 
             - name: Add Costura.Fody
               run: dotnet add package Costura.Fody
@@ -78,22 +78,24 @@ jobs:
               run: dotnet build -c Release
 
             - name: Copy to dist
-              run: xcopy "bin\Release\net472\" "dist\plugin" /Y /I
+              run: xcopy "bin\Release\net472\" "EliteVA v${{ steps.VERSION.outputs.semver }}\plugin" /Y /I
 
             - name: Generate profile
               run: dotnet run --project ProfileGenerator -c Release
 
             - name: Copy to dist
-              run: echo F|xcopy "Profile.vap" "dist\EliteVA v${{ steps.VERSION.outputs.semver }}.vap" /Y /I
+              run: echo F|xcopy "Profile.vap" "EliteVA v${{ steps.VERSION.outputs.semver }}\EliteVA v${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
-            - name: Create release artifact
-              uses: actions/upload-artifact@v2
+            - name: Zip dist
+              uses: thedoctor0/zip-release@0.7.1
               with:
-                  name: EliteVA
-                  path: dist/*
+                  type: "zip"
+                  filename: "EliteVA.zip"
+                  path: "EliteVA v${{ steps.VERSION.outputs.semver }}/*"
 
-            - uses: ncipollo/release-action@v1
+            - name: Release
+              uses: softprops/action-gh-release@v1
               with:
-                  artifacts: "EliteVA"
-                  tag: ${{ steps.VERSION.outputs.semver }}
+                  tag_name: ${{ steps.VERSION.outputs.semver }}
+                  files: EliteVA.zip
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
