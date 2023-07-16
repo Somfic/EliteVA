@@ -20,11 +20,6 @@ jobs:
               uses: actions/setup-dotnet@v2
               with:
                   dotnet-version: "6.0.x"
-                  
-            - name: Extract branch name
-              shell: bash
-              run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-              id: extract_branch
 
             - name: Checkout code
               uses: actions/checkout@v2
