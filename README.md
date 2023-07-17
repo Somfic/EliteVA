@@ -35,7 +35,7 @@ However, this approach lacks intelligence. What if the landing gear is already r
 ### With EliteVA
 By using EliteVA, you can significantly improve the intelligence of your macro. Here's how:
 
-1. Check if the landing gear is not already retracte
+1. Check if the landing gear is not already retracted:
 
 ```
 Boolean compare: EliteAPI.Gear equals True
