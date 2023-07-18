@@ -118,6 +118,19 @@ public class Plugin
         var isCurated = _config.GetSection("EliteAPI").GetValue("Mode", "raw") == "curated";
         _log.LogCritical(isCurated ? "Running in curated event mode" : "Running in raw event mode");
 
+        // _api.Events.On<StatusEvent>((e, c) =>
+        // {
+        //     var paths = _api.EventParser.ToPaths(e).Select(x => new EventPath(x.Path.Replace("Status.", ""), x.Value))
+        //         .ToArray();
+        //
+        //     foreach (var path in paths)
+        //     {
+        //         InvokePaths(new[] { path }, c, path.Path);
+        //     }
+        //
+        //     WriteVariables();
+        // });
+        
         if (isCurated)
         {
             _api.Events.OnAny((e, c) =>
@@ -146,19 +159,6 @@ public class Plugin
             });
         }
 
-        _api.Events.On<StatusEvent>((e, c) =>
-        {
-            var paths = _api.EventParser.ToPaths(e).Select(x => new EventPath(x.Path.Replace("Status.", ""), x.Value))
-                .ToArray();
-
-            foreach (var path in paths)
-            {
-                InvokePaths(new[] { path }, c, path.Path);
-            }
-
-            WriteVariables();
-        });
-
         _api.Events.Register<ShipEvent>();
 
         await _api.StartAsync();
@@ -174,6 +174,8 @@ public class Plugin
             return;
         
         var command = $"((EliteAPI.{eventName}))";
+        
+        _log.LogDebug("Invoking {Command}", command);
 
         if (!Proxy.Commands.Exists(command)) 
             return;
@@ -186,14 +188,20 @@ public class Plugin
     {
         try
         {
-            if (eventName == null)
-            {
-                eventName = paths.First(x => x.Path.EndsWith(".Event", StringComparison.InvariantCultureIgnoreCase)).Value;
+            eventName ??= paths.First(x => x.Path.EndsWith(".Event", StringComparison.InvariantCultureIgnoreCase)).Value;
 
-                if (c.SourceFile.EndsWith("Status.json") && eventName.Contains("Status"))
-                    return;
+            if (c.SourceFile.EndsWith("Status.json") && eventName.Contains("Status"))
+            {
+                paths = paths
+                    .Where(x => 
+                        !x.Path.EndsWith("timestamp", StringComparison.InvariantCultureIgnoreCase) &&
+                        !x.Path.EndsWith("event", StringComparison.InvariantCultureIgnoreCase))
+                    .Select(x =>
+                        new EventPath(Regex.Replace(x.Path, "([a-zA-Z]+)Status\\.Value", "$1"),
+                            x.Value))
+                    .ToList();
             }
-            
+
             // Clear arrays
             if (paths.Any(x => x.Path.Contains("[0]")))
             {
@@ -208,8 +216,12 @@ public class Plugin
                     
                 if (string.IsNullOrWhiteSpace(value))
                     value = "\"\"";
+
+                var name = $"EliteAPI.{path.Path}".Replace("..", ".");
                 
-                Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, $"EliteAPI.{path.Path}".Replace("..", "."), value, JToken.Parse(value).Type);
+                _log.LogDebug("Setting {Variable} to {Value}", name, value);
+                
+                Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, name, value, JToken.Parse(value).Type);
             }
         }
         catch (Exception ex)
