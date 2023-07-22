@@ -5,10 +5,10 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>0.1.23.0</AssemblyVersion>
-    <FileVersion>0.1.23.0</FileVersion>
-    <InformationalVersion>0.1.23+24.Branch.main.Sha.a2a9f6e6038e76537fc61caaf789548555c9d463</InformationalVersion>
-    <Version>0.1.23</Version>
+    <AssemblyVersion>0.2.0.0</AssemblyVersion>
+    <FileVersion>0.2.0.0</FileVersion>
+    <InformationalVersion>0.2.0-alpha.140+Branch.dev.Sha.a0acd547ea4e4224e5e0fe964d7c30524fc92ecd</InformationalVersion>
+    <Version>0.2.0-alpha0140</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EliteAPI" Version="3.0.9" />
