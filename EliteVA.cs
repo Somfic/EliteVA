@@ -29,13 +29,15 @@ public class Plugin
 
     private readonly ILogger<Plugin> _log;
     private readonly IEliteDangerousApi _api;
+    private readonly Documentation _docs;
     private readonly IConfiguration _config;
     public VoiceAttackProxy Proxy => VoiceAttack.Proxy;
 
-    public Plugin(ILogger<Plugin> log, IEliteDangerousApi api, IConfiguration config)
+    public Plugin(ILogger<Plugin> log, IEliteDangerousApi api, Documentation docs, IConfiguration config)
     {
         _log = log;
         _api = api;
+        _docs = docs;
         _config = config;
     }
 
@@ -64,6 +66,10 @@ public class Plugin
         
         await _api.InitialiseAsync();
         _api.Config.Apply();
+        
+        _log.LogInformation("Generating documentation");
+        _docs.Generate();
+        _log.LogInformation("Documentation generated");
 
         _api.Bindings.OnBindings((bindings, c) =>
         {

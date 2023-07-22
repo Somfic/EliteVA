@@ -62,11 +62,14 @@ jobs:
             - name: Build
               run: dotnet build -c Release
 
-            - name: Make EliteVA-${{ steps.VERSION.outputs.semver }}
-              run: mkdir "EliteVA-${{ steps.VERSION.outputs.semver }}"
+            - name: Make Apps
+              run: mkdir Apps
+              
+            - name: Make Apps\EliteVA
+              run: mkdir Apps\EliteVA
 
-            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
-              run: xcopy "bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
+            - name: Copy to Apps\EliteVA
+              run: xcopy "bin\Release\net472\" "Apps\EliteVA" /Y /I
 
             - name: Add Costura.Fody
               run: dotnet add package Costura.Fody
@@ -74,13 +77,13 @@ jobs:
             - name: Build
               run: dotnet build -c Release
 
-            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
-              run: xcopy "bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
+            - name: Copy to Apps\EliteVA
+              run: xcopy "bin\Release\net472\" "Apps\EliteVA" /Y /I
 
             - name: Generate profile
               run: dotnet run --project ProfileGenerator -c Release
 
-            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}\EliteVA-${{ steps.VERSION.outputs.semver }}.vap
+            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}.vap
               run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
             - name: Zip dist

@@ -64,6 +64,7 @@ public class VoiceAttack
             .ConfigureServices(s =>
             {
                 s.AddSingleton<Plugin>();
+                s.AddSingleton<Documentation>();
                 s.AddEliteApi();
             })
             .ConfigureLogging(l =>
