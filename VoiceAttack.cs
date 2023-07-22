@@ -80,5 +80,8 @@ public class VoiceAttack
         
         var eliteva = Host.Services.GetRequiredService<Plugin>();
         eliteva.Initialize().GetAwaiter().GetResult();
+
+        var documentation = Host.Services.GetRequiredService<Documentation>();
+        Task.Run(() => documentation.StartServer());
     }
 }
