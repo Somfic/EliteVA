@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
-    <InformationalVersion>0.2.0-alpha.149+Branch.dev.Sha.398869c09e7dd8ca42c9b7775ae0304c4affff87</InformationalVersion>
-    <Version>0.2.0-alpha0149</Version>
+    <InformationalVersion>0.2.0-alpha.152+Branch.dev.Sha.fde5363ff0b1072bdeb89a73d7d22ffe3aa382f6</InformationalVersion>
+    <Version>0.2.0-alpha0152</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EliteAPI" Version="3.0.9" />
