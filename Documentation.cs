@@ -7,7 +7,6 @@ using EliteAPI.Abstractions.Events;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SuperSimpleTcp;
 using WatsonWebsocket;
 
 namespace EliteVA;
@@ -16,7 +15,7 @@ public class Documentation
 {
     private readonly ILogger<Documentation> _log;
     private readonly IEliteDangerousApi _api;
-    private WatsonWsServer _server;
+    private readonly WatsonWsServer _server;
 
     public Documentation(ILogger<Documentation> log, IEliteDangerousApi api)
     {
