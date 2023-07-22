@@ -66,10 +66,6 @@ public class Plugin
         
         await _api.InitialiseAsync();
         _api.Config.Apply();
-        
-        _log.LogInformation("Generating documentation");
-        _docs.Generate();
-        _log.LogInformation("Documentation generated");
 
         _api.Bindings.OnBindings((bindings, c) =>
         {
