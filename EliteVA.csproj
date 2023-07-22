@@ -9,8 +9,8 @@
     <LangVersion>latest</LangVersion>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
-    <InformationalVersion>0.2.0-alpha.140+Branch.dev.Sha.a0acd547ea4e4224e5e0fe964d7c30524fc92ecd</InformationalVersion>
-    <Version>0.2.0-alpha0140</Version>
+    <InformationalVersion>0.2.0-alpha.143+Branch.dev.Sha.e654e68e60a75c5b80651db85576346357e64cf9</InformationalVersion>
+    <Version>0.2.0-alpha0143</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EliteAPI" Version="3.0.9" />
