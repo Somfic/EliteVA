@@ -34,14 +34,18 @@ public class Documentation
         {
             _log.LogDebug("Client connected");
 
-            var json = JsonConvert.SerializeObject(Generate());
-            _server.SendAsync(client.Client.Guid, json);
+            var records = JsonConvert.SerializeObject(GenerateJournalRecords());
+            _server.SendAsync(client.Client.Guid, "RECORDS");
+            _server.SendAsync(client.Client.Guid, records);
+            
+            SendCommands(VoiceAttack.Proxy.Commands.InvokedCommands);
+            SendVariables(VoiceAttack.Proxy.Variables.SetVariables);
         };
     }
 
     public void WriteToFiles()
     {
-        var variables = Generate();
+        var variables = GenerateJournalRecords();
         
         var path = Path.Combine(Plugin.Dir, "Variables", "Journal Records");
         Directory.CreateDirectory(path);
@@ -75,7 +79,7 @@ public class Documentation
         }
     }
 
-    private KeyValuePair<string, IEnumerable<DocumentationEntry>>[] Generate()
+    private KeyValuePair<string, IEnumerable<DocumentationEntry>>[] GenerateJournalRecords()
     {
         var journalsDirectory = new DirectoryInfo(_api.Config.JournalsPath);
         var journalFiles = journalsDirectory.GetFiles(_api.Config.JournalPattern);
@@ -136,4 +140,47 @@ public class Documentation
     }
 
     private string GetValue(string value) => JToken.Parse(value).ToString();
+
+    public void SendVariables(IReadOnlyList<(string category, string name, string value)> variables)
+    {
+        var groupedData = variables.GroupBy(item => item.category);
+
+        // Step 2: Create a new dictionary to hold the result
+        var resultDictionary = new Dictionary<string, IDictionary<string, string>>();
+
+        // Step 3: Iterate through the grouped data and create nested dictionaries for each category
+        foreach (var group in groupedData)
+        {
+            var category = group.Key;
+            var nestedDictionary = new Dictionary<string, string>();
+
+            // Step 4: Fill the nested dictionary with name-value pairs
+            foreach (var item in group)
+            {
+                nestedDictionary[item.name] = item.value;
+            }
+
+            // Step 5: Add the nested dictionary to the result dictionary
+            resultDictionary[category] = nestedDictionary;
+        }
+        
+        var clients = _server.ListClients();
+
+        foreach (var client in clients)
+        {
+            _server.SendAsync(client.Guid, "VARIABLES");
+            _server.SendAsync(client.Guid, JsonConvert.SerializeObject(resultDictionary));
+        }
+    }
+
+    public void SendCommands(IReadOnlyCollection<(DateTime timestamp, string command)> commands)
+    {
+        var clients = _server.ListClients();
+
+        foreach (var client in clients)
+        {
+            _server.SendAsync(client.Guid, "COMMANDS");
+            _server.SendAsync(client.Guid, JsonConvert.SerializeObject(commands));
+        }
+    }
 }

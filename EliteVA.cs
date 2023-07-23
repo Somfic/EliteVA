@@ -316,6 +316,10 @@ public class Plugin
                 File.WriteAllLines(Path.Combine(Dir, "Variables",  source) + ".txt", variables);
             }
         }
+
+        var dict = Proxy.Variables.SetVariables.ToDictionary(x => x.name, x => x.value);
+        
+        _docs.SendVariables(Proxy.Variables.SetVariables);
     }
     
     public void WriteCommands()
@@ -324,6 +328,8 @@ public class Plugin
         commands.Reverse();
         commands.Insert(0, " ###  Commands  ### ");
         File.WriteAllLines(Path.Combine(Dir, "Variables", "Commands.txt"), commands);
+        
+        _docs.SendCommands(Proxy.Commands.InvokedCommands);
     }
 }
 readonly struct ShipEvent : IEvent
