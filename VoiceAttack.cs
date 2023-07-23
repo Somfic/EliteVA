@@ -7,7 +7,9 @@ using EliteVA.Proxy.Logging;
 using EliteVA.Proxy.Logging.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -66,6 +68,8 @@ public class VoiceAttack
                 s.AddSingleton<Plugin>();
                 s.AddSingleton<Documentation>();
                 s.AddEliteApi();
+                s.AddHttpClient();
+                s.RemoveAll<IHttpMessageHandlerBuilderFilter>();
             })
             .ConfigureLogging(l =>
             {
