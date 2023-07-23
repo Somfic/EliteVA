@@ -97,7 +97,11 @@ public class Documentation
 
     private IEnumerable<EventPath> GetPaths(FileInfo journalFile)
     {
-        var jsons = File.ReadAllLines(journalFile.FullName);
+        // Open file with read-only access
+        using var stream = journalFile.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var reader = new StreamReader(stream);
+        
+        var jsons = reader.ReadToEnd().Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var json in jsons)
         {

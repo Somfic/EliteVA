@@ -68,10 +68,12 @@ public class Plugin
         await CheckForUpdates();
 
         ClearVariables();
-        
+
         await _api.InitialiseAsync();
         _api.Config.Apply();
 
+        _docs.WriteToFiles();
+        
         _api.Bindings.OnBindings((bindings, c) =>
         {
             try
@@ -168,8 +170,6 @@ public class Plugin
 
         _api.Events.Register<ShipEvent>();
 
-        _docs.WriteToFiles();
-        
         await _api.StartAsync();
     }
 
@@ -190,6 +190,11 @@ public class Plugin
 
         if (newVersion > currentVersion)
             _log.LogWarning("A new version of EliteVA is available: v{Version}", newVersion);
+        
+        // Cleanup
+        req.Dispose();
+        res.Dispose();
+        _http.Dispose();
     }
 
     private void TriggerEvent(string eventName, EventContext c)
@@ -272,10 +277,16 @@ public class Plugin
     public void ClearVariables()
     {
         if (!Directory.Exists(Path.Combine(Dir, "Variables")))
+        {
+            Directory.CreateDirectory(Path.Combine(Dir, "Variables"));
             return;
-        
+        }
+
         foreach (var file in Directory.GetFiles(Path.Combine(Dir, "Variables")))
             File.Delete(file);
+        
+        foreach (var directory in Directory.GetDirectories(Path.Combine(Dir, "Variables")))
+            Directory.Delete(directory, true);
     }
 
     public void WriteVariables()
