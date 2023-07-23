@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using EliteAPI.Abstractions;
 using EliteAPI.Abstractions.Events;
+using EliteVA.Proxy.Commands;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -177,7 +178,7 @@ public class Documentation
         }
     }
 
-    public void SendCommands(IReadOnlyCollection<(DateTime timestamp, string command)> commands)
+    public void SendCommands(IReadOnlyCollection<VoiceAttackCommands.SetCommand> commands)
     {
         var clients = _server.ListClients();
 
@@ -187,4 +188,6 @@ public class Documentation
             _server.SendAsync(client.Guid, JsonConvert.SerializeObject(commands));
         }
     }
+
+  
 }

@@ -333,7 +333,7 @@ public class Plugin
     
     public void WriteCommands()
     {
-        var commands = Proxy.Commands.InvokedCommands.Select(x => $"{x.timestamp.ToLongTimeString()}: {x.command}").ToList();
+        var commands = Proxy.Commands.InvokedCommands.Select(x => $"{x.Timestamp.ToLongTimeString()}: {x.Command}").ToList();
         commands.Reverse();
         commands.Insert(0, " ###  Commands  ### ");
         File.WriteAllLines(Path.Combine(Dir, "Variables", "Commands.txt"), commands);

@@ -8,8 +8,8 @@ namespace EliteVA.Proxy.Commands;
 public class VoiceAttackCommands
 {
     private readonly dynamic _proxy;
-    private readonly List<(DateTime timestamp, string command)> _invokedCommands = new();
-    public IReadOnlyCollection<(DateTime timestamp, string command)> InvokedCommands => _invokedCommands.AsReadOnly();
+    private readonly List<SetCommand> _invokedCommands = new();
+    public IReadOnlyCollection<SetCommand> InvokedCommands => _invokedCommands.AsReadOnly();
 
     internal VoiceAttackCommands(dynamic proxy)
     {
@@ -101,7 +101,7 @@ public class VoiceAttackCommands
     public void Invoke(string commandName, bool runSync = false, bool runAsSubCommand = false)
     {
         _proxy.Command.Execute(commandName, runSync, runAsSubCommand);
-        _invokedCommands.Add((DateTime.Now, commandName));
+        _invokedCommands.Add(new SetCommand(DateTime.Now, commandName));
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public class VoiceAttackCommands
     public Task Invoke(Guid identifier, bool runSync = false, bool runAsSubCommand = false)
     {
         _proxy.Command.Execute(identifier, runSync, runAsSubCommand);
-        _invokedCommands.Add((DateTime.Now, identifier.ToString()));
+        _invokedCommands.Add(new SetCommand(DateTime.Now, identifier.ToString()));
         return Task.CompletedTask;
     }
 
@@ -160,6 +160,20 @@ public class VoiceAttackCommands
     public Task<bool> CategoryExists(string name)
     {
         return Task.FromResult(_proxy.Command.CategoryExists(name));
+    }
+    
+    public struct SetCommand
+    {
+        public SetCommand(DateTime timestamp, string command)
+        {
+            Timestamp = timestamp;
+            Command = command;
+        }
+
+
+        public DateTime Timestamp { get; }
+        
+        public string Command { get; }
     }
 }
 
