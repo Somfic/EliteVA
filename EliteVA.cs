@@ -316,8 +316,6 @@ public class Plugin
                 File.WriteAllLines(Path.Combine(Dir, "Variables",  source) + ".txt", variables);
             }
         }
-
-        var dict = Proxy.Variables.SetVariables.ToDictionary(x => x.name, x => x.value);
         
         _docs.SendVariables(Proxy.Variables.SetVariables);
     }
