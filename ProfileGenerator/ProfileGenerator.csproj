@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
-    <InformationalVersion>0.2.0+31.Branch.main.Sha.ddeb25c222b2dc00a02d937629673bb43dbdd9ec</InformationalVersion>
+    <InformationalVersion>0.2.0+2.Branch.main.Sha.2056941a8765469a400ec2220160d8c8aa7c4cd2</InformationalVersion>
     <Version>0.2.0</Version>
   </PropertyGroup>
   <ItemGroup>
