@@ -112,7 +112,7 @@ public class Plugin
 
         });
 
-        _api.Events.On<FileheaderEvent>((e, c) =>
+        _api.Events.On<FileheaderEvent>((_, c) =>
         {
             _log.LogInformation("Processing {JournalFile}", new FileInfo(c.SourceFile).Name);
         });
@@ -163,6 +163,8 @@ public class Plugin
 
         _api.Events.Register<ShipEvent>();
 
+        _docs.WriteToFiles();
+        
         await _api.StartAsync();
     }
     
