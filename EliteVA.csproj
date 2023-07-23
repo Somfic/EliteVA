@@ -9,17 +9,19 @@
     <LangVersion>latest</LangVersion>
     <AssemblyVersion>0.1.24.0</AssemblyVersion>
     <FileVersion>0.1.24.0</FileVersion>
-    <InformationalVersion>0.1.24+5.Branch.main.Sha.1ebd39fd507b93129d48956d1c14f13a5e2ced8c</InformationalVersion>
+    <InformationalVersion>0.2.0-alpha.161+Branch.dev.Sha.2f1afaf915b79f23c1330d394ad213553b01e5d3</InformationalVersion>
     <Version>0.1.24</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.0.8" />
+    <PackageReference Include="EliteAPI" Version="3.0.10" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="WatsonWebsocket" Version="4.0.11" />
   </ItemGroup>
   <ItemGroup>
     <None Update="layout.yml">

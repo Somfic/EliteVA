@@ -29,14 +29,19 @@ public class Plugin
 
     private readonly ILogger<Plugin> _log;
     private readonly IEliteDangerousApi _api;
+    private readonly Documentation _docs;
     private readonly IConfiguration _config;
+    private readonly HttpClient _http;
+    
     public VoiceAttackProxy Proxy => VoiceAttack.Proxy;
 
-    public Plugin(ILogger<Plugin> log, IEliteDangerousApi api, IConfiguration config)
+    public Plugin(ILogger<Plugin> log, IEliteDangerousApi api, Documentation docs, IHttpClientFactory http, IConfiguration config)
     {
         _log = log;
         _api = api;
+        _docs = docs;
         _config = config;
+        _http = http.CreateClient();
     }
 
     private IDictionary<string, string> ReadYml(string name)
@@ -60,6 +65,8 @@ public class Plugin
     
     public async Task Initialize()
     {
+        await CheckForUpdates();
+
         ClearVariables();
         
         await _api.InitialiseAsync();
@@ -110,7 +117,7 @@ public class Plugin
 
         });
 
-        _api.Events.On<FileheaderEvent>((e, c) =>
+        _api.Events.On<FileheaderEvent>((_, c) =>
         {
             _log.LogInformation("Processing {JournalFile}", new FileInfo(c.SourceFile).Name);
         });
@@ -161,9 +168,30 @@ public class Plugin
 
         _api.Events.Register<ShipEvent>();
 
+        _docs.WriteToFiles();
+        
         await _api.StartAsync();
     }
-    
+
+    private async Task CheckForUpdates()
+    {
+        var req = new HttpRequestMessage(HttpMethod.Get,
+            "https://api.github.com/repos/Somfic/EliteVA/releases/latest");
+        req.Headers.Add("User-Agent", "EliteVA");
+        
+        var res = await _http.SendAsync(req);
+        
+        if (!res.IsSuccessStatusCode) return;
+        
+        var body = await res.Content.ReadAsStringAsync();
+        var json = JObject.Parse(body);
+        var newVersion = new Version(json["tag_name"] + ".0");
+        var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+        if (newVersion > currentVersion)
+            _log.LogWarning("A new version of EliteVA is available: v{Version}", newVersion);
+    }
+
     private void TriggerEvent(string eventName, EventContext c)
     {
         // Transform EliteAPI.FuelStatus into EliteAPI.Status.Fuel
@@ -288,6 +316,10 @@ public class Plugin
                 File.WriteAllLines(Path.Combine(Dir, "Variables",  source) + ".txt", variables);
             }
         }
+
+        var dict = Proxy.Variables.SetVariables.ToDictionary(x => x.name, x => x.value);
+        
+        _docs.SendVariables(Proxy.Variables.SetVariables);
     }
     
     public void WriteCommands()
@@ -296,6 +328,8 @@ public class Plugin
         commands.Reverse();
         commands.Insert(0, " ###  Commands  ### ");
         File.WriteAllLines(Path.Combine(Dir, "Variables", "Commands.txt"), commands);
+        
+        _docs.SendCommands(Proxy.Commands.InvokedCommands);
     }
 }
 readonly struct ShipEvent : IEvent
