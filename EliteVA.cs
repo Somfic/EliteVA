@@ -72,8 +72,6 @@ public class Plugin
         await _api.InitialiseAsync();
         _api.Config.Apply();
 
-        _docs.WriteToFiles();
-        
         _api.Bindings.OnBindings((bindings, c) =>
         {
             try
@@ -171,6 +169,8 @@ public class Plugin
         _api.Events.Register<ShipEvent>();
 
         await _api.StartAsync();
+        
+        _docs.WriteToFiles();
     }
 
     private async Task CheckForUpdates()

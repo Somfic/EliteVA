@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using EliteAPI.Abstractions;
 using EliteAPI.Abstractions.Events;
+using EliteAPI.Events;
 using EliteVA.Proxy.Commands;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -16,6 +17,7 @@ public class Documentation
     private readonly ILogger<Documentation> _log;
     private readonly IEliteDangerousApi _api;
     private readonly WatsonWsServer _server;
+    private KeyValuePair<string, IEnumerable<DocumentationEntry>>[]? _journalRecords = null;
 
     public Documentation(ILogger<Documentation> log, IEliteDangerousApi api)
     {
@@ -79,13 +81,24 @@ public class Documentation
             File.WriteAllText(Path.Combine(path, key + ".txt"), content.ToString());
         }
     }
-
+    
     private KeyValuePair<string, IEnumerable<DocumentationEntry>>[] GenerateJournalRecords()
     {
+        if (_journalRecords != null) return _journalRecords;
+        
         var journalsDirectory = new DirectoryInfo(_api.Config.JournalsPath);
         var journalFiles = journalsDirectory.GetFiles(_api.Config.JournalPattern);
+        
+        var latestJournalFile = journalFiles.OrderByDescending(x => x.LastWriteTime).First();
+        var targetVersion = GetGameVersionFromFile(latestJournalFile);
 
-       return journalFiles.SelectMany(GetPaths)
+        var filteredFiles = journalFiles
+            .Where(x => GetGameVersionFromFile(x) == targetVersion).ToArray();
+        
+        _log.LogDebug($"Generating journal records for version {targetVersion} by scraping {filteredFiles.Count()} files");
+        
+        _journalRecords = filteredFiles
+            .SelectMany(GetPaths)
             .GroupBy(x => x.Path)
             .ToDictionary(x => x.Key, x => x.Select(y => y.Value))
             .Select(x => new DocumentationEntry(x.Key, x.Value.Select(GetType),
@@ -94,9 +107,29 @@ public class Documentation
             .GroupBy(x => x.Name.Split('.')[0])
             .ToDictionary(x => x.Key, x => x.Select(y => y))
             .ToArray();
+        
+        return _journalRecords;
     }
 
-    private IEnumerable<EventPath> GetPaths(FileInfo journalFile)
+    private string GetGameVersionFromFile(FileInfo file)
+    {
+        // Open file with read-only access
+        using var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var reader = new StreamReader(stream);
+        
+        // Read the first line
+        var json = reader.ReadToEnd().Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).First();
+        
+        // Parse the fileheader event
+        var fileheader = _api.EventParser.FromJson<FileheaderEvent>(json);
+        
+        // Get the game version
+        var version = fileheader.Gameversion.Split('.');
+        
+        // Return the version
+        return string.Join(".", version.Take(3));
+    }
+    private IReadOnlyCollection<EventPath> GetPaths(FileInfo journalFile)
     {
         // Open file with read-only access
         using var stream = journalFile.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -104,16 +137,23 @@ public class Documentation
         
         var jsons = reader.ReadToEnd().Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
 
+        List<EventPath> allPaths = new();
+        
         foreach (var json in jsons)
         {
-            var paths = _api.EventParser.ToPaths(json).ToArray();
-            var eventName = paths.First(x => x.Path.EndsWith(".Event", StringComparison.InvariantCultureIgnoreCase)).Value;
-
-            foreach (var path in paths)
+            try
             {
-                yield return new EventPath(Regex.Replace(path.Path, @"\[\d+?\]", "[n]"), path.Value);
+                var paths = _api.EventParser.ToPaths(json).ToArray();
+                allPaths.AddRange(paths.Select(path => new EventPath(Regex.Replace(path.Path, @"\[\d+?\]", "[n]"), path.Value)));
+            } catch (Exception ex)
+            {
+                ex.Data.Add("json", json);
+                ex.Data.Add("file", journalFile.Name);
+                _log.LogDebug(ex, "Could not parse journal entry");
             }
         }
+
+        return allPaths;
     }
 
     public readonly struct DocumentationEntry
@@ -176,6 +216,8 @@ public class Documentation
             _server.SendAsync(client.Guid, "VARIABLES");
             _server.SendAsync(client.Guid, JsonConvert.SerializeObject(resultDictionary));
         }
+        
+        File.WriteAllText(Path.Combine(Plugin.Dir, "Variables", "EliteAPI.json"), JsonConvert.SerializeObject(resultDictionary, Formatting.Indented));
     }
 
     public void SendCommands(IReadOnlyCollection<VoiceAttackCommands.SetCommand> commands)

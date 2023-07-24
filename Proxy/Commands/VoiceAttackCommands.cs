@@ -170,7 +170,6 @@ public class VoiceAttackCommands
             Command = command;
         }
 
-
         public DateTime Timestamp { get; }
         
         public string Command { get; }

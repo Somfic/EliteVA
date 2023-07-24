@@ -76,6 +76,8 @@ public class VoiceAttack
                 l.SetMinimumLevel(LogLevel.Trace);
                 l.AddProvider(new VoiceAttackLoggerProvider(vaProxy));
                 l.AddFile("EliteVA", loggingPath);
+                l.AddFilter("Microsoft", LogLevel.Warning);
+                l.AddFilter("System", LogLevel.Warning);
             }).ConfigureAppConfiguration(config =>
             {
                 config.AddIniFile(Path.Combine(Plugin.Dir, "EliteVA.ini"), false);
