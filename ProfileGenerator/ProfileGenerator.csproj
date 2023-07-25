@@ -11,6 +11,6 @@
     <Version>0.2.2</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.0.10" />
+    <PackageReference Include="EliteAPI" Version="3.0.11" />
   </ItemGroup>
 </Project>

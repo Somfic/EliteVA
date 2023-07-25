@@ -67,11 +67,14 @@ public class Plugin
     {
         await CheckForUpdates();
 
+        
         ClearVariables();
-
+        
         await _api.InitialiseAsync();
         _api.Config.Apply();
 
+        Task.Run(() => _docs.GenerateJournalRecords());
+        
         _api.Bindings.OnBindings((bindings, c) =>
         {
             try
@@ -169,8 +172,6 @@ public class Plugin
         _api.Events.Register<ShipEvent>();
 
         await _api.StartAsync();
-        
-        _docs.WriteToFiles();
     }
 
     private async Task CheckForUpdates()

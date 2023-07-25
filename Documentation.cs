@@ -17,7 +17,7 @@ public class Documentation
     private readonly ILogger<Documentation> _log;
     private readonly IEliteDangerousApi _api;
     private readonly WatsonWsServer _server;
-    private KeyValuePair<string, IEnumerable<DocumentationEntry>>[]? _journalRecords = null;
+    private KeyValuePair<string, IEnumerable<DocumentationEntry>>[]? _journalRecords;
 
     public Documentation(ILogger<Documentation> log, IEliteDangerousApi api)
     {
@@ -33,20 +33,35 @@ public class Documentation
         
         _server.Logger += (message) => _log.LogTrace(message);
 
-        _server.ClientConnected += (_, client) =>
+        _server.ClientConnected += async (_, client) =>
         {
             _log.LogDebug("Client connected");
 
-            var records = JsonConvert.SerializeObject(GenerateJournalRecords());
-            _server.SendAsync(client.Client.Guid, "RECORDS");
-            _server.SendAsync(client.Client.Guid, records);
-            
             SendCommands(VoiceAttack.Proxy.Commands.InvokedCommands);
             SendVariables(VoiceAttack.Proxy.Variables.SetVariables);
+            
+            var records = JsonConvert.SerializeObject(GenerateJournalRecords());
+            await _server.SendAsync(client.Client.Guid, "RECORDS");
+            await _server.SendAsync(client.Client.Guid, records);
+        };
+
+        RecordsGenerated += async (_, _) =>
+        {
+            WriteRecordsToFile();
+            
+            var records = JsonConvert.SerializeObject(GenerateJournalRecords());
+            var clients = _server.ListClients();
+            foreach (var client in clients)
+            {
+                await _server.SendAsync(client.Guid, "RECORDS");
+                await _server.SendAsync(client.Guid, records);
+            }
         };
     }
+    
+    public event EventHandler? RecordsGenerated;
 
-    public void WriteToFiles()
+    private void WriteRecordsToFile()
     {
         var variables = GenerateJournalRecords();
         
@@ -82,52 +97,105 @@ public class Documentation
         }
     }
     
-    private KeyValuePair<string, IEnumerable<DocumentationEntry>>[] GenerateJournalRecords()
+    public KeyValuePair<string, IEnumerable<DocumentationEntry>>[] GenerateJournalRecords()
     {
-        if (_journalRecords != null) return _journalRecords;
-        
-        var journalsDirectory = new DirectoryInfo(_api.Config.JournalsPath);
-        var journalFiles = journalsDirectory.GetFiles(_api.Config.JournalPattern);
-        
-        var latestJournalFile = journalFiles.OrderByDescending(x => x.LastWriteTime).First();
-        var targetVersion = GetGameVersionFromFile(latestJournalFile);
+        try
+        {
+            if (_journalRecords != null)
+            {
+                _log.LogDebug($"Returning {_journalRecords.Length} journal records from cache");
+                return _journalRecords;
+            }
 
-        var filteredFiles = journalFiles
-            .Where(x => GetGameVersionFromFile(x) == targetVersion).ToArray();
-        
-        _log.LogDebug($"Generating journal records for version {targetVersion} by scraping {filteredFiles.Count()} files");
-        
-        _journalRecords = filteredFiles
-            .SelectMany(GetPaths)
-            .GroupBy(x => x.Path)
-            .ToDictionary(x => x.Key, x => x.Select(y => y.Value))
-            .Select(x => new DocumentationEntry(x.Key, x.Value.Select(GetType),
-                x.Value.Select(GetValue).OrderBy(_ => Guid.NewGuid())))
-            .OrderBy(x => x.Name)
-            .GroupBy(x => x.Name.Split('.')[0])
-            .ToDictionary(x => x.Key, x => x.Select(y => y))
-            .ToArray();
-        
-        return _journalRecords;
+            _journalRecords = Array.Empty<KeyValuePair<string, IEnumerable<DocumentationEntry>>>();
+
+            var journalsDirectory = new DirectoryInfo(_api.Config.JournalsPath);
+            var journalFiles = journalsDirectory.GetFiles(_api.Config.JournalPattern);
+
+            var latestJournalFile = journalFiles.OrderByDescending(x => x.LastWriteTime).First();
+            var targetVersion = GetGameVersionFromFile(latestJournalFile);
+
+            var filteredFiles = journalFiles
+                .Where(x => GetGameVersionFromFile(x) == targetVersion).OrderByDescending(x => x.LastWriteTime)
+                .ToArray();
+
+            _log.LogDebug(
+                $"Generating journal records for version {targetVersion} by scraping {filteredFiles.Length} journal files");
+
+            var lastCache = DateTime.MinValue;
+            
+            var generatedPaths = new List<EventPath>();
+            
+            foreach (var filteredFile in filteredFiles)
+            {
+                generatedPaths.AddRange(GetPaths(filteredFile));
+
+                if (DateTime.Now - lastCache <= TimeSpan.FromSeconds(15)) 
+                    continue;
+                
+                _log.LogDebug($"Generated {generatedPaths.Count} journal records");
+                
+                _journalRecords = generatedPaths
+                    .GroupBy(x => x.Path)
+                    .ToDictionary(x => x.Key, x => x.Select(y => y.Value))
+                    .Select(x => new DocumentationEntry(x.Key, x.Value.Select(GetType),
+                        x.Value.Select(GetValue).OrderBy(_ => Guid.NewGuid())))
+                    .OrderBy(x => x.Name)
+                    .GroupBy(x => x.Name.Split('.')[0])
+                    .ToDictionary(x => x.Key, x => x.Select(y => y))
+                    .ToArray();
+
+                RecordsGenerated?.Invoke(this, EventArgs.Empty);
+                lastCache = DateTime.Now;
+            }
+            
+            _journalRecords = generatedPaths
+                .GroupBy(x => x.Path)
+                .ToDictionary(x => x.Key, x => x.Select(y => y.Value))
+                .Select(x => new DocumentationEntry(x.Key, x.Value.Select(GetType),
+                    x.Value.Select(GetValue).OrderBy(_ => Guid.NewGuid())))
+                .OrderBy(x => x.Name)
+                .GroupBy(x => x.Name.Split('.')[0])
+                .ToDictionary(x => x.Key, x => x.Select(y => y))
+                .ToArray();
+            RecordsGenerated?.Invoke(this, EventArgs.Empty);
+            
+            _log.LogDebug($"Finished generating {_journalRecords.Length} journal records");
+
+            return _journalRecords;
+        } catch (Exception ex)
+        {
+            _log.LogDebug(ex, "Could not generate journal records");
+            return Array.Empty<KeyValuePair<string, IEnumerable<DocumentationEntry>>>();
+        }
     }
 
     private string GetGameVersionFromFile(FileInfo file)
     {
-        // Open file with read-only access
-        using var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        using var reader = new StreamReader(stream);
-        
-        // Read the first line
-        var json = reader.ReadToEnd().Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).First();
-        
-        // Parse the fileheader event
-        var fileheader = _api.EventParser.FromJson<FileheaderEvent>(json);
-        
-        // Get the game version
-        var version = fileheader.Gameversion.Split('.');
-        
-        // Return the version
-        return string.Join(".", version.Take(3));
+        try
+        {
+            // Open file with read-only access
+            using var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var reader = new StreamReader(stream);
+
+            // Read the first line
+            var json = reader.ReadToEnd().Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                .First();
+
+            // Parse the fileheader event
+            var fileheader = _api.EventParser.FromJson<FileheaderEvent>(json);
+
+            // Get the game version
+            var version = fileheader.Gameversion.Split('.');
+
+            // Return the version
+            return string.Join(".", version.Take(3));
+        } catch (Exception ex)
+        {
+            ex.Data.Add("file", file.Name);
+            _log.LogDebug(ex, "Could not get game version for file");
+            return "0.0.0";
+        }
     }
     private IReadOnlyCollection<EventPath> GetPaths(FileInfo journalFile)
     {
