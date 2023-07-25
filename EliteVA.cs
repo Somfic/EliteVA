@@ -66,7 +66,6 @@ public class Plugin
     public async Task Initialize()
     {
         await CheckForUpdates();
-
         
         ClearVariables();
         

@@ -71,11 +71,11 @@ public class VoiceAttack
                 s.AddHttpClient();
                 s.RemoveAll<IHttpMessageHandlerBuilderFilter>();
             })
-            .ConfigureLogging(l =>
+            .ConfigureLogging((c, l) =>
             {
                 l.SetMinimumLevel(LogLevel.Trace);
                 l.AddProvider(new VoiceAttackLoggerProvider(vaProxy));
-                l.AddFile("EliteVA", loggingPath);
+                l.AddFile("EliteVA", loggingPath, c.Configuration.GetSection("EliteAPI").GetValue("FileLogging", true));
                 l.AddFilter("Microsoft", LogLevel.Warning);
                 l.AddFilter("System", LogLevel.Warning);
             }).ConfigureAppConfiguration(config =>

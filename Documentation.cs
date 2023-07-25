@@ -281,7 +281,7 @@ public class Documentation
             // Step 5: Add the nested dictionary to the result dictionary
             resultDictionary[category] = nestedDictionary;
         }
-        
+
         var clients = _server.ListClients();
 
         foreach (var client in clients)
@@ -289,8 +289,6 @@ public class Documentation
             _server.SendAsync(client.Guid, "VARIABLES");
             _server.SendAsync(client.Guid, JsonConvert.SerializeObject(resultDictionary));
         }
-        
-        File.WriteAllText(Path.Combine(Plugin.Dir, "Variables", "EliteAPI.json"), JsonConvert.SerializeObject(resultDictionary, Formatting.Indented));
     }
 
     public void SendCommands(IReadOnlyCollection<VoiceAttackCommands.SetCommand> commands)
