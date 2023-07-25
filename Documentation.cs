@@ -5,6 +5,7 @@ using EliteAPI.Abstractions;
 using EliteAPI.Abstractions.Events;
 using EliteAPI.Events;
 using EliteVA.Proxy.Commands;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,13 +17,15 @@ public class Documentation
 {
     private readonly ILogger<Documentation> _log;
     private readonly IEliteDangerousApi _api;
+    private readonly IConfiguration _config;
     private readonly WatsonWsServer _server;
     private KeyValuePair<string, IEnumerable<DocumentationEntry>>[]? _journalRecords;
 
-    public Documentation(ILogger<Documentation> log, IEliteDangerousApi api)
+    public Documentation(ILogger<Documentation> log, IEliteDangerousApi api, IConfiguration config)
     {
         _log = log;
         _api = api;
+        _config = config;
         _server = new WatsonWsServer(IPAddress.Loopback.ToString(), 51555);
     }
     
@@ -102,10 +105,7 @@ public class Documentation
         try
         {
             if (_journalRecords != null)
-            {
-                _log.LogDebug($"Returning {_journalRecords.Length} journal records from cache");
                 return _journalRecords;
-            }
 
             _journalRecords = Array.Empty<KeyValuePair<string, IEnumerable<DocumentationEntry>>>();
 
@@ -115,8 +115,10 @@ public class Documentation
             var latestJournalFile = journalFiles.OrderByDescending(x => x.LastWriteTime).First();
             var targetVersion = GetGameVersionFromFile(latestJournalFile);
 
+            var amountOfJournalsToScrape = _config.GetSection("EliteAPI").GetValue("AmountJournalsToScrape", 1);
             var filteredFiles = journalFiles
                 .Where(x => GetGameVersionFromFile(x) == targetVersion).OrderByDescending(x => x.LastWriteTime)
+                .Take(amountOfJournalsToScrape)
                 .ToArray();
 
             _log.LogDebug(
@@ -126,14 +128,17 @@ public class Documentation
             
             var generatedPaths = new List<EventPath>();
             
+            var filesProcessed = 0;
             foreach (var filteredFile in filteredFiles)
             {
                 generatedPaths.AddRange(GetPaths(filteredFile));
+                filesProcessed++;
 
                 if (DateTime.Now - lastCache <= TimeSpan.FromSeconds(15)) 
                     continue;
                 
-                _log.LogDebug($"Generated {generatedPaths.Count} journal records");
+                var percentage = (int) Math.Round((double) filesProcessed / filteredFiles.Length * 100);
+                _log.LogDebug($"Generated {generatedPaths.Count} journal records ({percentage}%)");
                 
                 _journalRecords = generatedPaths
                     .GroupBy(x => x.Path)
@@ -160,7 +165,7 @@ public class Documentation
                 .ToArray();
             RecordsGenerated?.Invoke(this, EventArgs.Empty);
             
-            _log.LogDebug($"Finished generating {_journalRecords.Length} journal records");
+            _log.LogDebug($"Finished generating records. Generated {_journalRecords.Length} events from {generatedPaths.Count} journal events");
 
             return _journalRecords;
         } catch (Exception ex)
