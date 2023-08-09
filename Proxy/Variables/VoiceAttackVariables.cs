@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using EliteVA.Proxy.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,6 @@ public class VoiceAttackVariables
     /// <param name="code">The type of variable</param>
     public void Set(string category, string name, object value, TypeCode code)
     {
-        
         switch (code)
         {
             case TypeCode.Boolean:
@@ -61,7 +61,7 @@ public class VoiceAttackVariables
             case TypeCode.Single:
             case TypeCode.Decimal:
             case TypeCode.Double:
-                SetDecimal(category, name, decimal.Parse(value.ToString()));
+                SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
                 break;
 
             case TypeCode.Char:
@@ -86,8 +86,9 @@ public class VoiceAttackVariables
                 }
                 catch (OverflowException)
                 {
-                    SetDecimal(category, name, decimal.Parse(value.ToString()));
-                } 
+                    SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                }
+
                 break;
         }
     }
@@ -113,7 +114,7 @@ public class VoiceAttackVariables
                 break;
                 
             case JTokenType.Float:
-                SetDecimal(category, name, decimal.Parse(value.ToString(), System.Globalization.NumberStyles.Float));
+                SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
                 break;
 
             case JTokenType.String:
@@ -127,7 +128,7 @@ public class VoiceAttackVariables
                 }
                 catch (OverflowException)
                 {
-                    SetDecimal(category, name, decimal.Parse(value.ToString(), System.Globalization.NumberStyles.Float));
+                    SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
                 } 
                 break;
         }

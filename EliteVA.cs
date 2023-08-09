@@ -242,24 +242,30 @@ public class Plugin
                 Proxy.Variables.ClearStartingWith(array);
             }
 
-
             foreach (var path in paths)
             {
-                var value = path.Value;
-                    
-                if (string.IsNullOrWhiteSpace(value))
-                    value = "\"\"";
+                try
+                {
+                    var value = path.Value;
 
-                var name = $"EliteAPI.{path.Path}".Replace("..", ".");
-                
-                _log.LogDebug("Setting {Variable} to {Value}", name, value);
-                
-                Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, name, value, JToken.Parse(value).Type);
+                    if (string.IsNullOrWhiteSpace(value))
+                        value = "\"\"";
+
+                    var name = $"EliteAPI.{path.Path}".Replace("..", ".");
+
+                    _log.LogDebug("Setting {Variable} to {Value}", name, value);
+
+                    Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, name, value, JToken.Parse(value).Type);
+                }
+                catch (Exception ex)
+                {
+                    _log.LogWarning(ex, "Could not set variable {Variable} to {Value}", path.Path, path.Value);
+                }
             }
         }
         catch (Exception ex)
         {
-            _log.LogError(ex, ex.StackTrace);
+            _log.LogError(ex, "Could not process event {Event}", eventName);
         }
     }
     
