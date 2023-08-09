@@ -40,6 +40,12 @@ public class FileLogger : ILogger
         entry = entry.Trim('\r', '\n');
         entry += Environment.NewLine;
 
-        System.IO.File.AppendAllText(_path, entry);
+        try
+        {
+            File.AppendAllText(_path, entry);
+        } catch (Exception e)
+        {
+            // ignored
+        }
     }
 }

@@ -137,9 +137,6 @@ public class Documentation
                 if (DateTime.Now - lastCache <= TimeSpan.FromSeconds(15)) 
                     continue;
                 
-                var percentage = (int) Math.Round((double) filesProcessed / filteredFiles.Length * 100);
-                _log.LogDebug($"Generated {generatedPaths.Count} journal records ({percentage}%)");
-                
                 _journalRecords = generatedPaths
                     .GroupBy(x => x.Path)
                     .ToDictionary(x => x.Key, x => x.Select(y => y.Value))
@@ -164,8 +161,6 @@ public class Documentation
                 .ToDictionary(x => x.Key, x => x.Select(y => y))
                 .ToArray();
             RecordsGenerated?.Invoke(this, EventArgs.Empty);
-            
-            _log.LogDebug($"Finished generating records. Generated {_journalRecords.Length} events from {generatedPaths.Count} journal events");
 
             return _journalRecords;
         } catch (Exception ex)
