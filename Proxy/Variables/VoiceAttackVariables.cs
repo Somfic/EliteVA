@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using EliteVA.Proxy.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -48,6 +47,7 @@ public class VoiceAttackVariables
     /// <param name="code">The type of variable</param>
     public void Set(string category, string name, object value, TypeCode code)
     {
+        
         switch (code)
         {
             case TypeCode.Boolean:
@@ -61,7 +61,7 @@ public class VoiceAttackVariables
             case TypeCode.Single:
             case TypeCode.Decimal:
             case TypeCode.Double:
-                SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                SetDecimal(category, name, decimal.Parse(value.ToString()));
                 break;
 
             case TypeCode.Char:
@@ -86,9 +86,8 @@ public class VoiceAttackVariables
                 }
                 catch (OverflowException)
                 {
-                    SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
-                }
-
+                    SetDecimal(category, name, decimal.Parse(value.ToString()));
+                } 
                 break;
         }
     }
@@ -114,7 +113,7 @@ public class VoiceAttackVariables
                 break;
                 
             case JTokenType.Float:
-                SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                SetDecimal(category, name, decimal.Parse(value.ToString(), System.Globalization.NumberStyles.Float));
                 break;
 
             case JTokenType.String:
@@ -128,7 +127,7 @@ public class VoiceAttackVariables
                 }
                 catch (OverflowException)
                 {
-                    SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                    SetDecimal(category, name, decimal.Parse(value.ToString(), System.Globalization.NumberStyles.Float));
                 } 
                 break;
         }
@@ -139,42 +138,49 @@ public class VoiceAttackVariables
     /// </summary>
     /// <typeparam name="T">The type of variable</typeparam>
     /// <param name="name">The name of the variable</param>
-    public T Get<T>(string name)
+    public T? Get<T>(string name, T @default = default)
     {
         var code = Type.GetTypeCode(typeof(T));
+
+        T value = @default;
 
         switch (code)
         {
             case TypeCode.Boolean:
-                return (T) Convert.ChangeType(GetBoolean(name), typeof(T));
+                value = GetBoolean(name).HasValue ? (T)Convert.ChangeType(GetBoolean(name), typeof(T)) : @default;
+                break;
 
             case TypeCode.DateTime:
-                return (T) Convert.ChangeType(GetDate(name), typeof(T));
+                value = GetDate(name).HasValue ? (T)Convert.ChangeType(GetDate(name), typeof(T)) : @default;
+                break;
 
             case TypeCode.Single:
             case TypeCode.Decimal:
             case TypeCode.Double:
             case TypeCode.Int64:
             case TypeCode.UInt64:
-                return (T) Convert.ChangeType(GetDecimal(name), typeof(T));
+                value = GetDecimal(name).HasValue ? (T)Convert.ChangeType(GetDecimal(name), typeof(T)) : @default;
+                break;
 
             case TypeCode.Char:
             case TypeCode.String:
-                return (T) Convert.ChangeType(GetText(name), typeof(T));
+                value = string.IsNullOrWhiteSpace(GetText(name)) ? @default : (T)Convert.ChangeType(GetText(name), typeof(T));
+                break;
 
             case TypeCode.Byte:
             case TypeCode.Int16:
             case TypeCode.UInt16:
             case TypeCode.SByte:
-                return (T) Convert.ChangeType(GetShort(name), typeof(T));
+                value = GetShort(name).HasValue ? (T)Convert.ChangeType(GetShort(name), typeof(T)) : @default;
+                break;
 
             case TypeCode.Int32:
             case TypeCode.UInt32:
-                return (T) Convert.ChangeType(GetInt(name), typeof(T));
-
-            default:
-                return default;
+                value = GetInt(name).HasValue ? (T)Convert.ChangeType(GetInt(name), typeof(T)) : @default;
+                break;
         }
+
+        return value;
     }
 
     private short? GetShort(string name)

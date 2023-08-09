@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 using EliteAPI.Abstractions;
 using EliteAPI.Abstractions.Bindings.Models;
 using EliteAPI.Abstractions.Events;
+using EliteAPI.Abstractions.Events.Converters;
 using EliteAPI.Abstractions.Status;
 using EliteAPI.Bindings;
 using EliteAPI.Events;
 using EliteAPI.Events.Status.Ship;
 using EliteAPI.Events.Status.Ship.Events;
+using EliteAPI.Web.Spansh;
+using EliteAPI.Web.Spansh.RoutePlanner.Requests;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Logging;
 using Microsoft.Extensions.Configuration;
@@ -31,16 +34,18 @@ public class Plugin
     private readonly IEliteDangerousApi _api;
     private readonly Documentation _docs;
     private readonly IConfiguration _config;
+    private readonly SpanshApi _spansh;
     private readonly HttpClient _http;
     
     public VoiceAttackProxy Proxy => VoiceAttack.Proxy;
 
-    public Plugin(ILogger<Plugin> log, IEliteDangerousApi api, Documentation docs, IHttpClientFactory http, IConfiguration config)
+    public Plugin(ILogger<Plugin> log, IEliteDangerousApi api, Documentation docs, IHttpClientFactory http, IConfiguration config, SpanshApi spansh)
     {
         _log = log;
         _api = api;
         _docs = docs;
         _config = config;
+        _spansh = spansh;
         _http = http.CreateClient();
     }
 
@@ -235,33 +240,7 @@ public class Plugin
                     .ToList();
             }
 
-            // Clear arrays
-            if (paths.Any(x => x.Path.Contains("[0]")))
-            {
-                var array = $"EliteAPI.{paths.First(x => x.Path.Contains("[0]")).Path.Split(new[] {"[0]"}, StringSplitOptions.None)[0]}";
-                Proxy.Variables.ClearStartingWith(array);
-            }
-
-            foreach (var path in paths)
-            {
-                try
-                {
-                    var value = path.Value;
-
-                    if (string.IsNullOrWhiteSpace(value))
-                        value = "\"\"";
-
-                    var name = $"EliteAPI.{path.Path}".Replace("..", ".");
-
-                    _log.LogDebug("Setting {Variable} to {Value}", name, value);
-
-                    Proxy.Variables.Set(new FileInfo(c.SourceFile).Name, name, value, JToken.Parse(value).Type);
-                }
-                catch (Exception ex)
-                {
-                    _log.LogWarning(ex, "Could not set variable {Variable} to {Value}", path.Path, path.Value);
-                }
-            }
+            SetPaths(paths, c.SourceFile);
         }
         catch (Exception ex)
         {
@@ -345,6 +324,83 @@ public class Plugin
         File.WriteAllLines(Path.Combine(Dir, "Variables", "Commands.txt"), commands);
         
         _docs.SendCommands(Proxy.Commands.InvokedCommands);
+    }
+
+    private void SetPaths(IEnumerable<EventPath> paths, string category)
+    {
+        // Clear arrays
+        if (paths.Any(x => x.Path.Contains("[0]")))
+        {
+            var array = $"EliteAPI.{paths.First(x => x.Path.Contains("[0]")).Path.Split(new[] {"[0]"}, StringSplitOptions.None)[0]}";
+            Proxy.Variables.ClearStartingWith(array);
+        }
+
+        foreach (var path in paths)
+        {
+            try
+            {
+                var value = path.Value;
+
+                if (string.IsNullOrWhiteSpace(value))
+                    value = "\"\"";
+
+                var name = $"EliteAPI.{path.Path}".Replace("..", ".");
+
+                _log.LogDebug("Setting {Variable} to {Value}", name, value);
+
+                Proxy.Variables.Set(category, name, value, JToken.Parse(value).Type);
+            }
+            catch (Exception ex)
+            {
+                _log.LogWarning(ex, "Could not set variable {Variable} to {Value}", path.Path, path.Value);
+            }
+        }
+    }
+
+    public async Task Invoke(string context)
+    {
+        context = context.Trim().ToUpper();
+
+        switch (context)
+        {
+            case "SPANSH.NEUTRON-PLOTTER":
+            {
+                _log.LogDebug("Invoking Spansh.NeutronPlotter");
+                
+                var from = Proxy.Variables.Get<string>("EliteAPI.Spansh.NeutronPlotter.From", "Fusang");
+                var to = Proxy.Variables.Get<string>("EliteAPI.Spansh.NeutronPlotter.To", "Sol");
+                var range = Proxy.Variables.Get<int>("EliteAPI.Spansh.NeutronPlotter.Range", 15);
+                var result = await _spansh.Routes.Neutron(new NeutronRequest(from, to, range) { Via = from });
+
+                result.On(
+                    ok: x => HandleResponse("Spansh.NeutronPlotter", x),
+                    error: x => _log.LogWarning(x, "Could not get neutron route"));
+                break;
+            }
+            
+            default:
+                _log.LogWarning("Unknown invoke: {Command}", context);
+                break;
+        }
+    }
+
+    private void HandleResponse<T>(string command, T response)
+    {
+        var json = JsonConvert.SerializeObject(response, new JsonSerializerSettings {ContractResolver = new EventContractResolver()});
+
+        var jobject = JObject.Parse(json);
+        jobject.Add("event", command);
+        json = jobject.ToString();
+        
+        var paths = _api.EventParser.ToPaths(json);
+        paths = paths.Select(x => new EventPath(x.Path, x.Value)).ToList();
+        SetPaths(paths, command);
+        
+        command = $"((EliteAPI.{command}))";
+        if (Proxy.Commands.Exists(command))
+            Proxy.Commands.Invoke(command);
+        
+        WriteVariables();
     }
 }
 readonly struct ShipEvent : IEvent

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using EliteAPI.Web.Spansh;
 using EliteVA.FileLogger;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Logging;
@@ -17,6 +18,7 @@ namespace EliteVA;
 
 public class VoiceAttack
 {
+    private static Plugin _plugin;
     public static VoiceAttackProxy Proxy { get; private set; }
     
     private static IHost Host { get; set; }
@@ -39,8 +41,9 @@ public class VoiceAttack
         }
         catch (Exception ex)
         {
-            Proxy.Log.Write("Could not start EliteVA: " + ex.Message, VoiceAttackColor.Red);
-            Proxy.Log.Write("See the log file for more details", VoiceAttackColor.Red);
+            Proxy.Log.Write("Could not start EliteVA", VoiceAttackColor.Red);
+            Proxy.Log.Write(ex.Message, VoiceAttackColor.Red);
+            Proxy.Log.Write(ex.StackTrace, VoiceAttackColor.Red);
             
             File.WriteAllText(Path.Combine(Plugin.Dir, "Logs", "EliteVA.startup.log"), JsonConvert.SerializeObject(ex, Formatting.Indented));
             throw;
@@ -54,6 +57,17 @@ public class VoiceAttack
     public static void VA_Invoke1(dynamic vaProxy)
     {
         Proxy = new VoiceAttackProxy(vaProxy);
+
+        try
+        {
+            _plugin.Invoke(Proxy.Context).GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            Proxy.Log.Write("Error while invoking EliteVA", VoiceAttackColor.Red);
+            Proxy.Log.Write(ex.Message, VoiceAttackColor.Red);
+            Proxy.Log.Write(ex.StackTrace, VoiceAttackColor.Red);
+        }
     }
 
     private static void Initialize(dynamic vaProxy)
@@ -69,6 +83,7 @@ public class VoiceAttack
                 s.AddSingleton<Documentation>();
                 s.AddEliteApi();
                 s.AddHttpClient();
+                s.AddWebApi<SpanshApi>();
                 s.RemoveAll<IHttpMessageHandlerBuilderFilter>();
             })
             .ConfigureLogging((c, l) =>
@@ -84,8 +99,8 @@ public class VoiceAttack
             })
             .Build();
         
-        var eliteva = Host.Services.GetRequiredService<Plugin>();
-        eliteva.Initialize().GetAwaiter().GetResult();
+        _plugin = Host.Services.GetRequiredService<Plugin>();
+        _plugin.Initialize().GetAwaiter().GetResult();
 
         var documentation = Host.Services.GetRequiredService<Documentation>();
         Task.Run(() => documentation.StartServer());
