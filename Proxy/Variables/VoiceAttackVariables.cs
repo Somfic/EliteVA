@@ -61,7 +61,7 @@ public class VoiceAttackVariables
             case TypeCode.Single:
             case TypeCode.Decimal:
             case TypeCode.Double:
-                SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                SetDecimal(category, name, decimal.Parse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture));
                 break;
 
             case TypeCode.Char:
@@ -86,7 +86,7 @@ public class VoiceAttackVariables
                 }
                 catch (OverflowException)
                 {
-                    SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                    SetDecimal(category, name, decimal.Parse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture));
                 }
 
                 break;
@@ -114,7 +114,7 @@ public class VoiceAttackVariables
                 break;
                 
             case JTokenType.Float:
-                SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                SetDecimal(category, name, decimal.Parse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture));
                 break;
 
             case JTokenType.String:
@@ -128,7 +128,7 @@ public class VoiceAttackVariables
                 }
                 catch (OverflowException)
                 {
-                    SetDecimal(category, name, decimal.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                    SetDecimal(category, name, decimal.Parse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture));
                 } 
                 break;
         }
