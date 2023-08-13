@@ -97,3 +97,4 @@ jobs:
             EliteVA-${{ steps.VERSION.outputs.semver }}.zip
             EliteVA-${{ steps.VERSION.outputs.semver }}.vap
           prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
+          draft: true
