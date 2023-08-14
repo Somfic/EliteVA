@@ -1,6 +1,6 @@
+ <img src="https://repository-images.githubusercontent.com/529349259/227c444b-984e-48b3-8a09-5ad9282b36a5"/>
+
 <div style="text-align: center;">
-  <img src="https://github.com/EliteAPI/Icons/blob/main/logo_gradient_shine.jpg?raw=true" align="right"
-       alt="EliteVA Logo" title="EliteVA by Somfic" width="280" height="280">
   <h1 align="center">EliteVA</h1>
 
   <p align="center"><i>An intelligent VoiceAttack plugin for Elite: Dangerous, powered by <a href="https://www.github.com/EliteAPI/EliteAPI">EliteAPI</a></i></p>
