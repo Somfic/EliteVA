@@ -29,7 +29,7 @@ public class Plugin
 {
     public static string Dir => new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName ??
                                  Directory.GetCurrentDirectory();
-
+    
     private readonly ILogger<Plugin> _log;
     private readonly IEliteDangerousApi _api;
     private readonly Documentation _docs;
@@ -174,7 +174,7 @@ public class Plugin
         }
 
         _api.Events.Register<ShipEvent>();
-
+        
         await _api.StartAsync();
     }
 
@@ -369,7 +369,7 @@ public class Plugin
                 
                 var from = Proxy.Variables.Get<string>("EliteAPI.Spansh.NeutronPlotter.From", "Fusang");
                 var to = Proxy.Variables.Get<string>("EliteAPI.Spansh.NeutronPlotter.To", "Sol");
-                var range = Proxy.Variables.Get<int>("EliteAPI.Spansh.NeutronPlotter.Range", 15);
+                var range = Proxy.Variables.Get("EliteAPI.Spansh.NeutronPlotter.Range", 15);
                 var result = await _spansh.Routes.Neutron(new NeutronRequest(from, to, range) { Via = from });
 
                 result.On(
