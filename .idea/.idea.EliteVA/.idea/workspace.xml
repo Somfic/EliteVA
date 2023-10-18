@@ -7,33 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0be0c2f-24a9-432b-9c6a-6501380da4f3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/ActionSequence.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/AuthorID.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/CatchAllId.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/CategoryGroups.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/Command.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/CommandAction.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/Commands.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/ConditionMet.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/DictationCommandId.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/ExecOnRecognizedId.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/InitializeCommandId.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/InternalId.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/Keycodes.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/ProductID.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/Profile.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/RandomSounds.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/ReferencedProfile.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/Referrer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/UnloadCommandId.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Models/VoiceAttackProfile.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/ProfileGenerator.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProfileGenerator/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/build.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.EliteVA/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.EliteVA/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EliteVA.sln" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA.sln" afterDir="false" />
-    </list>
+    <list default="true" id="d0be0c2f-24a9-432b-9c6a-6501380da4f3" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -75,30 +49,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;rewrite&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "dev",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\Lucas\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\Lucas\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\Lucas\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\Lucas\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache",
+      "C:\\Users\\Lucas\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache",
+      "C:\\Users\\Lucas\\AppData\\Local\\Symbols\\src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Shell Script.Build">
     <configuration name="ProfileGenerator" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -166,7 +140,7 @@
       <workItem from="1697583727705" duration="364000" />
       <workItem from="1697623503659" duration="4962000" />
       <workItem from="1697630552203" duration="1266000" />
-      <workItem from="1697632792296" duration="10080000" />
+      <workItem from="1697632792296" duration="10435000" />
     </task>
     <servers />
   </component>
