@@ -65,16 +65,17 @@ jobs:
         run: mkdir "EliteVA-${{ steps.VERSION.outputs.semver }}"
 
       - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
-        run: xcopy "bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
+        run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
 
       - name: Add Costura.Fody
         run: dotnet add package Costura.Fody
+        working-directory: EliteVA
 
       - name: Build
         run: dotnet build -c Release
 
       - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
-        run: xcopy "bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
+        run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
 
       - name: Generate profile
         run: dotnet run --project ProfileGenerator -c Release
