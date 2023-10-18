@@ -1,9 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using EliteAPI.Abstractions;
-using EliteAPI.Abstractions.Bindings;
-using EliteAPI.Abstractions.Bindings.Models;
 using EliteAPI.Abstractions.Events;
 using EliteAPI.Events;
+using EliteAPI.Events.Status.Ship;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -25,16 +24,21 @@ public class JournalEventsService : VoiceAttackService
     public override Task OnStart(IVoiceAttackProxy proxy)
     {
         _api.Events.OnAnyJson(HandleIncomingJournalEvent);
+        _api.Events.On<FileheaderEvent>((e, c) => _log.LogInformation("Processing {Journal}", c.SourceFile.Split('\\').Last()));
         return Task.CompletedTask;
     }
+
     private void HandleIncomingJournalEvent(string json, EventContext context)
     {
         var paths = _api.EventParser.ToPaths(json).ToArray();
-        var eventName = paths.First(x => x.Path.EndsWith(".Event", StringComparison.InvariantCultureIgnoreCase)).Value;
+        var eventName = paths.First(x => x.Path.EndsWith(".Event", StringComparison.InvariantCultureIgnoreCase)).Value.Replace("\"", "");
+        
+        // If this is a status event, remove the status suffix from the paths
+        if (eventName == "Status")
+            return;
         
         _log.LogDebug("Processing {Event}", eventName);
         
-        // If this is a status event, remove the status suffix from the paths
         if (context.SourceFile.EndsWith("Status.json") && eventName.Contains("Status"))
             paths = paths
                 .Where(x => 
@@ -44,7 +48,11 @@ public class JournalEventsService : VoiceAttackService
                     new EventPath(Regex.Replace(x.Path, "([a-zA-Z]+)Status\\.Value", "$1"), x.Value))
                 .ToArray();
         
-        // Todo: clear arrays
+        if (paths.Any(x => x.Path.Contains("[0]")))
+        {
+            var array = $"EliteAPI.{paths.First(x => x.Path.Contains("[0]")).Path.Split(new[] {"[0]"}, StringSplitOptions.None)[0]}";
+            VoiceAttackPlugin.Proxy.Variables.ClearStartingWith(array);
+        }
         
         foreach (var path in paths)
         {
@@ -56,8 +64,22 @@ public class JournalEventsService : VoiceAttackService
             var name = $"EliteAPI.{path.Path}".Replace("..", ".");
             
             _log.LogDebug("Setting {Variable} to {Value}", name, value);
-            VoiceAttackPlugin.Proxy.Variables.Set(context.SourceFile, name, value, JToken.Parse(value).Type);
+            VoiceAttackPlugin.Proxy.Variables.Set(context.SourceFile.Split('\\').Last(), name, value, JToken.Parse(value).Type);
         }
+
+        if (context.IsRaisedDuringCatchup)
+            return;
+        
+        var command = $"((EliteAPI.{eventName}))";
+        
+        if (eventName.EndsWith("Status") && eventName != "Status")
+            command = $"((EliteAPI.Status.{eventName.Replace("Status", "")}))";
+        
+        if (!VoiceAttackPlugin.Proxy.Commands.Exists(command))
+            return;
+        
+        _log.LogDebug("Invoking {Command}", command);
+        VoiceAttackPlugin.Proxy.Commands.Invoke(command);
     }
 }
 

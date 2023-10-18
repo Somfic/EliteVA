@@ -11,6 +11,8 @@ public class VoiceAttackCommands
         _proxy = proxy;
     }
 
+    public event EventHandler? OnCommandInvoked;
+    
     /// <summary>
     /// The total amount of commands executed in this session
     /// </summary>
@@ -97,6 +99,7 @@ public class VoiceAttackCommands
     {
         _proxy.Command.Execute(commandName, runSync, runAsSubCommand);
         _invokedCommands.Add(new SetCommand(DateTime.Now, commandName));
+        OnCommandInvoked?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -109,6 +112,7 @@ public class VoiceAttackCommands
     {
         _proxy.Command.Execute(identifier, runSync, runAsSubCommand);
         _invokedCommands.Add(new SetCommand(DateTime.Now, identifier.ToString()));
+        OnCommandInvoked?.Invoke(this, EventArgs.Empty);
         return Task.CompletedTask;
     }
 

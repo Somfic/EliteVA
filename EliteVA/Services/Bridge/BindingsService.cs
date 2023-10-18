@@ -57,10 +57,20 @@ public class BindingsService : VoiceAttackService
                 keycode = $"[{GetKeyCode(bindingModifier.Key, layout)}]{keycode}";
             }
 
-            Proxy.Variables.Set("Bindings", $"EliteAPI.{b.Name}", keycode, TypeCode.String);
+            _log.LogDebug("Setting {Variable} to {Value}", $"EliteAPI.{b.Name}", keycode);
+            VoiceAttackPlugin.Proxy.Variables.Set("Bindings", $"EliteAPI.{b.Name}", keycode, TypeCode.String);
         }
-                
-        WriteVariables();
+    }
+    
+    public string GetKeyCode(string key, IDictionary<string, string> layout)
+    {
+        key = key.Replace("Key_", "");
+        var keycode = layout.FirstOrDefault(x => x.Key == key).Value ?? $"NOT_SET({key})";
+
+        if (keycode == "NOT_SET")
+            _log.LogWarning("Key '{Key}' is not set in the layout.yml file and cannot be added", key);
+
+        return keycode;
     }
     
     private static IDictionary<string, string> ReadYml(string name)

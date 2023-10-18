@@ -4,7 +4,10 @@ using EliteVA.Loggers.File;
 using EliteVA.Loggers.VoiceAttack;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Abstractions;
+using EliteVA.Records;
 using EliteVA.Services.Bridge;
+using EliteVA.Services.Documentation;
+using EliteVA.Services.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -25,12 +28,18 @@ public class VoiceAttack : VoiceAttackPlugin
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices(s =>
             {
+                s.AddSingleton<RecordGenerator>();
+                
                 s.AddSingleton<JournalEventsService>();
                 s.AddSingleton<BindingsService>();
-
+                s.AddSingleton<FileDocumentationService>();
+                s.AddSingleton<SocketDocumentationService>();
+                
+                s.AddSingleton<SpanshService>();
+                s.AddWebApi<SpanshApi>();
+                
                 s.AddEliteApi();
                 s.AddHttpClient();
-                s.AddWebApi<SpanshApi>();
                 s.RemoveAll<IHttpMessageHandlerBuilderFilter>();
             })
             .ConfigureLogging((c, l) =>
@@ -49,12 +58,15 @@ public class VoiceAttack : VoiceAttackPlugin
 
         _log = _host.Services.GetRequiredService<ILogger<VoiceAttack>>();
 
-        _log.LogInformation("Initialising EliteVA v{Version}", GetType().Assembly.GetName().Version);
+        _log.LogDebug("Initialising EliteVA v{Version}", GetType().Assembly.GetName().Version);
 
         _services = new List<VoiceAttackService>()
         {
             _host.Services.GetRequiredService<JournalEventsService>(),
-            _host.Services.GetRequiredService<BindingsService>()
+            _host.Services.GetRequiredService<BindingsService>(),
+            _host.Services.GetRequiredService<FileDocumentationService>(),
+            _host.Services.GetRequiredService<SocketDocumentationService>(),
+            _host.Services.GetRequiredService<SpanshService>()
         };
         
         var api = _host.Services.GetRequiredService<IEliteDangerousApi>();
@@ -71,6 +83,13 @@ public class VoiceAttack : VoiceAttackPlugin
                 _log.LogError(e, "Failed to start for {Name}", service.GetType().Name);
             }
         }
+        
+        var records = _host.Services.GetRequiredService<RecordGenerator>();
+        Task.Run(() => records.GenerateJournalRecords());
+
+        await api.InitialiseAsync();
+        
+        Proxy.Variables.Set("Metadata", "EliteAPI.Version", api.GetType().Assembly.GetName().Version.ToString(), TypeCode.String);
 
         await api.StartAsync();
     }

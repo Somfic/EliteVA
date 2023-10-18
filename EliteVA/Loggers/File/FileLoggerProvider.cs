@@ -5,10 +5,9 @@ namespace EliteVA.Loggers.File;
 
 public class FileLoggerProvider : ILoggerProvider
 {
-    private readonly string _name;
-    private readonly DirectoryInfo _directory;
     private readonly IFileNamingFormat _namingFormat;
     private readonly IFileFormat _format;
+    private readonly string _path;
 
     /// <summary>
     /// Creates a new instance of the <see cref="FileLoggerProvider"/> class
@@ -17,10 +16,10 @@ public class FileLoggerProvider : ILoggerProvider
     {
         Directory.CreateDirectory(directory.FullName);
         
-        _name = name;
-        _directory = directory;
         _namingFormat = namingFormat;
         _format = format;
+
+        _path = Path.Combine(directory.FullName, namingFormat.NameFile(directory, name));
     }
 
     /// <summary>
@@ -37,6 +36,6 @@ public class FileLoggerProvider : ILoggerProvider
     /// <returns></returns>
     public ILogger CreateLogger(string categoryName)
     {
-        return new FileLogger(categoryName, _name, _directory, _format, _namingFormat);
+        return new FileLogger(categoryName, _path, _format, _namingFormat);
     }
 }

@@ -1,6 +1,4 @@
 ﻿using EliteVA.Loggers.File;
-using EliteVA.Loggers.File.Formats;
-using EliteVA.Loggers.File.Formats.Abstractions;
 using EliteVA.Proxy.Abstractions;
 using Microsoft.Extensions.Logging;
 

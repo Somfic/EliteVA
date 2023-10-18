@@ -1,5 +1,4 @@
-﻿using EliteVA.Proxy;
-using EliteVA.Proxy.Abstractions;
+﻿using EliteVA.Proxy.Abstractions;
 using EliteVA.Proxy.Logging;
 using Microsoft.Extensions.Logging;
 

@@ -5,85 +5,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0be0c2f-24a9-432b-9c6a-6501380da4f3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.EliteVA/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.EliteVA/.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.EliteVA/.idea/projectSettingsUpdater.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.EliteVA/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/FodyWeavers.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/FileLogger.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/FileLoggerExtensions.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/FileLoggerProvider.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/Formats/Abstractions/IFileFormat.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/Formats/Abstractions/IFileNamingFormat.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/Formats/Default/DefaultFileFormat.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/Formats/Default/DefaultFileNamingFormat.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/Formats/FileFormats.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/Formats/FileNamingFormats.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLogger.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLoggerExtensions.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLoggerProvider.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Services/Bridge/BindingsService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/Services/Bridge/JournalEventsService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EliteVA/build-old.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EliteVA.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EliteVA.csproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EliteVA.ini" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EliteVA.sln" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileLogger/FileLogger.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileLogger/FileLoggerExtensions.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileLogger/FileLoggerProvider.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileLogger/Formats/Abstractions/IFileFormat.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileLogger/Formats/Abstractions/IFileNamingFormat.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileLogger/Formats/Default/DefaultFileFormat.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileLogger/Formats/Default/DefaultFileNamingFormat.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileLogger/Formats/FileFormats.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileLogger/Formats/FileNamingFormats.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FodyWeavers.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/ActionSequence.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/AuthorID.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/CatchAllId.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/CategoryGroups.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/Command.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/CommandAction.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/Commands.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/ConditionMet.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/DictationCommandId.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/ExecOnRecognizedId.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/InitializeCommandId.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/InternalId.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/Keycodes.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/ProductID.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/Profile.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/RandomSounds.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/ReferencedProfile.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/Referrer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/UnloadCommandId.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Models/VoiceAttackProfile.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/ProfileGenerator.csproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProfileGenerator/Program.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Abstractions/IProxy.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Audio/AudioType.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Audio/VoiceAttackSpeech.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Commands/VoiceAttackCommand.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Commands/VoiceAttackCommands.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Logging/Extensions/VoiceAttackLogger.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Logging/Extensions/VoiceAttackLoggerProvider.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Logging/VoiceAttackColor.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Logging/VoiceAttackLog.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Options/VoiceAttackOptions.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Paths/VoiceAttackPaths.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Process/VoiceAttackActiveWindow.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Variables/VoiceAttackVariables.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/Versions/VoiceAttackVersions.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Proxy/VoiceAttackProxy.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/VoiceAttack.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/layout.yml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/EliteVA/EliteVA.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EliteVA/Records/RecordGenerator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EliteVA/Services/Documentation/CommandDocumentation.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EliteVA/Services/Documentation/FileDocumentationService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EliteVA/Services/Documentation/RecordDocumentation.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EliteVA/Services/Documentation/SocketDocumentationService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EliteVA/Services/Documentation/VariableDocumentation.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EliteVA/Services/WebApi/SpanshService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EliteVA/layout.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.EliteVA/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.EliteVA/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/EliteVA.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/EliteVA.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Loggers/File/FileLogger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/FileLogger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Loggers/File/FileLoggerProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Loggers/File/FileLoggerProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLogger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLogger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLoggerExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLoggerExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLoggerProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLoggerProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Proxy/Commands/VoiceAttackCommands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Proxy/Commands/VoiceAttackCommands.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Proxy/Variables/VoiceAttackVariables.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Proxy/Variables/VoiceAttackVariables.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Proxy/VoiceAttackPlugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Proxy/VoiceAttackPlugin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Services/Bridge/BindingsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Services/Bridge/BindingsService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/Services/Bridge/JournalEventsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/Services/Bridge/JournalEventsService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EliteVA/VoiceAttack.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EliteVA/VoiceAttack.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,10 +37,25 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/f193f6b39728473bbb372170f66944b01b400/21/ddafd5bd/0200001B.il" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/105da1159ec9496ab9310694c7b11dd2532bb0/21/e116cd67/DirectoryInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/105da1159ec9496ab9310694c7b11dd2532bb0/b9/5e63eb78/Timer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/105da1159ec9496ab9310694c7b11dd2532bb0/c7/f8a1268d/Object.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f193f6b39728473bbb372170f66944b01b400/1a/1485f052/IEventParser.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/EliteVA/Loggers/File/FileLogger.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLogger.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/EliteVA/Loggers/VoiceAttack/VoiceAttackLoggerProvider.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/EliteVA/PluginConfiguration.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/EliteVA/Proxy/Variables/VoiceAttackVariables.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/EliteVA/Proxy/VoiceAttackPlugin.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/EliteVA/Proxy/VoiceAttackPluginWrapper.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/EliteVA/Proxy/VoiceAttackService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/EliteVA/Services/Bridge/BindingsService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/EliteVA/Services/Bridge/JournalEventsService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/EliteVA/VoiceAttack.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -181,6 +139,9 @@
       <updated>1697580147863</updated>
       <workItem from="1697580147980" duration="3265000" />
       <workItem from="1697583727705" duration="364000" />
+      <workItem from="1697623503659" duration="4962000" />
+      <workItem from="1697630552203" duration="1266000" />
+      <workItem from="1697632792296" duration="9133000" />
     </task>
     <servers />
   </component>

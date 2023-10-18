@@ -12,11 +12,11 @@ public class FileLogger : ILogger
     private readonly IFileFormat _format;
     private readonly string _path;
 
-    internal FileLogger(string categoryName, string name, DirectoryInfo directory, IFileFormat format, IFileNamingFormat namingFormat)
+    internal FileLogger(string categoryName, string path, IFileFormat format, IFileNamingFormat namingFormat)
     {
         _categoryName = categoryName;
         _format = format;
-        _path = Path.Combine(directory.FullName, namingFormat.NameFile(directory, name));
+        _path = path;
     }
 
     /// <inheritdoc />

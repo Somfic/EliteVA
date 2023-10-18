@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using EliteVA.Proxy.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+﻿using System.Globalization;
 using Newtonsoft.Json.Linq;
 
 namespace EliteVA.Proxy.Variables;
@@ -16,6 +10,8 @@ public class VoiceAttackVariables
     private List<(string category, string name, string value)> _setVariables;
 
     public IReadOnlyList<(string category, string name, string value)> SetVariables => _setVariables;
+    
+    public event EventHandler? OnVariablesSet;
 
     internal VoiceAttackVariables(dynamic vaProxy)
     {
@@ -101,7 +97,6 @@ public class VoiceAttackVariables
     /// <param name="code">The type of variable</param>
     public void Set(string category, string name, object value, JTokenType code)
     {
-        
         switch (code)
         {
             case JTokenType.Boolean:
@@ -256,13 +251,18 @@ public class VoiceAttackVariables
 
     private void SetVariable(string category, string name, string value)
     {
-        // Newest entries are at the bottom
-        var index = _setVariables.FindIndex(x => x.category == category && x.name == name);
+        var index = _setVariables.FindIndex(x => x.name == name);
         if (index >= 0)
         {
-            _setVariables.RemoveAt(index);
+            File.AppendAllText(Path.Combine(VoiceAttackPlugin.Dir, "Variables", "test.txt"),
+                $"Replacing {category} {name} {value} at index {index}\n");
+            _setVariables[index] = (category, name, value);
+        }
+        else
+        {
+            _setVariables.Insert(0, (category, name, value));
         }
 
-        _setVariables.Insert(0, (category, name, value));
+        OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
 }
