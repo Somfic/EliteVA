@@ -253,16 +253,10 @@ public class VoiceAttackVariables
     {
         var index = _setVariables.FindIndex(x => x.name == name);
         if (index >= 0)
-        {
-            File.AppendAllText(Path.Combine(VoiceAttackPlugin.Dir, "Variables", "test.txt"),
-                $"Replacing {category} {name} {value} at index {index}\n");
             _setVariables[index] = (category, name, value);
-        }
         else
-        {
             _setVariables.Insert(0, (category, name, value));
-        }
-
+        
         OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
 }
