@@ -77,6 +77,7 @@ public class FileDocumentationService : VoiceAttackService
                     var variables = group
                         .Select(x => x with{ name = x.name.Split(':')[0].Length == 4 ? $" {x.name}" : x.name})
                         .Select(x => $"{x.name}: {x.value}")
+                        .Reverse()
                         .ToList();
                     variables.Insert(0, $" ###  {group.First().category}  ### ");
                     File.WriteAllText(Path.Combine(VoiceAttackPlugin.Dir, "Variables", source) + ".txt", string.Join(Environment.NewLine, variables));
