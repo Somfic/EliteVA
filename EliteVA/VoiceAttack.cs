@@ -50,8 +50,8 @@ public class VoiceAttack : VoiceAttackPlugin
 
                 l.AddVoiceAttack(proxy);
 
-                //if (c.Configuration.GetSection("EliteAPI").GetValue("FileLogging", true))
-                l.AddFile("EliteVA", Path.Combine(Dir, "Logs"));
+                if (c.Configuration.GetSection("EliteAPI").GetValue("FileLogging", true))
+                    l.AddFile("EliteVA", Path.Combine(Dir, "Logs"));
             })
             .ConfigureAppConfiguration(config => { config.AddIniFile(Path.Combine(Dir, "EliteVA.ini"), true); })
             .Build();
@@ -85,12 +85,13 @@ public class VoiceAttack : VoiceAttackPlugin
         }
         
         var records = _host.Services.GetRequiredService<RecordGenerator>();
-        Task.Run(() => records.GenerateJournalRecords());
 
         await api.InitialiseAsync();
         
         Proxy.Variables.Set("Metadata", "EliteAPI.Version", api.GetType().Assembly.GetName().Version.ToString(), TypeCode.String);
 
+        Task.Run(() => records.GenerateJournalRecords());
+        
         await api.StartAsync();
     }
 

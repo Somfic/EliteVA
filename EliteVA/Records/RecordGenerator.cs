@@ -41,7 +41,7 @@ public class RecordGenerator
             var latestJournalFile = journalFiles.OrderByDescending(x => x.LastWriteTime).First();
             var targetVersion = GetGameVersionFromFile(latestJournalFile);
 
-            var amountOfJournalsToScrape = _config.GetSection("EliteAPI").GetValue("AmountJournalsToScrape", 5);
+            var amountOfJournalsToScrape = _config.GetSection("EliteAPI").GetValue("AmountJournalsToScrape", 10);
             var filteredFiles = journalFiles
                 .Where(x => GetGameVersionFromFile(x) == targetVersion).OrderByDescending(x => x.LastWriteTime)
                 .Take(amountOfJournalsToScrape)
@@ -81,14 +81,14 @@ public class RecordGenerator
                     x.Value.Select(GetValue).OrderBy(_ => Guid.NewGuid())))
                 .OrderBy(x => x.Name)
                 .GroupBy(x => x.Name.Split('.')[0])
-                .ToDictionary(x => x.Key, x => x.Select(y => y))
+                .ToDictionary(x => x.Key, x => x.Select(y => y).Reverse())
                 .ToArray();
             RecordsGenerated?.Invoke(this, _journalRecords);
 
             return _journalRecords;
         } catch (Exception ex)
         {
-            _log.LogDebug(ex, "Could not generate journal records");
+            _log.LogWarning(ex, "Could not generate journal records");
             return Array.Empty<KeyValuePair<string, IEnumerable<RecordDocumentation>>>();
         }
     }

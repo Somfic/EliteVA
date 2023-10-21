@@ -1,5 +1,7 @@
-﻿using EliteVA.Proxy;
+﻿using System.Text;
+using EliteVA.Proxy;
 using EliteVA.Proxy.Abstractions;
+using EliteVA.Records;
 using Microsoft.Extensions.Logging;
 
 namespace EliteVA.Services.Documentation;
@@ -9,12 +11,47 @@ public class FileDocumentationService : VoiceAttackService
     private readonly ILogger<FileDocumentationService> _log;
     private readonly Timer _countdown;
 
-    public FileDocumentationService(ILogger<FileDocumentationService> log)
+    public FileDocumentationService(ILogger<FileDocumentationService> log, RecordGenerator record)
     {
         _countdown = new Timer(VariablesHaveBeenSetHandler, null, Timeout.Infinite, Timeout.Infinite);
+        record.RecordsGenerated += (_, records) => WriteRecordsToFile(records);
         _log = log;
     }
-    
+
+    private void WriteRecordsToFile(KeyValuePair<string, IEnumerable<RecordDocumentation>>[] records)
+    {
+        var path = Path.Combine(VoiceAttackPlugin.Dir, "Variables", "Journal Records");
+        Directory.CreateDirectory(path);
+        
+        // For each key, write to a file
+        foreach (var record in records)
+        {
+            var key = record.Key;
+            var values = record.Value;
+
+            var content = new StringBuilder(" ### ((EliteAPI.");
+            content.Append(key);
+            content.Append(")) ###");
+            content.AppendLine();
+            content.AppendLine();
+
+            foreach (var value in values)
+            {
+                foreach (var type in value.Types)
+                {
+                    content.Append("{");
+                    content.Append(type);
+                    content.Append(":");
+                    content.Append("EliteAPI.");
+                    content.Append(value.Name);
+                    content.AppendLine("}");
+                }
+            }
+            
+            File.WriteAllText(Path.Combine(path, key + ".txt"), content.ToString());
+        }
+    }
+
     public override Task OnStart(IVoiceAttackProxy proxy)
     {
         proxy.Variables.OnVariablesSet += (_, _) =>
