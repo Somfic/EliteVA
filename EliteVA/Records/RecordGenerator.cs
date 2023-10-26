@@ -48,30 +48,12 @@ public class RecordGenerator
                 .ToArray();
 
             _log.LogDebug("Generating journal records for version {TargetVersion} by scraping {FilteredFilesLength} journal files", targetVersion, filteredFiles.Length);
-
-            var lastCache = DateTime.MinValue;
             
             var generatedPaths = new List<EventPath>();
 
             foreach (var filteredFile in filteredFiles)
             {
                 generatedPaths.AddRange(GetPaths(filteredFile));
-
-                if (DateTime.Now - lastCache <= TimeSpan.FromSeconds(15)) 
-                    continue;
-                
-                _journalRecords = generatedPaths
-                    .GroupBy(x => x.Path)
-                    .ToDictionary(x => x.Key, x => x.Select(y => y.Value))
-                    .Select(x => new RecordDocumentation(x.Key, x.Value.Select(GetType),
-                        x.Value.Select(GetValue).OrderBy(_ => Guid.NewGuid())))
-                    .OrderBy(x => x.Name)
-                    .GroupBy(x => x.Name.Split('.')[0])
-                    .ToDictionary(x => x.Key, x => x.Select(y => y))
-                    .ToArray();
-
-                RecordsGenerated?.Invoke(this, _journalRecords);
-                lastCache = DateTime.Now;
             }
             
             _journalRecords = generatedPaths
@@ -83,6 +65,7 @@ public class RecordGenerator
                 .GroupBy(x => x.Name.Split('.')[0])
                 .ToDictionary(x => x.Key, x => x.Select(y => y).Reverse())
                 .ToArray();
+            
             RecordsGenerated?.Invoke(this, _journalRecords);
 
             return _journalRecords;
@@ -125,15 +108,20 @@ public class RecordGenerator
         {
             using var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var reader = new StreamReader(stream);
+            var content = reader.ReadToEnd().Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
 
-            var json = reader.ReadToEnd().Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                .First();
+            var json = content.FirstOrDefault();
+            
+            if (string.IsNullOrWhiteSpace(json) || !json.Contains("Fileheader"))
+                return "0.0.0";
 
             var fileHeader = _api.EventParser.FromJson<FileheaderEvent>(json);
 
-            var version = fileHeader.Gameversion.Split('.');
-
-            return string.Join(".", version.Take(3));
+            var versions = fileHeader.Gameversion.Split('.');
+            var version = string.Join(".", versions.Take(3));
+            
+            _log.LogDebug("Found game version {Version} for file {File}", version, file.Name);
+            return version;
         } catch (Exception ex)
         {
             ex.Data.Add("file", file.Name);
