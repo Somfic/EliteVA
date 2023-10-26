@@ -90,20 +90,30 @@ public class FileDocumentationService : VoiceAttackService
                 if (source == "Journal")
                 {
                     var variables = new List<string>();
-                    
-                    // Group by event
-                   var events = group.GroupBy(x => x.name.Split('.')[1]).OrderByDescending(
-                       x => x.First(x => x.name.Contains("timestamp")).value).ToList();
-                   foreach (var eventVariables in events)
-                   {
-                       variables.Add($" ###  {eventVariables.Key}  ### ");
-                       variables.AddRange(eventVariables
-                           .Select(x => x with{ name = x.name.Split(':')[0].Length == 4 ? $" {x.name}" : x.name})
-                           .Select(x => $"{x.name}: {x.value}")
-                           .Reverse());
-                       variables.Add("");
-                   }
-                   File.WriteAllLines(Path.Combine(VoiceAttackPlugin.Dir, "Variables", source) + ".txt", variables);
+
+                    try
+                    {
+
+                        // Group by event
+                        var events = group.GroupBy(x => x.name.Split('.')[1]).OrderByDescending(
+                            x => x.First(x => x.name.Contains("timestamp")).value).ToList();
+                        foreach (var eventVariables in events)
+                        {
+                            variables.Add($" ###  {eventVariables.Key}  ### ");
+                            variables.AddRange(eventVariables
+                                .Select(x => x with { name = x.name.Split(':')[0].Length == 4 ? $" {x.name}" : x.name })
+                                .Select(x => $"{x.name}: {x.value}")
+                                .Reverse());
+                            variables.Add("");
+                        }
+
+                        File.WriteAllLines(Path.Combine(VoiceAttackPlugin.Dir, "Variables", source) + ".txt",
+                            variables);
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.LogDebug(ex, "Could not write variables to file");
+                    }
                 }
                 else
                 {
@@ -118,7 +128,7 @@ public class FileDocumentationService : VoiceAttackService
             }
         } catch (Exception ex)
         {
-            _log.LogError(ex, "Could not write variables to file");
+            _log.LogWarning(ex, "Could not write variables to file");
         }
     }
 }
