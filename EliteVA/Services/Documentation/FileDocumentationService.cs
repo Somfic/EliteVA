@@ -66,8 +66,6 @@ public class FileDocumentationService : VoiceAttackService
 
     private void CommandsHaveBeenInvokedHandler()
     {
-        _log.LogDebug("Writing commands to file");
-
         var commands = VoiceAttackPlugin.Proxy.Commands.InvokedCommands;
 
         if(!Directory.Exists(Path.Combine(VoiceAttackPlugin.Dir, "Commands")))
@@ -80,8 +78,6 @@ public class FileDocumentationService : VoiceAttackService
     {
         try
         {
-            _log.LogDebug("Writing variables to file");
-
             var groups = VoiceAttackPlugin.Proxy.Variables.SetVariables.GroupBy(x => x.category);
 
             if (!Directory.Exists(Path.Combine(VoiceAttackPlugin.Dir, "Variables")))

@@ -95,19 +95,16 @@ public class SocketDocumentationService : VoiceAttackService
     
     private async Task SendCommandsToClients(ICollection<CommandDocumentation> commands)
     {
-        _log.LogDebug("Sending {CommandCount} commands to clients", commands.Count);
-        await SendToClients("commands", JsonConvert.SerializeObject(commands));
+         await SendToClients("commands", JsonConvert.SerializeObject(commands));
     }
     
     private async Task SendVariablesToClients(ICollection<VariableDocumentation> variables)
     {
-        _log.LogDebug("Sending {VariableCount} variables to clients", variables.Count);
-        await SendToClients("variables", JsonConvert.SerializeObject(variables));
+         await SendToClients("variables", JsonConvert.SerializeObject(variables));
     }
 
     private async Task SendRecordsToClients(KeyValuePair<string, IEnumerable<RecordDocumentation>>[] records)
     {
-        _log.LogDebug("Sending {RecordCount} records to clients", records.Length);
         await SendToClients("records", JsonConvert.SerializeObject(records));
     }
 

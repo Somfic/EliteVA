@@ -1,6 +1,7 @@
 ﻿using EliteAPI.Abstractions;
 using EliteAPI.Web.Spansh;
 using EliteVA.Loggers.File;
+using EliteVA.Loggers.Socket;
 using EliteVA.Loggers.VoiceAttack;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Abstractions;
@@ -49,6 +50,7 @@ public class VoiceAttack : VoiceAttackPlugin
                 l.AddFilter("System", LogLevel.Warning);
 
                 l.AddVoiceAttack(proxy);
+                l.AddSocket();
 
                 if (c.Configuration.GetSection("EliteAPI").GetValue("FileLogging", true))
                     l.AddFile("EliteVA", Path.Combine(Dir, "Logs"));

@@ -41,7 +41,7 @@ public class RecordGenerator
             var latestJournalFile = journalFiles.OrderByDescending(x => x.LastWriteTime).First();
             var targetVersion = GetGameVersionFromFile(latestJournalFile);
 
-            var amountOfJournalsToScrape = _config.GetSection("EliteAPI").GetValue("AmountJournalsToScrape", 10);
+            var amountOfJournalsToScrape = _config.GetSection("EliteAPI").GetValue("AmountJournalsToScrape", 50);
             var filteredFiles = journalFiles
                 .Where(x => GetGameVersionFromFile(x) == targetVersion).OrderByDescending(x => x.LastWriteTime)
                 .Take(amountOfJournalsToScrape)
