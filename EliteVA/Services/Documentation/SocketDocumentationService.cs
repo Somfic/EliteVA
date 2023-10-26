@@ -1,4 +1,7 @@
 ﻿using System.Net;
+using System.Text;
+using EliteAPI.Abstractions;
+using EliteAPI.Abstractions.Events;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Abstractions;
 using EliteVA.Records;
@@ -13,15 +16,17 @@ public class SocketDocumentationService : VoiceAttackService
 {
     private readonly ILogger<SocketDocumentationService> _log;
     private readonly RecordGenerator _record;
+    private readonly IEliteDangerousApi _api;
     private readonly WatsonWsServer _server;
     private readonly Timer _countdown;
     private CommandDocumentation[] _commands;
     private VariableDocumentation[] _variables;
 
-    public SocketDocumentationService(ILogger<SocketDocumentationService> log, RecordGenerator record)
+    public SocketDocumentationService(ILogger<SocketDocumentationService> log, RecordGenerator record, IEliteDangerousApi api)
     {
         _log = log;
         _record = record;
+        _api = api;
         _server = new WatsonWsServer(IPAddress.Loopback.ToString(), 51555);
         _countdown = new Timer(VariablesHaveBeenSetHandler, null, Timeout.Infinite, Timeout.Infinite);
     }
@@ -38,6 +43,18 @@ public class SocketDocumentationService : VoiceAttackService
             await SendToClient(c.Client, "commands", JsonConvert.SerializeObject(_commands));
             await SendToClient(c.Client, "variables", JsonConvert.SerializeObject(_variables));
             await SendToClient(c.Client, "records", JsonConvert.SerializeObject(_record.Records));
+        };
+
+        _server.MessageReceived += (_, e) =>
+        {
+            var json = Encoding.UTF8.GetString(e.Data.ToArray());
+            _log.LogInformation("Invoking custom JSON: {Json}", json);
+            _api.Events.Invoke(json, new EventContext()
+            {
+                IsImplemented = true,
+                IsRaisedDuringCatchup = false,
+                SourceFile = "Invoked JSON"
+            });
         };
         
         proxy.Commands.OnCommandInvoked += (_, _) => CommandsHaveBeenInvokedHandler();
