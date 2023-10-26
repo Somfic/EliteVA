@@ -6,8 +6,8 @@
     <LangVersion>latest</LangVersion>
     <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <FileVersion>0.4.0.0</FileVersion>
-    <InformationalVersion>0.4.0-alpha.26+Branch.dev.Sha.afb876939c1c7723d342b1d6e325ee8425d5c439</InformationalVersion>
-    <Version>0.4.0-alpha0026</Version>
+    <InformationalVersion>0.4.0+28.Branch.main.Sha.8861f4f6331ee9c8a7153f911d23bb41b3455da3</InformationalVersion>
+    <Version>0.4.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EliteAPI" Version="3.1.3" />
