@@ -60,7 +60,7 @@ public class VoiceAttack : VoiceAttackPlugin
 
         _log = _host.Services.GetRequiredService<ILogger<VoiceAttack>>();
 
-        _log.LogDebug("Initialising EliteVA v{Version}", GetType().Assembly.GetName().Version);
+        _log.LogInformation("Starting EliteVA v{Version}", GetType().Assembly.GetName().Version);
 
         _services = new List<VoiceAttackService>()
         {
