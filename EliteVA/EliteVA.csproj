@@ -10,7 +10,7 @@
     <Version>0.4.0-alpha0023</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.1.2" />
+    <PackageReference Include="EliteAPI" Version="3.1.3" />
     <PackageReference Include="EliteAPI.Web" Version="3.1.2" />
     <PackageReference Include="EliteAPI.Web.Spansh" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="7.0.0" />
