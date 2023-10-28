@@ -93,10 +93,12 @@ public class FileDocumentationService : VoiceAttackService
 
                     try
                     {
-
                         // Group by event
-                        var events = group.GroupBy(x => x.name.Split('.')[1]).OrderByDescending(
-                            x => x.First(x => x.name.Contains("timestamp")).value).ToList();
+                        var events = group
+                            .GroupBy(x => x.name.Split('.')[1])
+                            .OrderByDescending(x => x.FirstOrDefault(x => x.name.Contains("timestamp")).value ?? "")
+                            .ToList();
+                        
                         foreach (var eventVariables in events)
                         {
                             variables.Add($" ###  {eventVariables.Key}  ### ");
