@@ -85,7 +85,7 @@ public class SocketDocumentationService : VoiceAttackService
             SendVariablesToClients(_variables).GetAwaiter().GetResult();
         } catch (Exception e)
         {
-            _log.LogError(e, "Failed to send variables to clients");
+            _log.LogDebug(e, "Failed to send variables to clients");
         }
     }
     

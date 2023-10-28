@@ -9,7 +9,7 @@ public class VoiceAttackVariables
 
     private List<(string category, string name, string value)> _setVariables;
 
-    public IReadOnlyList<(string category, string name, string value)> SetVariables => _setVariables;
+    public IReadOnlyList<(string category, string name, string value)> SetVariables => _setVariables.ToList();
     
     public event EventHandler? OnVariablesSet;
 
