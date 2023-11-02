@@ -51,22 +51,20 @@ public class RecordGenerator
             
             var generatedPaths = new List<EventPath>();
 
+            var lastChange = DateTime.Now;
+            
             foreach (var filteredFile in filteredFiles)
             {
                 generatedPaths.AddRange(GetPaths(filteredFile));
+
+                if (DateTime.Now - lastChange <= TimeSpan.FromSeconds(10)) continue;
+                
+                lastChange = DateTime.Now;
+                _log.LogDebug("Scraped {GeneratedPathsLength} paths", generatedPaths.Count);
+                InvokeRecords(generatedPaths);
             }
-            
-            _journalRecords = generatedPaths
-                .GroupBy(x => x.Path)
-                .ToDictionary(x => x.Key, x => x.Select(y => y.Value))
-                .Select(x => new RecordDocumentation(x.Key, x.Value.Select(GetType),
-                    x.Value.Select(GetValue).OrderBy(_ => Guid.NewGuid())))
-                .OrderBy(x => x.Name)
-                .GroupBy(x => x.Name.Split('.')[0])
-                .ToDictionary(x => x.Key, x => x.Select(y => y).Reverse())
-                .ToArray();
-            
-            RecordsGenerated?.Invoke(this, _journalRecords);
+
+            InvokeRecords(generatedPaths);
 
             return _journalRecords;
         } catch (Exception ex)
@@ -75,7 +73,22 @@ public class RecordGenerator
             return Array.Empty<KeyValuePair<string, IEnumerable<RecordDocumentation>>>();
         }
     }
-    
+
+    private void InvokeRecords(List<EventPath> generatedPaths)
+    {
+        _journalRecords = generatedPaths
+            .GroupBy(x => x.Path)
+            .ToDictionary(x => x.Key, x => x.Select(y => y.Value))
+            .Select(x => new RecordDocumentation(x.Key, x.Value.Select(GetType),
+                x.Value.Select(GetValue).OrderBy(_ => Guid.NewGuid())))
+            .OrderBy(x => x.Name)
+            .GroupBy(x => x.Name.Split('.')[0])
+            .ToDictionary(x => x.Key, x => x.Select(y => y).Reverse())
+            .ToArray();
+
+        RecordsGenerated.Invoke(this, _journalRecords);
+    }
+
     private IReadOnlyCollection<EventPath> GetPaths(FileInfo journalFile)
     {
         using var stream = journalFile.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
