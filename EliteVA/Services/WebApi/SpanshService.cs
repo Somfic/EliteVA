@@ -8,6 +8,7 @@ using EliteVA.Proxy.Abstractions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Somfic.Common;
 
 namespace EliteVA.Services.WebApi;
 
@@ -51,7 +52,7 @@ public class SpanshService : VoiceAttackService
         var result = await _spansh.Routes.Neutron(new NeutronRequest(from, to, range) { Via = from });
         
         result.On(
-            ok: x => HandleResponse("Spansh.NeutronPlotter", x),
+            value: x => HandleResponse("Spansh.NeutronPlotter", x),
             error: x => _log.LogWarning(x, "Could not get neutron route"));
     }
     
