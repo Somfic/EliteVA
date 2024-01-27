@@ -1,37 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using EliteAPI;
-using EliteAPI.Abstractions.Events;
 using EliteAPI.Abstractions.Status;
-using EliteAPI.Events;
 
 var api = EliteDangerousApi.Create();
 api.InitialiseAsync();
-
-// Keep a list of active missions
-var missions = new List<MissionAcceptedEvent>();
-
-// Add new missions
-api.Events.On<MissionAcceptedEvent>(m => missions.Add(m));
-
-// Remove completed/abandoned/failed missions
-api.Events.On<MissionCompletedEvent>(m => missions = missions.Where(x => x.MissionId != m.MissionId).ToList());
-api.Events.On<MissionAbandonedEvent>(m => missions = missions.Where(x => x.MissionId != m.MissionId).ToList());
-api.Events.On<MissionFailedEvent>(m => missions = missions.Where(x => x.MissionId != m.MissionId).ToList());
-
-// Invoke all the journal files in the journals directory
-var journalsDirectory = new DirectoryInfo(api.Config.JournalsPath);
-var journalFiles = journalsDirectory.GetFiles(api.Config.JournalPattern).Where(x => x.LastWriteTime > DateTime.Now.AddDays(-8));
-journalFiles
-    .SelectMany(file => File.ReadAllLines(file.FullName))
-    .ToList()
-    .ForEach(json => api.Events.Invoke(json, new EventContext()));
 
 var commands = api.Events.EventTypes.Select(type => (fullname: type.FullName, command: type.GetInterfaces().Contains(typeof(IStatusEvent))
         ? $"((EliteAPI.Status.{type.Name}))"
