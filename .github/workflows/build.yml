@@ -1,101 +1,102 @@
 name: .NET
 on:
-  push:
+    push:
 
 jobs:
-  release:
-    runs-on: windows-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    release:
+        runs-on: windows-latest
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-      - name: Setup .NET 6
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: "6.0.x"
+            - name: Extract branch name
+              shell: bash
+              run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+              id: extract_branch
 
-      - name: Setup GitVersion
-        run: dotnet tool install --global GitVersion.Tool
+            - name: Setup .NET 6
+              uses: actions/setup-dotnet@v2
+              with:
+                  dotnet-version: "6.0.x"
 
-      - name: Fetch for GitVersion
-        run: git fetch --tags --unshallow
+            - name: Setup GitVersion
+              run: dotnet tool install --global GitVersion.Tool
 
-      - name: Fetch main for GitVersion
-        if: github.ref != 'refs/heads/main'
-        run: git branch --create-reflog main origin/main
+            - name: Fetch for GitVersion
+              run: git fetch --tags --unshallow
 
-      - name: Update version
-        run: dotnet-gitversion /updateprojectfiles /updateassemblyinfo /output buildserver
+            - name: Fetch main for GitVersion
+              if: github.ref != 'refs/heads/main'
+              run: git branch --create-reflog main origin/main
 
-      - name: Set job output
-        id: VERSION
-        run: |
-          echo '::set-output name=label::${{env.GitVersion_PreReleaseLabel}}'
-          echo '::set-output name=semver::${{env.GitVersion_LegacySemVer}}'
-          echo '::set-output name=nuget::${{env.GitVersion_NuGetPreReleaseTagV2}}'
-          echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
+            - name: Update version
+              run: dotnet-gitversion /updateprojectfiles /updateassemblyinfo /output buildserver
 
-      - name: Apply changes
-        if: ${{ steps.VERSION.outputs.applicable == 'true' || steps.extract_branch.outputs.branch == 'main' }}
-        uses: EndBug/add-and-commit@v6.2.0
-        with:
-          author_name: github-actions[bot]
-          author_email: github-actions[bot]@users.noreply.github.com
-          message: "Bumped version to ${{env.GitVersion_LegacySemVer}}"
+            - name: Set job output
+              id: VERSION
+              run: |
+                  echo '::set-output name=label::${{env.GitVersion_PreReleaseLabel}}'
+                  echo '::set-output name=semver::${{env.GitVersion_LegacySemVer}}'
+                  echo '::set-output name=nuget::${{env.GitVersion_NuGetPreReleaseTagV2}}'
+                  echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1
+            - name: Apply changes
+              if: ${{ steps.VERSION.outputs.applicable == 'true' || steps.extract_branch.outputs.branch == 'main' }}
+              uses: EndBug/add-and-commit@v6.2.0
+              with:
+                  author_name: github-actions[bot]
+                  author_email: github-actions[bot]@users.noreply.github.com
+                  message: "Bumped version to ${{env.GitVersion_LegacySemVer}}"
 
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1
+            - name: Setup MSBuild
+              uses: microsoft/setup-msbuild@v1
 
-      - name: Restore Packages
-        run: dotnet restore
+            - name: Setup NuGet
+              uses: NuGet/setup-nuget@v1
 
-      - name: Build
-        run: dotnet build -c Release
+            - name: Restore Packages
+              run: dotnet restore
 
-      - name: Make EliteVA-${{ steps.VERSION.outputs.semver }}
-        run: mkdir "EliteVA-${{ steps.VERSION.outputs.semver }}"
+            - name: Build
+              run: dotnet build -c Release
 
-      - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
-        run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
+            - name: Make EliteVA-${{ steps.VERSION.outputs.semver }}
+              run: mkdir "EliteVA-${{ steps.VERSION.outputs.semver }}"
 
-      - name: Add Costura.Fody
-        run: dotnet add package Costura.Fody
-        working-directory: EliteVA
+            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
+              run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
 
-      - name: Build
-        run: dotnet build -c Release
+            - name: Add Costura.Fody
+              run: dotnet add package Costura.Fody
+              working-directory: EliteVA
 
-      - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
-        run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
+            - name: Build
+              run: dotnet build -c Release
 
-      - name: Generate profile
-        run: dotnet run --project ProfileGenerator -c Release
+            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
+              run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
 
-      - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}\EliteVA-${{ steps.VERSION.outputs.semver }}.vap
-        run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
+            - name: Generate profile
+              run: dotnet run --project ProfileGenerator -c Release
 
-      - name: Zip dist
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: "zip"
-          filename: "EliteVA-${{ steps.VERSION.outputs.semver }}.zip"
-          path: "EliteVA-${{ steps.VERSION.outputs.semver }}/*"
+            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}\EliteVA-${{ steps.VERSION.outputs.semver }}.vap
+              run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.VERSION.outputs.semver }}
-          files: |
-            EliteVA-${{ steps.VERSION.outputs.semver }}.zip
-            EliteVA-${{ steps.VERSION.outputs.semver }}.vap
-          prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
-          draft: true
+            - name: Zip dist
+              uses: thedoctor0/zip-release@0.7.1
+              with:
+                  type: "zip"
+                  filename: "EliteVA-${{ steps.VERSION.outputs.semver }}.zip"
+                  path: "EliteVA-${{ steps.VERSION.outputs.semver }}/*"
+
+            - name: Release
+              if: github.ref == 'refs/heads/main' || ${{ steps.VERSION.outputs.applicable == 'true' }}
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: ${{ steps.VERSION.outputs.semver }}
+                  files: |
+                      EliteVA-${{ steps.VERSION.outputs.semver }}.zip
+                      EliteVA-${{ steps.VERSION.outputs.semver }}.vap
+                  prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
+                  draft: true
