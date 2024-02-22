@@ -10,6 +10,6 @@
     <Version>0.4.3</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.1.4" />
+    <PackageReference Include="EliteAPI" Version="3.1.12" />
   </ItemGroup>
 </Project>
