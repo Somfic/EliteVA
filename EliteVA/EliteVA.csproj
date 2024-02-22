@@ -6,7 +6,7 @@
     <LangVersion>latest</LangVersion>
     <AssemblyVersion>0.4.3.0</AssemblyVersion>
     <FileVersion>0.4.3.0</FileVersion>
-    <InformationalVersion>0.4.3+8.Branch.main.Sha.e5da2c70a8248370d873dfe3ab91b16a203898b2</InformationalVersion>
+    <InformationalVersion>0.4.3+13.Branch.main.Sha.9f6882499e852be5382d0ebcd101a4659d1a9110</InformationalVersion>
     <Version>0.4.3</Version>
   </PropertyGroup>
   <ItemGroup>
