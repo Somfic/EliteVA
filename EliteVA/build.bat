@@ -1,10 +1,10 @@
 taskkill /IM "voiceattack.exe" /F
 
-rmdir /S /Q "C:\Users\Lucas\VoiceAttack\Apps\EliteVA"
-mkdir "C:\Users\Lucas\VoiceAttack\Apps\EliteVA"
+rmdir /S /Q "D:\SteamLibrary\steamapps\common\VoiceAttack2\Apps\EliteVA"
+mkdir "D:\SteamLibrary\steamapps\common\VoiceAttack2\Apps\EliteVA"
 
 dotnet clean
 dotnet build -c Release
-copy /Y "C:\dev\EliteVA\EliteVA\bin\Release\net7.0\" "C:\Users\Lucas\VoiceAttack\Apps\EliteVA\"
+copy /Y "C:\dev\EliteVA\EliteVA\bin\Release\net7.0\" "D:\SteamLibrary\steamapps\common\VoiceAttack2\Apps\EliteVA\"
 
-start "" "C:\Users\Lucas\VoiceAttack\VoiceAttack.exe"
+start "" "D:\SteamLibrary\steamapps\common\VoiceAttack2\VoiceAttack.exe"

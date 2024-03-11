@@ -93,13 +93,17 @@ jobs:
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
+            - name: Copy setup to base folder
+              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
+              run: xcopy "EliteVA.Updater\bin\Release\EliteVA.Updater.exe" "EliteVA-setup.exe" /Y /I
+
             - name: Zip dist
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               uses: thedoctor0/zip-release@0.7.1
               with:
                   type: "zip"
                   filename: "EliteVA-${{ steps.VERSION.outputs.semver }}.zip"
-                  path: "EliteVA-${{ steps.VERSION.outputs.semver }}/*"
+                  path: "EliteVA-${{ steps.VERSION.outputs.semver }}/EliteVA-${{ steps.VERSION.outputs.semver }}/*"
 
             - name: Release
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
@@ -109,5 +113,6 @@ jobs:
                   files: |
                       EliteVA-${{ steps.VERSION.outputs.semver }}.zip
                       EliteVA-${{ steps.VERSION.outputs.semver }}.vap
+                      EliteVA-setup.exe
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
                   draft: true

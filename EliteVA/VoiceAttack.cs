@@ -9,6 +9,7 @@ using EliteVA.Records;
 using EliteVA.Services;
 using EliteVA.Services.Bridge;
 using EliteVA.Services.Documentation;
+using EliteVA.Services.Updater;
 using EliteVA.Services.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
