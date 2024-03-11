@@ -98,7 +98,7 @@ jobs:
 
             - name: Copy setup to base folder
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: copy "EliteVA.Updater\bin\Release\net6.0\win-x64\publish\EliteVA.Updater.exe" "EliteVA-setup.exe" /Y
+              run: copy /Y "EliteVA.Updater\bin\Release\net6.0\win-x64\publish\EliteVA.Updater.exe" "EliteVA-setup.exe"
 
             - name: Zip dist
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
