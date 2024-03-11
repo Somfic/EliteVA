@@ -6,6 +6,7 @@ using EliteVA.Loggers.VoiceAttack;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Abstractions;
 using EliteVA.Records;
+using EliteVA.Services;
 using EliteVA.Services.Bridge;
 using EliteVA.Services.Documentation;
 using EliteVA.Services.WebApi;
@@ -33,6 +34,7 @@ public class VoiceAttack : VoiceAttackPlugin
                 
                 s.AddSingleton<JournalEventsService>();
                 s.AddSingleton<BindingsService>();
+                s.AddSingleton<VersionChecker>();
                 s.AddSingleton<FileDocumentationService>();
                 s.AddSingleton<SocketDocumentationService>();
                 
@@ -68,7 +70,8 @@ public class VoiceAttack : VoiceAttackPlugin
             _host.Services.GetRequiredService<BindingsService>(),
             _host.Services.GetRequiredService<FileDocumentationService>(),
             _host.Services.GetRequiredService<SocketDocumentationService>(),
-            _host.Services.GetRequiredService<SpanshService>()
+            _host.Services.GetRequiredService<SpanshService>(),
+            _host.Services.GetRequiredService<VersionChecker>()
         };
         
         var api = _host.Services.GetRequiredService<IEliteDangerousApi>();
