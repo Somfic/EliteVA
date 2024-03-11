@@ -1,0 +1,30 @@
+name: ci
+on: [push, pull_request]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Setup .NET 6
+              uses: actions/setup-dotnet@v2
+              with:
+                  dotnet-version: "6.0.x"
+
+            - name: Setup MSBuild
+              uses: microsoft/setup-msbuild@v1
+
+            - name: Setup NuGet
+              uses: NuGet/setup-nuget@v1
+
+            - name: Restore Packages
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build -c Release
+
+            - name: Test
+              run: dotnet test -c Release

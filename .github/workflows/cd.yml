@@ -1,9 +1,12 @@
-name: .NET
+name: cd
 on:
     push:
+        branches:
+            - main
 
 jobs:
     release:
+        if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
         runs-on: windows-latest
 
         steps:
@@ -21,19 +24,19 @@ jobs:
                   dotnet-version: "6.0.x"
 
             - name: Setup GitVersion
-              if: github.ref == 'refs/heads/main'
               run: dotnet tool install --global GitVersion.Tool
 
             - name: Fetch for GitVersion
-              if: github.ref == 'refs/heads/main'
               run: git fetch --tags --unshallow
 
+            - name: Fetch main for GitVersion
+              if: github.ref != 'refs/heads/main'
+              run: git branch --create-reflog main origin/main
+
             - name: Update version
-              if: github.ref == 'refs/heads/main'
               run: dotnet-gitversion /updateprojectfiles /updateassemblyinfo /output buildserver
 
             - name: Set job output
-              if: github.ref == 'refs/heads/main'
               id: VERSION
               run: |
                   echo '::set-output name=label::${{env.GitVersion_PreReleaseLabel}}'
@@ -42,7 +45,7 @@ jobs:
                   echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
 
             - name: Apply changes
-              if: ${{ steps.VERSION.outputs.applicable == 'true' && github.ref == 'refs/heads/main' }}
+              if: ${{ steps.VERSION.outputs.applicable == 'true' && steps.extract_branch.outputs.branch == 'main' }}
               uses: EndBug/add-and-commit@v6.2.0
               with:
                   author_name: github-actions[bot]
