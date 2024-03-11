@@ -106,7 +106,7 @@ jobs:
               with:
                   type: "zip"
                   filename: "EliteVA-${{ steps.VERSION.outputs.semver }}.zip"
-                  path: "EliteVA-${{ steps.VERSION.outputs.semver }}/EliteVA-${{ steps.VERSION.outputs.semver }}/*"
+                  path: "EliteVA-${{ steps.VERSION.outputs.semver }}/*"
 
             - name: Release
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
