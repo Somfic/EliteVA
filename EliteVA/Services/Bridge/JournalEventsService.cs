@@ -2,7 +2,6 @@
 using EliteAPI.Abstractions;
 using EliteAPI.Abstractions.Events;
 using EliteAPI.Events;
-using EliteAPI.Events.Status.Ship;
 using EliteVA.Proxy;
 using EliteVA.Proxy.Abstractions;
 using Microsoft.Extensions.Logging;
