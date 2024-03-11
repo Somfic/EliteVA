@@ -93,9 +93,12 @@ jobs:
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
+            - name: Publish
+              run: dotnet publish -c Release
+
             - name: Copy setup to base folder
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: xcopy "EliteVA.Updater\bin\Release\EliteVA.Updater.exe" "EliteVA-setup.exe" /Y /I
+              run: xcopy "EliteVA.Updater\bin\Release\net6.0\win-x64\publish\EliteVA.Updater.exe" "EliteVA-setup.exe" /Y /I
 
             - name: Zip dist
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}

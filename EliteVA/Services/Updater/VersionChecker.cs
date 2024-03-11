@@ -42,7 +42,7 @@ public class VersionChecker : VoiceAttackService
 				return;
 			}
 
-			if (_configuration.GetSection("EliteAPI")["AutoUpdate"] == "true")
+			if (_configuration.GetSection("EliteAPI").GetValue("AutoUpdate", true))
 			{
 				_log.LogDebug("Auto update is enabled");
 				await DownloadAndRunFile(asset.BrowserDownloadUrl.ToString(), release.TagName);

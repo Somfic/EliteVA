@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteVA", "EliteVA\EliteVA.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfileGenerator", "ProfileGenerator\ProfileGenerator.csproj", "{10496688-903C-4B63-81D0-835D88DD1A4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteVA.Updater", "EliteVA.Updater\EliteVA.Updater.csproj", "{00A2BA41-02C4-4480-8FC6-957FF83D3224}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteVA.Updater", "EliteVA.Updater\EliteVA.Updater.csproj", "{7F30BFD4-B7D5-40F4-9715-1DE1E747A902}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,9 +20,9 @@ Global
 		{10496688-903C-4B63-81D0-835D88DD1A4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10496688-903C-4B63-81D0-835D88DD1A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10496688-903C-4B63-81D0-835D88DD1A4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00A2BA41-02C4-4480-8FC6-957FF83D3224}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00A2BA41-02C4-4480-8FC6-957FF83D3224}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00A2BA41-02C4-4480-8FC6-957FF83D3224}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00A2BA41-02C4-4480-8FC6-957FF83D3224}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F30BFD4-B7D5-40F4-9715-1DE1E747A902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F30BFD4-B7D5-40F4-9715-1DE1E747A902}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F30BFD4-B7D5-40F4-9715-1DE1E747A902}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F30BFD4-B7D5-40F4-9715-1DE1E747A902}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
