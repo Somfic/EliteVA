@@ -29,12 +29,14 @@ public class VersionChecker : VoiceAttackService
 		
 		var (release, version) = await GetLatestRelease();
 		
+		_log.LogDebug("Latest version is v{LatestVersion}", version);
+		
 		if (version > currentVersion)
 		{
 			_log.LogWarning("An update is available: v{LatestVersion}", version);
 			
 			// Download setup.exe
-			var asset = release.Assets.FirstOrDefault(x => x.Name.EndsWith(".exe"));
+			var asset = release.Assets.FirstOrDefault(x => x.Name.EndsWith(".bat"));
 			
 			if (asset == null)
 			{
@@ -45,16 +47,8 @@ public class VersionChecker : VoiceAttackService
 			if (_configuration.GetSection("EliteAPI").GetValue("AutoUpdate", true))
 			{
 				_log.LogDebug("Auto update is enabled");
-				await DownloadAndRunFile(asset.BrowserDownloadUrl.ToString(), release.TagName);
+				await DownloadAndRunFile(asset, release.TagName);
 			}
-		}
-		else if (version == currentVersion)
-		{
-			_log.LogDebug("EliteVA is up to date");
-		}
-		else
-		{
-			_log.LogWarning("Running pre-release version v{CurrentVersion}", currentVersion);
 		}
 	}
 	
@@ -91,7 +85,7 @@ public class VersionChecker : VoiceAttackService
 		 }
 	 }
 
-	 private async Task DownloadAndRunFile(string url, string hash)
+	 private async Task DownloadAndRunFile(Asset asset, string hash)
 	 {
 		 // Make sure we're not in a update loop
 		 if (File.Exists("last-update"))
@@ -106,17 +100,17 @@ public class VersionChecker : VoiceAttackService
 		 
 		 File.WriteAllText("last-update", hash);
 		 
-		 _log.LogDebug("Downloading setup.exe from {Url}", url);
+		 _log.LogDebug("Downloading setup file from {Url}", asset.BrowserDownloadUrl);
 		 
 		 _http.DefaultRequestHeaders.Add("User-Agent", "EliteVA");
-		 var response = await _http.GetAsync(url);
+		 var response = await _http.GetAsync(asset.BrowserDownloadUrl);
 		 var setup = await response.Content.ReadAsByteArrayAsync();
 		  
-		 File.WriteAllBytes("setup.exe", setup);
+		 File.WriteAllBytes(asset.Name, setup);
 		 
-		 _log.LogDebug("Running setup.exe ... This process will exit soon ... ");
+		 _log.LogDebug("Running setup ... This process will exit soon ... ");
 		 
 		 // Start setup
-		 System.Diagnostics.Process.Start("setup.exe");
+		 System.Diagnostics.Process.Start(asset.Name);
 	 }
 }

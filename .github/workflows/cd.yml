@@ -64,13 +64,13 @@ jobs:
             - name: Build
               run: dotnet build -c Release
 
-            - name: Make EliteVA-${{ steps.VERSION.outputs.semver }}
+            - name: Make EliteVA-plugin
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: mkdir "EliteVA-${{ steps.VERSION.outputs.semver }}"
+              run: mkdir "EliteVA-plugin"
 
-            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
+            - name: Copy to EliteVA-plugin
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
+              run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-plugin" /Y /I
 
             - name: Add Costura.Fody
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
@@ -81,32 +81,29 @@ jobs:
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: dotnet build -c Release
 
-            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}
+            - name: Copy to EliteVA-plugin
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-${{ steps.VERSION.outputs.semver }}" /Y /I
+              run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-plugin" /Y /I
 
             - name: Generate profile
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: dotnet run --project ProfileGenerator -c Release
 
-            - name: Copy to EliteVA-${{ steps.VERSION.outputs.semver }}\EliteVA-${{ steps.VERSION.outputs.semver }}.vap
+            - name: Copy to EliteVA-plugin\EliteVA-${{ steps.VERSION.outputs.semver }}.vap
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
 
-            - name: Publish
-              run: dotnet publish -c Release
-
             - name: Copy setup to base folder
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: cmd /c 'copy EliteVA.Updater\bin\Release\net6.0\win-x64\publish\EliteVA.Updater.exe EliteVA-setup.exe'
+              run: cmd /c 'copy EliteVA\bin\Release\net472\EliteVA-setup.bat EliteVA-setup.bat'
 
             - name: Zip dist
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               uses: thedoctor0/zip-release@0.7.1
               with:
                   type: "zip"
-                  filename: "EliteVA-${{ steps.VERSION.outputs.semver }}.zip"
-                  path: "EliteVA-${{ steps.VERSION.outputs.semver }}/*"
+                  filename: "EliteVA.zip"
+                  path: "EliteVA-plugin/*"
 
             - name: Release
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
@@ -114,8 +111,8 @@ jobs:
               with:
                   tag_name: ${{ steps.VERSION.outputs.semver }}
                   files: |
-                      EliteVA-${{ steps.VERSION.outputs.semver }}.zip
+                      EliteVA.zip
                       EliteVA-${{ steps.VERSION.outputs.semver }}.vap
-                      EliteVA-setup.exe
+                      EliteVA-setup.bat
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
                   draft: true
