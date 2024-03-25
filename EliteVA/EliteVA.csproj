@@ -11,7 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EliteAPI" Version="3.2.4" />
-    <PackageReference Include="EliteAPI.Web" Version="3.2.4" />
+    <PackageReference Include="EliteAPI.Web" Version="3.2.6" />
     <PackageReference Include="EliteAPI.Web.Spansh" Version="3.2.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="8.0.0" />
     <PackageReference Include="WatsonWebsocket" Version="4.1.1" />
