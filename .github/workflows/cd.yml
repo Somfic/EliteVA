@@ -95,7 +95,7 @@ jobs:
 
             - name: Copy setup to base folder
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: cmd /c 'copy EliteVA\bin\Release\net472\EliteVA-setup.bat EliteVA-setup.bat'
+              run: cmd /c 'copy EliteVA\bin\Release\net472\EliteVA-setup.ps1 EliteVA-setup.ps1'
 
             - name: Zip dist
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
@@ -113,6 +113,6 @@ jobs:
                   files: |
                       EliteVA.zip
                       EliteVA-${{ steps.VERSION.outputs.semver }}.vap
-                      EliteVA-setup.bat
+                      EliteVA-setup.ps1
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
                   draft: true
