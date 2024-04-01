@@ -23,7 +23,7 @@
     <None Update="EliteVA.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="EliteVA-setup.bat">
+    <None Update="EliteVA-setup.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
