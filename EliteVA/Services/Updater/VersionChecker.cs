@@ -36,7 +36,7 @@ public class VersionChecker : VoiceAttackService
 			_log.LogWarning("An update is available: v{LatestVersion}", version);
 			
 			// Download setup.exe
-			var asset = release.Assets.FirstOrDefault(x => x.Name.EndsWith(".bat"));
+			var asset = release.Assets.FirstOrDefault(x => x.Name.EndsWith(".ps1"));
 			
 			if (asset == null)
 			{
