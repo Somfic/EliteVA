@@ -1,0 +1,20 @@
+{
+  "name": "EliteVA",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Somfic/EliteVA.git",
+  "author": "Lucas <lucas@somfic.dev>",
+  "license": "MIT",
+  "dependencies": {
+    "tauri": "^0.15.0"
+  },
+  "scripts": {
+    "tauri": "tauri",
+    "build-client": "cd src-client && yarn build",
+    "dev-client": "cd src-client && yarn dev"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.1",
+    "@tauri-apps/cli": "^1.5.11"
+  }
+}
