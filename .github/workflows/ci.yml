@@ -22,9 +22,12 @@ jobs:
 
             - name: Restore Packages
               run: dotnet restore
+              working-directory: src-plugin
 
             - name: Build
               run: dotnet build -c Release
+              working-directory: src-plugin
 
             - name: Test
               run: dotnet test -c Release
+              working-directory: src-plugin

@@ -60,42 +60,51 @@ jobs:
 
             - name: Restore Packages
               run: dotnet restore
+              working-directory: src-plugin
 
             - name: Build
               run: dotnet build -c Release
+              working-directory: src-plugin
 
             - name: Make EliteVA-plugin
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: mkdir "EliteVA-plugin"
+              working-directory: src-plugin
 
             - name: Copy to EliteVA-plugin
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-plugin" /Y /I
+              working-directory: src-plugin
 
             - name: Add Costura.Fody
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: dotnet add package Costura.Fody
-              working-directory: EliteVA
+              working-directory: src-plugin\EliteVA
 
             - name: Build
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: dotnet build -c Release
+              working-directory: src-plugin
 
             - name: Copy to EliteVA-plugin
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-plugin" /Y /I
+              working-directory: src-plugin
 
             - name: Generate profile
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: dotnet run --project ProfileGenerator -c Release
+              working-directory: src-plugin
 
             - name: Copy to EliteVA-plugin\EliteVA-${{ steps.VERSION.outputs.semver }}.vap
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
+              working-directory: src-plugin
 
             - name: Copy setup to base folder
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: cmd /c 'copy EliteVA\bin\Release\net472\EliteVA-setup.ps1 EliteVA-setup.ps1'
+              working-directory: src-plugin
 
             - name: Zip dist
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
@@ -103,7 +112,7 @@ jobs:
               with:
                   type: "zip"
                   filename: "EliteVA.zip"
-                  path: "EliteVA-plugin/*"
+                  path: "src-plugin/EliteVA-plugin/*"
 
             - name: Release
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
@@ -113,6 +122,5 @@ jobs:
                   files: |
                       EliteVA.zip
                       EliteVA-${{ steps.VERSION.outputs.semver }}.vap
-                      EliteVA-setup.ps1
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
                   draft: true
