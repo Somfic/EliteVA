@@ -18,6 +18,21 @@ jobs:
               run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
               id: extract_branch
 
+            - name: Set up Rust
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: Setup cargo-llvm-cov
+              uses: taiki-e/install-action@cargo-llvm-cov
+
+            - name: Generate Cargo.lock
+              run: cargo generate-lockfile
+              working-directory: ./src-tauri
+
+            - name: Rust cache
+              uses: swatinem/rust-cache@v2
+              with:
+                  workspaces: "./src-tauri -> target"
+
             - name: Setup .NET 6
               uses: actions/setup-dotnet@v2
               with:
@@ -58,9 +73,16 @@ jobs:
             - name: Setup NuGet
               uses: NuGet/setup-nuget@v1
 
-            - name: Restore Packages
+            - name: Setup Yarn
+              run: npm install --global yarn && yarn
+
+            - name: Restore plugin packages
               run: dotnet restore
               working-directory: src-plugin
+
+            - name: Restore client packages
+              run: yarn install
+              working-directory: src-client
 
             - name: Build
               run: dotnet build -c Release
@@ -109,6 +131,12 @@ jobs:
                   filename: "EliteVA.zip"
                   directory: "src-plugin/EliteVA-plugin"
 
+            - name: Build updater
+              run: yarn tauri build
+
+            - name: Move updater
+              run: xcopy "src-tauri\target\release\EliteVA.exe" "EliteVA-updater.exe" /Y /I
+
             - name: Release
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               uses: softprops/action-gh-release@v1
@@ -117,5 +145,6 @@ jobs:
                   files: |
                       EliteVA.zip
                       EliteVA-${{ steps.VERSION.outputs.semver }}.vap
+                      EliteVA-updater.exe
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
                   draft: true
