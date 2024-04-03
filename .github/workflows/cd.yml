@@ -118,10 +118,9 @@ jobs:
               run: dotnet run --project ProfileGenerator -c Release
               working-directory: src-plugin
 
-            - name: Copy to EliteVA-plugin\EliteVA-${{ steps.VERSION.outputs.semver }}.vap
+            - name: Copy profile
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
-              working-directory: src-plugin
+              run: copy "src-plugin/Profile.vap" "EliteVA.vap" /Y /I
 
             - name: Zip dist
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
@@ -129,7 +128,7 @@ jobs:
               with:
                   type: "zip"
                   filename: "EliteVA.zip"
-                  directory: "src-plugin/EliteVA-plugin"
+                  path: "src-plugin/EliteVA-plugin/*"
 
             - name: Build updater
               run: yarn tauri build
@@ -144,7 +143,7 @@ jobs:
                   tag_name: ${{ steps.VERSION.outputs.semver }}
                   files: |
                       EliteVA.zip
-                      EliteVA-${{ steps.VERSION.outputs.semver }}.vap
+                      EliteVA.vap
                       EliteVA-updater.exe
                   prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
                   draft: true
