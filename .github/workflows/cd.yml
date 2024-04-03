@@ -101,18 +101,13 @@ jobs:
               run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
               working-directory: src-plugin
 
-            - name: Copy setup to base folder
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: cmd /c 'copy EliteVA\bin\Release\net472\EliteVA-setup.ps1 EliteVA-setup.ps1'
-              working-directory: src-plugin
-
             - name: Zip dist
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               uses: thedoctor0/zip-release@0.7.1
               with:
                   type: "zip"
                   filename: "EliteVA.zip"
-                  path: "src-plugin/EliteVA-plugin/*"
+                  directory: "src-plugin/EliteVA-plugin"
 
             - name: Release
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
