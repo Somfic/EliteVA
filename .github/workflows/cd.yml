@@ -135,7 +135,7 @@ jobs:
               run: yarn tauri build
 
             - name: Move updater
-              run: xcopy "src-tauri\target\release\EliteVA.exe" "EliteVA-updater.exe" /Y /I
+              run: copy "src-tauri\target\release\EliteVA.exe" "EliteVA-updater.exe"
 
             - name: Release
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
