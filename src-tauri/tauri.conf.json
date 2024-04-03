@@ -4,7 +4,7 @@
         "beforeBuildCommand": "yarn build-client",
         "beforeDevCommand": "yarn dev-client",
         "devPath": "http://localhost:5173",
-        "distDir": "../build"
+        "distDir": "../src-client/build"
     },
     "package": {
         "productName": "EliteVA",
@@ -23,7 +23,7 @@
             },
             "externalBin": [],
             "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
-            "identifier": "com.tauri.dev",
+            "identifier": "dev.somfic.eliteva",
             "longDescription": "",
             "macOS": {
                 "entitlements": null,
