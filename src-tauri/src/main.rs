@@ -182,22 +182,6 @@ async fn update_eliteva(window: Window) {
         }
     }
 
-    // Move everything from EliteVA/EliteVA-plugin to EliteVA
-    let plugin_dir = eliteva_dir.join("EliteVA-plugin");
-    let eliteva_files = std::fs::read_dir(&plugin_dir).unwrap();
-
-    for file in eliteva_files {
-        let file = file.unwrap();
-        let file_path = file.path();
-        let file_name = file.file_name();
-
-        let new_path = eliteva_dir.join(file_name);
-        std::fs::rename(file_path, new_path).unwrap();
-    }
-
-    // Remove the EliteVA-plugin directory
-    std::fs::remove_dir_all(plugin_dir).unwrap();
-
     // Remove the downloaded zip file
     std::fs::remove_file(path).unwrap();
 
@@ -208,7 +192,14 @@ async fn update_eliteva(window: Window) {
 
     std::thread::sleep(std::time::Duration::from_secs(1));
 
-    set_finished(&window, true, "EliteVA has been updated successfully");
+    set_finished(
+        &window,
+        true,
+        format!(
+            "EliteVA has been updated to v{} successfully",
+            latest_version
+        ),
+    );
 
     window.close().unwrap();
     std::process::exit(0);
