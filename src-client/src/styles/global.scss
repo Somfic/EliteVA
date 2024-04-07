@@ -15,6 +15,9 @@
 	margin: 0;
 }
 
+:global(main) {
+	background: rgba(0, 0, 0, 0.687);
+}
 
 :global(style) {
 	display: none;
