@@ -50,6 +50,10 @@ public class VersionChecker : VoiceAttackService
 				await DownloadAndRunFile(asset, release.TagName);
 			}
 		}
+		else
+		{
+			_log.LogInformation("EliteVA is up to date");
+		}
 	}
 	
 	 private async Task<(ReleaseResponse release, Version version)> GetLatestRelease()
