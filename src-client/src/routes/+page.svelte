@@ -18,7 +18,8 @@
 
 	onMount(() => {
 		progress = 'fetching';
-		text = 'Starting updater ...';
+		text =
+			'Starting updater aaaaaaaaaaaaaaaaaaasssssssssssssssssssssssssssssssss ssssssssssssssssssssssssssssssssssssssssssssss ...';
 
 		listen('message', (event) => {
 			let message = event.payload as Message;
@@ -67,6 +68,8 @@
 	}
 
 	h2 {
+		text-align: center;
+		margin-top: 2rem;
 		font-size: 1.25rem;
 		font-weight: 600;
 		color: rgba(255, 255, 255, 0.9);
