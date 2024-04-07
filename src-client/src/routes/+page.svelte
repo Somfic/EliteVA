@@ -17,6 +17,9 @@
 	}
 
 	onMount(() => {
+		progress = 'fetching';
+		text = 'Starting updater ...';
+
 		listen('message', (event) => {
 			let message = event.payload as Message;
 			progress = message.is_fetching ? 'fetching' : message.progress;
@@ -29,7 +32,7 @@
 			text = message.message;
 		});
 
-		invoke('update_eliteva');
+		//invoke('update_eliteva');
 	});
 
 	let progress: number | 'fetching' | 'none' = 'none';
@@ -60,15 +63,17 @@
 		height: 100vh;
 		padding: 0 5rem;
 		padding-top: 25vh;
+		border: 10px solid rgba(255, 255, 255, 0.1);
 	}
 
 	h2 {
 		font-size: 1.25rem;
-		font-weight: 400;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.9);
 	}
 
 	.progress {
-		margin-top: 6rem;
+		margin-top: 10rem;
 		width: 100%;
 		height: 10px;
 		background-color: $background;
@@ -80,7 +85,7 @@
 			height: 100%;
 			background-color: rgba(255, 255, 255, 0.5);
 			border-radius: 10px;
-			filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+			//filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 			transition: all 250ms ease-in-out;
 
 			// Diagonal stripes that move
@@ -96,7 +101,7 @@
 					transparent
 				);
 				background-size: 20px 20px;
-				animation: move 0.5s linear infinite; // 2s duration, linear timing, infinite loop
+				animation: move 1s linear infinite; // 2s duration, linear timing, infinite loop
 			}
 		}
 
