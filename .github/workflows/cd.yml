@@ -125,12 +125,12 @@ jobs:
             - name: Zip plugin
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
               run: 7z a -tzip EliteVA.zip *
-              working-directory: src-plugin/EliteVA/bin/Release/net472
+              working-directory: src-plugin/EliteVA-plugin
 
             - name: Copy EliteVA.zip
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: copy "EliteVA.zip" "..\..\..\..\..\EliteVA.zip"
-              working-directory: src-plugin/EliteVA/bin/Release/net472
+              run: copy "EliteVA.zip" "..\..\EliteVA.zip"
+              working-directory: src-plugin/EliteVA-plugin
 
             - name: Build updater
               run: yarn tauri build
