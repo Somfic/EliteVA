@@ -18,8 +18,7 @@
 
 	onMount(() => {
 		progress = 'fetching';
-		text =
-			'Starting updater aaaaaaaaaaaaaaaaaaasssssssssssssssssssssssssssssssss ssssssssssssssssssssssssssssssssssssssssssssss ...';
+		text = 'Starting updater ... ';
 
 		listen('message', (event) => {
 			let message = event.payload as Message;
@@ -33,7 +32,7 @@
 			text = message.message;
 		});
 
-		//invoke('update_eliteva');
+		invoke('update_eliteva');
 	});
 
 	let progress: number | 'fetching' | 'none' = 'none';
