@@ -123,13 +123,15 @@ jobs:
               run: echo F|xcopy "Profile.vap" "EliteVA-${{ steps.VERSION.outputs.semver }}.vap" /Y /I
               working-directory: src-plugin
 
-            - name: Zip dist
+            - name: Zip plugin
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              uses: thedoctor0/zip-release@0.7.1
-              with:
-                  type: "zip"
-                  filename: "EliteVA.zip"
-                  directory: "src-plugin/EliteVA-plugin"
+              run: 7z a -tzip EliteVA.zip *
+              working-directory: src-plugin/EliteVA/bin/Release/net472
+
+            - name: Copy EliteVA.zip
+              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
+              run: copy "EliteVA.zip" "..\..\..\..\..\EliteVA.zip"
+              working-directory: src-plugin/EliteVA/bin/Release/net472
 
             - name: Build updater
               run: yarn tauri build
