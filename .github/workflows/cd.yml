@@ -129,7 +129,7 @@ jobs:
 
             - name: Copy EliteVA.zip
               if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: 
+              run: copy "EliteVA.zip" "..\..\EliteVA.zip"
               working-directory: src-plugin/EliteVA-plugin
 
             - name: Build updater
