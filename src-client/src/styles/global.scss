@@ -15,9 +15,17 @@
 	margin: 0;
 }
 
-:global(main) {
-	background: rgba(0, 0, 0, 0.687);
+:global(html) {
+	background: url('/background.png');
+	background-size: cover;
+	background-position: center;
 }
+
+:global(body) {
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 10px;
+}
+
 
 :global(style) {
 	display: none;

@@ -12,8 +12,12 @@
 	}
 
 	interface Finished {
-		success: boolean;
 		message: string;
+	}
+
+	interface Error {
+		message: string;
+		error_message: string;
 	}
 
 	onMount(() => {
@@ -32,15 +36,29 @@
 			text = message.message;
 		});
 
+		listen('error', (event) => {
+			let message = event.payload as Error;
+			progress = 'none';
+			text = message.message;
+			error_message = message.error_message;
+		});
+
 		invoke('update_eliteva');
 	});
 
 	let progress: number | 'fetching' | 'none' = 'none';
 	let text: string = '';
+	let error_message = '';
+
+	function copy() {
+		// Copy error message to clipboard
+		navigator.clipboard.writeText(error_message);
+	}
 </script>
 
 <main>
 	<Logo />
+	<h3>VoiceAttack plugin for Elite: Dangerous</h3>
 	<div class="progress" class:none={progress == 'none'}>
 		{#if progress === 'none'}
 			<div class="progress-bar" style="width: 0%"></div>
@@ -51,6 +69,9 @@
 		{/if}
 	</div>
 	<h2>{text}</h2>
+	{#if error_message}
+		<button on:click={() => copy()}>Copy error code</button>
+	{/if}
 </main>
 
 <style lang="scss">
@@ -60,10 +81,10 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: center;
+		margin-top: 80px;
 		height: 100vh;
 		padding: 0 5rem;
-		padding-top: 25vh;
-		border: 10px solid rgba(255, 255, 255, 0.1);
 	}
 
 	h2 {
@@ -72,6 +93,14 @@
 		font-size: 1.25rem;
 		font-weight: 600;
 		color: rgba(255, 255, 255, 0.9);
+	}
+
+	h3 {
+		text-align: center;
+		margin-top: 0;
+		font-size: 1rem;
+		font-weight: 500;
+		color: rgba(255, 255, 255, 0.85);
 	}
 
 	.progress {
@@ -109,6 +138,25 @@
 
 		&.none {
 			opacity: 0;
+		}
+	}
+
+	button {
+		font-size: 0.8em;
+		opacity: 0.85;
+		cursor: pointer;
+		background-color: rgba(255, 255, 255, 0.1);
+		border-radius: 10px;
+		border: 2px solid rgba(255, 255, 255, 0.25);
+		padding: 5px 10px;
+		transition: 200ms ease;
+
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.25);
+		}
+
+		&:active {
+			transform: scale(0.95);
 		}
 	}
 

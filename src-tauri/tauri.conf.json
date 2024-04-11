@@ -51,13 +51,14 @@
             {
                 "fullscreen": false,
                 "height": 600,
-                "resizable": false,
-                "title": "EliteVA",
+                "title": "EliteVA updater",
                 "width": 600,
                 "center": true,
                 "transparent": true,
-                "decorations": false,
-                "alwaysOnTop": true
+                "decorations": true,
+                "maximizable": false,
+                "minimizable": false,
+                "resizable": false
             }
         ]
     }
