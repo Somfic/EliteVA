@@ -111,7 +111,7 @@
 		<div class="footer">
 			<div class="buttons">
 				<button class="main" on:click={() => updateNow()}>Update now</button>
-				<button on:click={() => updateLater()}>Remind me later</button>
+				<button on:click={() => updateLater()}>Skip this version</button>
 				<!-- <button on:click={() => skipUpdate()}>Skip this version</button> -->
 			</div>
 		</div>
