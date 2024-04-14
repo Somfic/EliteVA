@@ -22,6 +22,11 @@ public class ConfigurationService : VoiceAttackService
 	                                      #  false will disable the EDDN bridge
 	                                      Eddn = true
 	                                      
+	                                      # Whether or not to enable Discord Rich Presence. This is used to show your current in-game status on Discord.
+	                                      #  true (default) will enable Discord Rich Presence
+	                                      #  false will disable Discord Rich Presence
+	                                      DiscordRichPresence = true
+	                                      
 	                                      # The amount of time in milliseconds to wait between each checking for new event data.
 	                                      #  500 (default) is the recommended value.
 	                                      #  Setting this to an arbitrarily low value may cause increased CPU usage, while setting it to a high value may cause delays in events.
