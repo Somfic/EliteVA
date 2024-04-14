@@ -54,18 +54,23 @@ fn stop_voiceattack_process() -> Result<()> {
 }
 
 fn get_voiceattack_installation_directory() -> Result<PathBuf> {
-    let def = winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER);
-    let key = def
+    #[cfg(target_os = "windows")]
+    {
+        let def = winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER);
+        let key = def
         .open_subkey(r"Software\VoiceAttack.com\VoiceAttack")
         .context(
         "Could not find VoiceAttack installation directory in the registry. Subkey does not exist",
     )?;
 
-    let path = key
+        let path = key
         .get_value::<String, _>("installpath")
         .context( "Could not find VoiceAttack installation directory in the registry. Keyvalue 'installpath' does not exist")?;
 
-    Ok(std::path::PathBuf::from(path))
+        return Ok(std::path::PathBuf::from(path));
+    }
+
+    Err(anyhow::anyhow!("Unsupported OS"))
 }
 
 fn get_eliteva_installation_directory(
@@ -86,7 +91,7 @@ fn get_eliteva_installation_directory(
     Ok(directory)
 }
 
-async fn query_latest_release(owner: &str, repo: &str) -> Result<Release> {
+pub async fn query_latest_release(owner: &str, repo: &str) -> Result<Release> {
     let release = octocrab::instance()
         .repos(owner, repo)
         .releases()
