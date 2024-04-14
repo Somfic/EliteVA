@@ -10,13 +10,13 @@ dotnet remove package Costura.Fody
 
 dotnet clean
 dotnet build -c Release
-copy /Y "C:\dev\EliteVA\EliteVA\bin\Release\net472\" "D:\SteamLibrary\steamapps\common\VoiceAttack\Apps\EliteVA\"
+copy /Y "C:\dev\EliteVA\src-plugin\EliteVA\bin\Release\net472\" "D:\SteamLibrary\steamapps\common\VoiceAttack\Apps\EliteVA\"
 
 dotnet clean
 dotnet add package Costura.Fody
 dotnet build -c Release
 
-copy /Y "C:\dev\EliteVA\EliteVA\bin\Release\net472\" "D:\SteamLibrary\steamapps\common\VoiceAttack\Apps\EliteVA\"
+copy /Y "C:\dev\EliteVA\src-plugin\EliteVA\bin\Release\net472\" "D:\SteamLibrary\steamapps\common\VoiceAttack\Apps\EliteVA\"
 
 dotnet remove package Costura.Fody
 

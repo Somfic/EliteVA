@@ -10,6 +10,7 @@ using EliteVA.Services;
 using EliteVA.Services.Bridge;
 using EliteVA.Services.Configuration;
 using EliteVA.Services.Documentation;
+using EliteVA.Services.Eddn;
 using EliteVA.Services.Updater;
 using EliteVA.Services.WebApi;
 using Microsoft.Extensions.Configuration;
@@ -40,11 +41,14 @@ public class VoiceAttack : VoiceAttackPlugin
                 s.AddSingleton<FileDocumentationService>();
                 s.AddSingleton<SocketDocumentationService>();
                 s.AddSingleton<ConfigurationService>();
+                s.AddSingleton<EliteDangerousDataNetworkService>();
                 
                 s.AddSingleton<SpanshService>();
                 s.AddWebApi<SpanshApi>();
                 
                 s.AddEliteApi();
+                s.AddEddnBridge();
+                
                 s.AddHttpClient();
                 s.RemoveAll<IHttpMessageHandlerBuilderFilter>();
             })
@@ -75,7 +79,8 @@ public class VoiceAttack : VoiceAttackPlugin
             _host.Services.GetRequiredService<SocketDocumentationService>(),
             _host.Services.GetRequiredService<SpanshService>(),
             _host.Services.GetRequiredService<VersionChecker>(),
-            _host.Services.GetRequiredService<ConfigurationService>()
+            _host.Services.GetRequiredService<ConfigurationService>(),
+            _host.Services.GetRequiredService<EliteDangerousDataNetworkService>()
         };
         
         var api = _host.Services.GetRequiredService<IEliteDangerousApi>();

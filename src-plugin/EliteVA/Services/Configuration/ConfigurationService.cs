@@ -17,6 +17,11 @@ public class ConfigurationService : VoiceAttackService
 	                                      #  false will disable automatic updates
 	                                      AutoUpdate = true
 
+	                                      # Whether or not to enable the Elite Dangerous Data Network (EDDN) bridge. This is used to send event data to EDDN.
+	                                      #  true (default) will enable the EDDN bridge
+	                                      #  false will disable the EDDN bridge
+	                                      Eddn = true
+	                                      
 	                                      # The amount of time in milliseconds to wait between each checking for new event data.
 	                                      #  500 (default) is the recommended value.
 	                                      #  Setting this to an arbitrarily low value may cause increased CPU usage, while setting it to a high value may cause delays in events.
