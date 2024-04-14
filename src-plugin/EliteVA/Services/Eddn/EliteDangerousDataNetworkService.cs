@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 
 namespace EliteVA.Services.Eddn;
 
-public class EliteDangerousDataNetworkService : VoiceAttackService
+public class DataNetworkService : VoiceAttackService
 {
-	private readonly ILogger<EliteDangerousDataNetworkService> _log;
+	private readonly ILogger<DataNetworkService> _log;
 	private readonly IConfiguration _config;
 	private readonly EliteDangerousApiEddnBridge _eddn;
 
-	public EliteDangerousDataNetworkService(ILogger<EliteDangerousDataNetworkService> log, IConfiguration config, EliteDangerousApiEddnBridge eddn)
+	public DataNetworkService(ILogger<DataNetworkService> log, IConfiguration config, EliteDangerousApiEddnBridge eddn)
 	{
 		_log = log;
 		_config = config;

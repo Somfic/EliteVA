@@ -9,6 +9,7 @@ using EliteVA.Records;
 using EliteVA.Services;
 using EliteVA.Services.Bridge;
 using EliteVA.Services.Configuration;
+using EliteVA.Services.Discord;
 using EliteVA.Services.Documentation;
 using EliteVA.Services.Eddn;
 using EliteVA.Services.Updater;
@@ -41,13 +42,15 @@ public class VoiceAttack : VoiceAttackPlugin
                 s.AddSingleton<FileDocumentationService>();
                 s.AddSingleton<SocketDocumentationService>();
                 s.AddSingleton<ConfigurationService>();
-                s.AddSingleton<EliteDangerousDataNetworkService>();
+                s.AddSingleton<DataNetworkService>();
+                s.AddSingleton<DiscordRichPresenceService>();
                 
                 s.AddSingleton<SpanshService>();
                 s.AddWebApi<SpanshApi>();
                 
                 s.AddEliteApi();
                 s.AddEddnBridge();
+                s.AddDiscordRichPresence();
                 
                 s.AddHttpClient();
                 s.RemoveAll<IHttpMessageHandlerBuilderFilter>();
@@ -80,7 +83,8 @@ public class VoiceAttack : VoiceAttackPlugin
             _host.Services.GetRequiredService<SpanshService>(),
             _host.Services.GetRequiredService<VersionChecker>(),
             _host.Services.GetRequiredService<ConfigurationService>(),
-            _host.Services.GetRequiredService<EliteDangerousDataNetworkService>()
+            _host.Services.GetRequiredService<DataNetworkService>(),
+            _host.Services.GetRequiredService<DiscordRichPresenceService>()
         };
         
         var api = _host.Services.GetRequiredService<IEliteDangerousApi>();
@@ -104,7 +108,7 @@ public class VoiceAttack : VoiceAttackPlugin
         
         Proxy.Variables.Set("Metadata", "EliteAPI.Version", api.GetType().Assembly.GetName().Version.ToString(), TypeCode.String);
 
-        Task.Run(() => records.GenerateJournalRecords());
+        _ = Task.Run(() => records.GenerateJournalRecords());
         
         await api.StartAsync();
     }
