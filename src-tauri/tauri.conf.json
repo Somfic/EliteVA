@@ -58,7 +58,8 @@
                 "decorations": true,
                 "maximizable": false,
                 "minimizable": false,
-                "resizable": false
+                "resizable": false,
+                "visible": false
             }
         ]
     }
