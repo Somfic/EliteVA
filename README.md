@@ -62,7 +62,7 @@ Let's help you get started, commander.
 EliteVA is distributed through GitHub, making it the recommended method for installation. Alternatively, you can compile the plugin to retrieve the plugin file.
 
 To install, follow these steps:
-1. Download the [EliteVA-setup.bat](https://github.com/Somfic/EliteVA/releases/latest) file and run it. The setup will automatically detect your VoiceAttack installation.
+1. Download the [EliteVA-updater.exe](https://github.com/Somfic/EliteVA/releases/latest) file and run it. The updater will automatically detect your VoiceAttack installation.
 2. Ensure that **Plugin Support** is enabled in VoiceAttack.
 3. After restarting VoiceAttack, the EliteVA plugin will be ready to use.
 
