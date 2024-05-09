@@ -93,6 +93,10 @@
 		isPrompting = false;
 		invoke('skip_update');
 	}
+
+	function close() {
+		invoke('close_window');
+	}
 </script>
 
 <main class:prompt={isPrompting}>
@@ -136,7 +140,7 @@
 				{#if error_message}
 					<button on:click={() => copy()}>Copy error code</button>
 				{:else}
-					<button class="hidden" />
+					<button on:click={() => close()}>Close</button>
 				{/if}
 			</div>
 		</div>
