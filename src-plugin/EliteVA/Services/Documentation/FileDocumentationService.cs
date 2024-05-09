@@ -130,7 +130,7 @@ public class FileDocumentationService : VoiceAttackService
             }
         } catch (Exception ex)
         {
-            _log.LogWarning(ex, "Could not write variables to file");
+            _log.LogDebug(ex, "Could not write variables to file");
         }
     }
 }
