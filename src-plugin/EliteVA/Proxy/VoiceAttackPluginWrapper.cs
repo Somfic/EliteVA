@@ -1,4 +1,5 @@
 ﻿using EliteVA.Proxy.Logging;
+using Newtonsoft.Json;
 
 namespace EliteVA.Proxy;
 
@@ -33,7 +34,10 @@ public class VoiceAttackPluginWrapper
         }
         catch (Exception e)
         {
-            VoiceAttackPlugin.Instance.Log(VoiceAttackColor.Red, "Error during plugin initialisation", e);
+            VoiceAttackPlugin.Instance.Log(VoiceAttackColor.Red, "Error during plugin initialisation. See logs for further information");
+            var path = Path.Combine(VoiceAttackPlugin.Dir, "Logs", "STARTUP ERROR.log");
+            Directory.CreateDirectory(Path.GetDirectoryName(path) ?? VoiceAttackPlugin.Dir);
+            File.WriteAllText(path, JsonConvert.SerializeObject(e, Formatting.Indented));
         }
     }
     
