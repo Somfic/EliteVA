@@ -136,12 +136,12 @@ fn show_window(window: Window) {
 
 #[tauri::command]
 async fn update_later(window: Window) -> Result<(), ()> {
-    close(&window);
-
+    close_window(window).await?;
     Ok(())
 }
 
-fn close(window: &Window) {
+#[tauri::command]
+async fn close_window(window: Window) -> Result<(), ()> {
     window.close().unwrap();
     std::process::exit(0);
 }
@@ -152,7 +152,8 @@ fn main() {
             show_window,
             get_new_version,
             update_now,
-            update_later
+            update_later,
+            close_window
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
