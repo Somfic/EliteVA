@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Logo from '$lib/Logo.svelte';
 	import SvelteMarkdown from 'svelte-markdown';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { listen } from '@tauri-apps/api/event';
@@ -117,7 +116,7 @@
 		</div>
 	{:else}
 		<div class="header">
-			<Logo />
+			<img src="/icon.png" />
 			<h3>VoiceAttack plugin for Elite: Dangerous</h3>
 		</div>
 		<div class="content">
@@ -162,6 +161,10 @@
 				font-weight: 500;
 				font-size: 1rem;
 			}
+		}
+
+		img {
+			max-width: 100%;
 		}
 
 		.content {
