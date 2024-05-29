@@ -13,6 +13,7 @@ public class BindingsService : VoiceAttackService
 {
     private readonly ILogger<BindingsService> _log;
     private readonly IEliteDangerousApi _api;
+    private IReadOnlyCollection<Binding> _oldBindings = new List<Binding>();
 
     public BindingsService(ILogger<BindingsService> log, IEliteDangerousApi api)
     {
@@ -28,6 +29,14 @@ public class BindingsService : VoiceAttackService
 
     private void HandleBindings(IReadOnlyCollection<Binding> bindings, BindingsContext context)
     {
+        foreach (var oldBinding in _oldBindings)
+        {
+            _log.LogDebug("Clearing {Variable} from VoiceAttack", $"EliteAPI.{oldBinding.Name}");
+            VoiceAttackPlugin.Proxy.Variables.Clear("Bindings", $"EliteAPI.{oldBinding.Name}", TypeCode.String);
+        }
+        
+        _oldBindings = bindings;
+
         var bindsName = new FileInfo(context.SourceFile).Name;
         if (!bindsName.EndsWith(".binds"))
             bindsName = "standard";
@@ -36,12 +45,11 @@ public class BindingsService : VoiceAttackService
                 
         var layout = ReadYml("layout");
                 
+        // var nonKeyboardBinidings = bindings.Where(x => x.Primary?.Device != "Keyboard" && x.Secondary?.Device != "Keyboard").ToList();
+        
         // Set keyboard keys
-        foreach (var b in bindings)
+        foreach (var b in bindings.Where(x => x.Primary?.Device == "Keyboard" || x.Secondary?.Device == "Keyboard"))
         {
-            if (b.Primary?.Device != "Keyboard" && b.Secondary?.Device != "Keyboard")
-                continue;
-
             IPrimarySecondaryBinding binding = b.Primary?.Device == "Keyboard" ? b.Primary! : b.Secondary!;
 
             var keycode = $"[{GetKeyCode(binding.Key, layout)}]";
