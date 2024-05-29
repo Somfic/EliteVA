@@ -21,6 +21,12 @@ public class VoiceAttackVariables
     
     public void ClearStartingWith(string name)
     {
+        // TODO: Clear all variables
+        // foreach (var variable in variablesToClear)
+        // {
+        //     Clear(variable.category, variable.name, variable.value);
+        // }
+        
         _setVariables = _setVariables.Where(x => !x.name.Split(':')[1].StartsWith(name)).ToList();
     }
 
@@ -171,6 +177,45 @@ public class VoiceAttackVariables
         return value;
     }
     
+    public void Clear(string category, string name, TypeCode code)
+    {
+        switch (code)
+        {
+            case TypeCode.Boolean:
+                ClearBoolean(category, name);
+                break;
+
+            case TypeCode.DateTime:
+                ClearDate(category, name);
+                break;
+
+            case TypeCode.Single:
+            case TypeCode.Decimal:
+            case TypeCode.Double:
+                ClearDecimal(category, name);
+                break;
+
+            case TypeCode.Char:
+            case TypeCode.String:
+                ClearText(category, name);
+                break;
+
+            case TypeCode.Byte:
+            case TypeCode.Int16:
+            case TypeCode.UInt16:
+            case TypeCode.SByte:
+                ClearShort(category, name);
+                break;
+
+            case TypeCode.Int32:
+            case TypeCode.UInt32:
+            case TypeCode.Int64:
+            case TypeCode.UInt64:
+                ClearInt(category, name);
+                break;
+        }
+    }
+    
     private short? GetShort(string name)
     {
         return _proxy.GetSmallInt(name);
@@ -208,6 +253,14 @@ public class VoiceAttackVariables
 
         _proxy.SetSmallInt(name, value);
     }
+    
+    private void ClearShort(string category, string name)
+    {
+        var variable = $"{{SHORT:{name}}}";
+        ClearVariable(category, variable);
+
+        _proxy.SetSmallInt(name, null);
+    }
 
     private void SetInt(string category, string name, int? value)
     {
@@ -215,6 +268,14 @@ public class VoiceAttackVariables
         SetVariable(category, variable, value.ToString());
 
         _proxy.SetInt(name, value);
+    }
+    
+    private void ClearInt(string category, string name)
+    {
+        var variable = $"{{INT:{name}}}";
+        ClearVariable(category, variable);
+
+        _proxy.SetInt(name, null);
     }
 
     private void SetText(string category, string name, string value)
@@ -224,6 +285,14 @@ public class VoiceAttackVariables
 
         _proxy.SetText(name, value);
     }
+    
+    private void ClearText(string category, string name)
+    {
+        var variable = $"{{TXT:{name}}}";
+        ClearVariable(category, variable);
+
+        _proxy.SetText(name, null);
+    }
 
     private void SetDecimal(string category, string name, decimal? value)
     {
@@ -231,6 +300,14 @@ public class VoiceAttackVariables
         SetVariable(category, variable, value.ToString());
 
         _proxy.SetDecimal(name, value);
+    }
+    
+    private void ClearDecimal(string category, string name)
+    {
+        var variable = $"{{DEC:{name}}}";
+        ClearVariable(category, variable);
+
+        _proxy.SetDecimal(name, null);
     }
 
     private void SetBoolean(string category, string name, bool? value)
@@ -240,6 +317,14 @@ public class VoiceAttackVariables
 
         _proxy.SetBoolean(name, value);
     }
+    
+    private void ClearBoolean(string category, string name)
+    {
+        var variable = $"{{BOOL:{name}}}";
+        ClearVariable(category, variable);
+
+        _proxy.SetBoolean(name, null);
+    }
 
     private void SetDate(string category, string name, DateTime? value)
     {
@@ -248,14 +333,30 @@ public class VoiceAttackVariables
 
         _proxy.SetDate(name, value);
     }
+    
+    private void ClearDate(string category, string name)
+    {
+        var variable = $"{{DATE:{name}}}";
+        ClearVariable(category, variable);
+
+        _proxy.SetDate(name, null);
+    }
 
     private void SetVariable(string category, string name, string value)
     {
         var index = _setVariables.FindIndex(x => x.name == name);
+        
         if (index >= 0)
             _setVariables[index] = (category, name, value);
         else
             _setVariables.Insert(0, (category, name, value));
+        
+        OnVariablesSet?.Invoke(this, EventArgs.Empty);
+    }
+    
+    private void ClearVariable(string category, string name)
+    {
+        _setVariables.RemoveAll(x => x.name == name);
         
         OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
