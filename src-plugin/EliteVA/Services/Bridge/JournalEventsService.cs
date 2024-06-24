@@ -47,11 +47,8 @@ public class JournalEventsService : VoiceAttackService
                     new EventPath(Regex.Replace(x.Path, "([a-zA-Z]+)Status\\.Value", "$1"), x.Value))
                 .ToArray();
         
-        if (paths.Any(x => x.Path.Contains("[0]")))
-        {
-            var array = $"EliteAPI.{paths.First(x => x.Path.Contains("[0]")).Path.Split(new[] {"[0]"}, StringSplitOptions.None)[0]}";
-            VoiceAttackPlugin.Proxy.Variables.ClearStartingWith(array);
-        }
+        _log.LogDebug("Clearing variables starting with {Variable}", $"EliteAPI.{eventName}");
+        VoiceAttackPlugin.Proxy.Variables.ClearStartingWith(context.SourceFile.Split('\\').Last(), $"EliteAPI.{eventName}");
         
         foreach (var path in paths)
         {

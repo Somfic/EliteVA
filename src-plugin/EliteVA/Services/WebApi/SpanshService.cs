@@ -79,7 +79,8 @@ public class SpanshService : VoiceAttackService
         if (paths.Any(x => x.Path.Contains("[0]")))
         {
             var array = $"EliteAPI.{paths.First(x => x.Path.Contains("[0]")).Path.Split(new[] {"[0]"}, StringSplitOptions.None)[0]}";
-            VoiceAttackPlugin.Proxy.Variables.ClearStartingWith(array);
+            _log.LogDebug("Clearing variables starting with {Variable}", array);
+            VoiceAttackPlugin.Proxy.Variables.ClearStartingWith(category, array);
         }
 
         foreach (var path in paths)

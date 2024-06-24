@@ -7,25 +7,27 @@ public class VoiceAttackVariables
 {
     private readonly dynamic _proxy;
 
-    private List<(string category, string name, string value)> _setVariables;
+    private List<(string category, string name, string value, TypeCode type)> _setVariables;
 
-    public IReadOnlyList<(string category, string name, string value)> SetVariables => _setVariables.ToList();
+    public IReadOnlyList<(string category, string name, string value, TypeCode type)> SetVariables => _setVariables.ToList();
     
     public event EventHandler? OnVariablesSet;
 
     internal VoiceAttackVariables(dynamic vaProxy)
     {
         _proxy = vaProxy;
-        _setVariables = new List<(string, string, string)>();
+        _setVariables = new List<(string, string, string, TypeCode)>();
     }
     
-    public void ClearStartingWith(string name)
+    public void ClearStartingWith(string category, string name)
     {
         // TODO: Clear all variables
-        // foreach (var variable in variablesToClear)
-        // {
-        //     Clear(variable.category, variable.name, variable.value);
-        // }
+        var variablesToClear = _setVariables.Where(x => string.Equals(x.category, category, StringComparison.OrdinalIgnoreCase) && x.name.StartsWith(name)).ToList();
+        
+        foreach (var variable in variablesToClear)
+        {
+            Clear(variable.category, variable.name, variable.type);
+        }
         
         _setVariables = _setVariables.Where(x => !x.name.Split(':')[1].StartsWith(name)).ToList();
     }
@@ -249,7 +251,7 @@ public class VoiceAttackVariables
     private void SetShort(string category, string name, short? value)
     {
         var variable = $"{{SHORT:{name}}}";
-        SetVariable(category, variable, value.ToString());
+        SetVariable(category, variable, value.ToString(), TypeCode.Int16);
 
         _proxy.SetSmallInt(name, value);
     }
@@ -265,7 +267,7 @@ public class VoiceAttackVariables
     private void SetInt(string category, string name, int? value)
     {
         var variable = $"{{INT:{name}}}";
-        SetVariable(category, variable, value.ToString());
+        SetVariable(category, variable, value.ToString(), TypeCode.Int32);
 
         _proxy.SetInt(name, value);
     }
@@ -281,7 +283,7 @@ public class VoiceAttackVariables
     private void SetText(string category, string name, string value)
     {
         var variable = $"{{TXT:{name}}}";
-        SetVariable(category, variable, value ?? "");
+        SetVariable(category, variable, value ?? "", TypeCode.String);
 
         _proxy.SetText(name, value);
     }
@@ -297,7 +299,7 @@ public class VoiceAttackVariables
     private void SetDecimal(string category, string name, decimal? value)
     {
         var variable = $"{{DEC:{name}}}";
-        SetVariable(category, variable, value.ToString());
+        SetVariable(category, variable, value.ToString(), TypeCode.Decimal);
 
         _proxy.SetDecimal(name, value);
     }
@@ -313,7 +315,7 @@ public class VoiceAttackVariables
     private void SetBoolean(string category, string name, bool? value)
     {
         var variable = $"{{BOOL:{name}}}";
-        SetVariable(category, variable, value.ToString());
+        SetVariable(category, variable, value.ToString(), TypeCode.Boolean);
 
         _proxy.SetBoolean(name, value);
     }
@@ -329,7 +331,7 @@ public class VoiceAttackVariables
     private void SetDate(string category, string name, DateTime? value)
     {
         var variable = $"{{DATE:{name}}}";
-        SetVariable(category, variable, value.ToString());
+        SetVariable(category, variable, value.ToString(), TypeCode.DateTime);
 
         _proxy.SetDate(name, value);
     }
@@ -342,21 +344,21 @@ public class VoiceAttackVariables
         _proxy.SetDate(name, null);
     }
 
-    private void SetVariable(string category, string name, string value)
+    private void SetVariable(string category, string name, string value, TypeCode type)
     {
         var index = _setVariables.FindIndex(x => x.name == name);
         
         if (index >= 0)
-            _setVariables[index] = (category, name, value);
+            _setVariables[index] = (category, name, value, type);
         else
-            _setVariables.Insert(0, (category, name, value));
+            _setVariables.Insert(0, (category, name, value, type));
         
         OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
     
     private void ClearVariable(string category, string name)
     {
-        _setVariables.RemoveAll(x => x.name == name);
+        _setVariables.RemoveAll(x => x.category == category && x.name == name);
         
         OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
