@@ -37,10 +37,7 @@ public class JournalEventsService : VoiceAttackService
             return;
 
         if (eventName == "NavRoute" && context.SourceFile.Contains("Journal"))
-        {
-            _log.LogWarning("Ignoring NavRoute event from Journal");
             return;
-        }
 
         _log.LogDebug("Processing {Event}", eventName);
         
