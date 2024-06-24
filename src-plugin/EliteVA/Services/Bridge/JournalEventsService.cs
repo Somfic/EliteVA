@@ -35,7 +35,13 @@ public class JournalEventsService : VoiceAttackService
         // If this is a status event, remove the status suffix from the paths
         if (eventName == "Status")
             return;
-        
+
+        if (eventName == "NavRoute" && context.SourceFile.Contains("Journal"))
+        {
+            _log.LogWarning("Ignoring NavRoute event from Journal");
+            return;
+        }
+
         _log.LogDebug("Processing {Event}", eventName);
         
         if (context.SourceFile.EndsWith("Status.json") && eventName.Contains("Status"))
