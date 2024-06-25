@@ -19,7 +19,24 @@ jobs:
               id: extract_branch
 
             - name: Set up Rust
-              uses: dtolnay/rust-toolchain@stable
+              uses: actions-rs/toolchain@v1
+              with:
+                profile: minimal
+                toolchain: stable
+
+            - name: Rust cache
+              uses: actions/cache@v4
+              continue-on-error: false
+              with:
+                save-always: true
+                path: |
+                  ~/.cargo/bin/
+                  ~/.cargo/registry/index/
+                  ~/.cargo/registry/cache/
+                  ~/.cargo/git/db/
+                  src-tauri/target/
+                key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+                restore-keys: ${{ runner.os }}-cargo-
 
             - name: Setup cargo-llvm-cov
               uses: taiki-e/install-action@cargo-llvm-cov
@@ -27,11 +44,6 @@ jobs:
             - name: Generate Cargo.lock
               run: cargo generate-lockfile
               working-directory: ./src-tauri
-
-            - name: Rust cache
-              uses: swatinem/rust-cache@v2
-              with:
-                  workspaces: "./src-tauri -> target"
 
             - name: Setup .NET 6
               uses: actions/setup-dotnet@v2
