@@ -3,7 +3,6 @@ using EliteVA.Proxy.Abstractions;
 using System.IO.Pipes;
 using System.Text;
 using EliteVA.Proxy.Logging;
-using System.Json.Text;
 using System.Text.Json;
 
 namespace VoiceAttack.Services;
@@ -42,7 +41,13 @@ public class EliteApiService : VoiceAttackService
                 if (string.IsNullOrWhiteSpace(message))
                     continue;
 
-                await HandleMessage(message, proxy);
+                try
+                {
+                    await HandleMessage(message, proxy);
+                } catch (Exception e)
+                {
+                    proxy.Log.Write($"Error handling message from EliteAPI: {e.Message}", VoiceAttackColor.Yellow);
+                }
             } catch (Exception e)
             {
                 proxy.Log.Write($"Error reading message from EliteAPI: {e.Message}", VoiceAttackColor.Yellow);
@@ -55,6 +60,8 @@ public class EliteApiService : VoiceAttackService
     private static async Task HandleMessage(string messageJson, IVoiceAttackProxy proxy)
     {
         var message = JsonSerializer.Deserialize<EliteApiMessage>(messageJson);
+        
+        proxy.Log.Write($"Received {message.Commands.Count} commands from EliteAPI", VoiceAttackColor.Blue);
 
         foreach (var command in message.Commands)
         {
@@ -74,7 +81,8 @@ public class EliteApiService : VoiceAttackService
         {
             EliteApiCommandType.SetVariable => HandleSetVariable(command, proxy),
             EliteApiCommandType.ClearVariable => HandleClearVariable(command, proxy),
-            _ => throw new ArgumentOutOfRangeException(nameof(command.Type), command.Type, "Unknown command type")
+            EliteApiCommandType.ClearVariablesStartingWith => HandleClearVariablesStartingWith(command, proxy),
+            _ => throw new ArgumentOutOfRangeException(nameof(command.Type), command.Type, $"Unimplemented command type: {command.Type}''")
         };
     }
     
@@ -87,7 +95,7 @@ public class EliteApiService : VoiceAttackService
         
         proxy.Variables.Set(category, name, value, type);
        
-        return Task.CompletedTask;
+        return Task.CompletedTask;     
     }
     
     private static Task HandleClearVariable(EliteApiCommand command, IVoiceAttackProxy proxy)
@@ -97,6 +105,16 @@ public class EliteApiService : VoiceAttackService
         var type = command.Arguments.ExpectTypeCode(2, "type");
         
         proxy.Variables.Clear(category, name, type);
+        
+        return Task.CompletedTask;
+    }
+    
+    private static Task HandleClearVariablesStartingWith(EliteApiCommand command, IVoiceAttackProxy proxy)
+    {
+        var category = command.Arguments.Expect(0, "category");
+        var prefix = command.Arguments.Expect(1, "prefix");
+        
+        proxy.Variables.ClearStartingWith(category, prefix);
         
         return Task.CompletedTask;
     }
@@ -116,7 +134,8 @@ public class EliteApiService : VoiceAttackService
     private enum EliteApiCommandType
     {
         SetVariable,
-        ClearVariable
+        ClearVariable,
+        ClearVariablesStartingWith
     }
 }
 

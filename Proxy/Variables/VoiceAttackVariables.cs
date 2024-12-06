@@ -18,17 +18,14 @@ public class VoiceAttackVariables
         _setVariables = new List<(string, string, string, TypeCode)>();
     }
     
-    public void ClearStartingWith(string category, string name)
+    public void ClearStartingWith(string category, string prefix)
     {
-        // TODO: Clear all variables
-        var variablesToClear = _setVariables.Where(x => string.Equals(x.category, category, StringComparison.OrdinalIgnoreCase) && x.name.StartsWith(name)).ToList();
+        var variablesToClear = _setVariables.Where(x => string.Equals(x.category, category, StringComparison.OrdinalIgnoreCase) && x.name.StartsWith(prefix)).ToList();
         
         foreach (var variable in variablesToClear)
         {
             Clear(variable.category, variable.name, variable.type);
         }
-        
-        _setVariables = _setVariables.Where(x => !x.name.Split(':')[1].StartsWith(name)).ToList();
     }
 
     /// <summary>
@@ -305,7 +302,7 @@ public class VoiceAttackVariables
     
     private void ClearVariable(string category, string name)
     {
-        _setVariables.RemoveAll(x => x.category == category && x.name == name);
+        _setVariables.RemoveAll(x => string.Equals(x.category, category, StringComparison.OrdinalIgnoreCase) && x.name == name);
         
         OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
