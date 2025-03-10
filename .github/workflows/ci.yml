@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
     test:
-        runs-on: windows-latest
+        runs-on: ubuntu-latest
 
         steps:
             - name: Checkout code
@@ -13,9 +13,6 @@ jobs:
               uses: actions/setup-dotnet@v2
               with:
                   dotnet-version: "8.0.x"
-
-            - name: Setup MSBuild
-              uses: microsoft/setup-msbuild@v1
 
             - name: Setup NuGet
               uses: NuGet/setup-nuget@v1
