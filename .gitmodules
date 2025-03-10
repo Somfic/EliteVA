@@ -1,0 +1,3 @@
+[submodule "src-plugin/EliteAPI"]
+	path = src-plugin/EliteAPI
+	url = https://github.com/Somfic/EliteAPI.git
