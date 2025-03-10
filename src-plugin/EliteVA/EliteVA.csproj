@@ -10,11 +10,6 @@
     <Version>0.4.3</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.3.9" />
-    <PackageReference Include="EliteAPI.Discord" Version="3.3.9" />
-    <PackageReference Include="EliteAPI.EDDN" Version="3.3.9" />
-    <PackageReference Include="EliteAPI.Web" Version="3.3.9" />
-    <PackageReference Include="EliteAPI.Web.Spansh" Version="3.3.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="8.0.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="WatsonWebsocket" Version="4.1.2" />
@@ -29,5 +24,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="EliteVA.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EliteAPI\Discord\EliteAPI.Discord\EliteAPI.Discord.csproj" />
+    <ProjectReference Include="..\EliteAPI\EDDN\EliteAPI.EDDN\EliteAPI.EDDN.csproj" />
+    <ProjectReference Include="..\EliteAPI\EliteAPI.Web.Spansh\EliteAPI.Web.Spansh.csproj" />
+    <ProjectReference Include="..\EliteAPI\EliteAPI\EliteAPI.csproj" />
   </ItemGroup>
 </Project>

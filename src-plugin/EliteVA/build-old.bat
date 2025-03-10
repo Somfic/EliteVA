@@ -21,4 +21,3 @@ copy /Y "C:\dev\EliteVA\src-plugin\EliteVA\bin\Release\net472\" "D:\SteamLibrary
 dotnet remove package Costura.Fody
 
 start "" "D:\SteamLibrary\steamapps\common\VoiceAttack\VoiceAttack.exe"
-
