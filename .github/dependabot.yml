@@ -1,5 +1,10 @@
 version: 2
 updates:
+  - package-ecosystem: "actions"
+    directory: "/.github/workflows"
+    schedule:
+      interval: "daily"
+
   - package-ecosystem: "nuget"
     directory: "/src-plugin"
     schedule:
