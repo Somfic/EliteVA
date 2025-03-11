@@ -11,6 +11,7 @@
     <LangVersion>default</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.3.9" />
+    <ProjectReference Include="..\EliteAPI\EliteAPI.Abstractions\EliteAPI.Abstractions.csproj" />
+    <ProjectReference Include="..\EliteAPI\EliteAPI\EliteAPI.csproj" />
   </ItemGroup>
 </Project>

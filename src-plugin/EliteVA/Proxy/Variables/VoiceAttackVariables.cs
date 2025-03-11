@@ -13,7 +13,7 @@ public class VoiceAttackVariables
     
     public event EventHandler? OnVariablesSet;
 
-    internal VoiceAttackVariables(dynamic vaProxy)
+    public VoiceAttackVariables(dynamic vaProxy)
     {
         _proxy = vaProxy;
         _setVariables = new List<(string, string, string, TypeCode)>();

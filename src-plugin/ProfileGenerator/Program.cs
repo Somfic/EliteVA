@@ -5,7 +5,7 @@ using EliteAPI;
 using EliteAPI.Abstractions.Status;
 
 var api = EliteDangerousApi.Create();
-api.InitialiseAsync();
+await api.InitialiseAsync();
 
 var commands = api.Events.EventTypes.Select(type => (fullname: type.FullName, command: type.GetInterfaces().Contains(typeof(IStatusEvent))
         ? $"((EliteAPI.Status.{type.Name}))"

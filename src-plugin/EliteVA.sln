@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteAPI.Web.Spansh", "Elit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteAPI.EDDN", "EliteAPI\EDDN\EliteAPI.EDDN\EliteAPI.EDDN.csproj", "{318F060C-736D-4585-9614-4B9206B13E3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteVA.Tests", "EliteVA.Tests\EliteVA.Tests.csproj", "{09216EB8-6E39-4D3A-B31B-89BC8D756114}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +96,10 @@ Global
 		{318F060C-736D-4585-9614-4B9206B13E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{318F060C-736D-4585-9614-4B9206B13E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{318F060C-736D-4585-9614-4B9206B13E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09216EB8-6E39-4D3A-B31B-89BC8D756114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09216EB8-6E39-4D3A-B31B-89BC8D756114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09216EB8-6E39-4D3A-B31B-89BC8D756114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09216EB8-6E39-4D3A-B31B-89BC8D756114}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{01A08AA5-4397-4395-B178-1FA63EEA600E} = {6038D867-2642-40C3-9292-264C1FB33072}

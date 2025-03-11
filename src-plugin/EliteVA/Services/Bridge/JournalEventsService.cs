@@ -12,24 +12,26 @@ namespace EliteVA.Services.Bridge;
 public class JournalEventsService : VoiceAttackService
 {
     private readonly ILogger<JournalEventsService> _log;
-    private readonly IEliteDangerousApi _api;
+    private readonly IEventParser _eventParser;
+    private readonly IEvents _events;
 
-    public JournalEventsService(ILogger<JournalEventsService> log, IEliteDangerousApi api)
+    public JournalEventsService(ILogger<JournalEventsService> log, IEventParser eventParser, IEvents events)
     {
         _log = log;
-        _api = api;
+        _eventParser = eventParser;
+        _events = events;
     }
     
     public override Task OnStart(IVoiceAttackProxy proxy)
     {
-        _api.Events.OnAnyJson(HandleIncomingJournalEvent);
-        _api.Events.On<FileheaderEvent>((e, c) => _log.LogInformation("Processing {Journal}", c.SourceFile.Split('\\').Last()));
+        _events.OnAnyJson(HandleIncomingJournalEvent);
+        _events.On<FileheaderEvent>((e, c) => _log.LogInformation("Processing {Journal}", c.SourceFile.Split('\\').Last()));
         return Task.CompletedTask;
     }
 
     private void HandleIncomingJournalEvent(string json, EventContext context)
     {
-        var paths = _api.EventParser.ToPaths(json).ToArray();
+        var paths = _eventParser.ToPaths(json).ToArray();
         var eventName = paths.First(x => x.Path.EndsWith(".Event", StringComparison.InvariantCultureIgnoreCase)).Value.Replace("\"", "");
         
         // If this is a status event, remove the status suffix from the paths

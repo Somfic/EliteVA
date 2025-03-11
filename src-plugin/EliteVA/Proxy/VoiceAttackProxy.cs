@@ -40,28 +40,28 @@ public class VoiceAttackProxy : IVoiceAttackProxy
     public IntPtr Handle => _vaProxy.MainWindowHandle;
 
     /// <inheritdoc />
-    public VoiceAttackVariables Variables { get; }
+    public VoiceAttackVariables Variables { get; init; }
 
     /// <inheritdoc />
-    public VoiceAttackVersions Versions { get; }
+    public VoiceAttackVersions Versions { get; init; }
 
     /// <inheritdoc />
-    public VoiceAttackLog Log { get; }
+    public VoiceAttackLog Log { get; init; }
 
     /// <inheritdoc />
-    public VoiceAttackPaths Paths { get; }
+    public VoiceAttackPaths Paths { get; init; }
 
     /// <inheritdoc />
-    public VoiceAttackOptions Options { get; }
+    public VoiceAttackOptions Options { get; init; }
 
     /// <inheritdoc />
-    public VoiceAttackSpeech Speech { get; }
+    public VoiceAttackSpeech Speech { get; init; }
 
     /// <inheritdoc />
-    public VoiceAttackCommands Commands { get; }
+    public VoiceAttackCommands Commands { get; init; }
 
     /// <inheritdoc />
-    public VoiceAttackCommand Command { get; }
+    public VoiceAttackCommand Command { get; init; }
 
     /// <inheritdoc />
     public Task<IReadOnlyCollection<string>> GeneratePhrases(string query, bool trimSpaces = false, bool lowercase = false)
