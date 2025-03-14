@@ -1,163 +1,64 @@
-name: cd
+name: release
+permissions: write-all
 on:
-    push:
-        branches:
-            - main
-
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 jobs:
     release:
-        if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
         runs-on: windows-latest
 
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
 
-            - name: Extract branch name
-              shell: bash
-              run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-              id: extract_branch
+            - name: Setup .NET 8
+              uses: actions/setup-dotnet@v2
+              with:
+                  dotnet-version: "8.0.x"
 
             - name: Set up Rust
               uses: actions-rs/toolchain@v1
               with:
                 profile: minimal
-                toolchain: stable
-
-            - name: Rust cache
+                toolchain: nightly
+                override: true
+                components: rustfmt, clippy, llvm-tools-preview
+           
+            - name: Apply Rust cache
               uses: actions/cache@v4
-              continue-on-error: false
               with:
-                save-always: true
                 path: |
-                  ~/.cargo/bin/
-                  ~/.cargo/registry/index/
-                  ~/.cargo/registry/cache/
-                  ~/.cargo/git/db/
-                  src-tauri/target/
-                key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-                restore-keys: ${{ runner.os }}-cargo-
+                    ~/.cargo/bin/
+                    ~/.cargo/registry/index/
+                    ~/.cargo/registry/cache/
+                    ~/.cargo/git/db/
+                    target/            
+                key: ${{ runner.os }}
 
-            - name: Setup cargo-llvm-cov
-              uses: taiki-e/install-action@cargo-llvm-cov
+            - name: Install committer
+              run: cargo install --locked committer || true
 
-            - name: Generate Cargo.lock
-              run: cargo generate-lockfile
-              working-directory: ./src-tauri
+            - name: Build
+              run: dotnet build -c Release
 
-            - name: Setup .NET 6
-              uses: actions/setup-dotnet@v2
-              with:
-                  dotnet-version: "6.0.x"
-
-            - name: Setup GitVersion
-              run: dotnet tool install --global GitVersion.Tool
-
-            - name: Fetch for GitVersion
-              run: git fetch --tags --unshallow
-
-            - name: Fetch main for GitVersion
-              if: github.ref != 'refs/heads/main'
-              run: git branch --create-reflog main origin/main
-
-            - name: Update version
-              run: dotnet-gitversion /updateprojectfiles /updateassemblyinfo /output buildserver
-
-            - name: Set job output
-              id: VERSION
+            - name: Tag version
               run: |
-                  echo '::set-output name=label::${{env.GitVersion_PreReleaseLabel}}'
-                  echo '::set-output name=semver::${{env.GitVersion_LegacySemVer}}'
-                  echo '::set-output name=nuget::${{env.GitVersion_NuGetPreReleaseTagV2}}'
-                  echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
+                committer tag
+                echo "COMMITTER_IS_NEW=$(cat .env/COMMITTER_IS_NEW)" >> $GITHUB_ENV
+                echo "COMMITTER_TAG=$(cat .env/COMMITTER_TAG)" >> $GITHUB_ENV
 
-            - name: Apply changes
-              if: ${{ steps.VERSION.outputs.applicable == 'true' && steps.extract_branch.outputs.branch == 'main' }}
-              uses: EndBug/add-and-commit@v6.2.0
+            - name: Push tag to origin
+              if: env.COMMITTER_IS_NEW == 'true'
+              run: git push --tags origin
+
+            - name: Create release
+              if: env.COMMITTER_IS_NEW == 'true'
+              uses: softprops/action-gh-release@v2
               with:
-                  author_name: github-actions[bot]
-                  author_email: github-actions[bot]@users.noreply.github.com
-                  message: "Bumped version to ${{env.GitVersion_LegacySemVer}}"
-
-            - name: Setup MSBuild
-              uses: microsoft/setup-msbuild@v1
-
-            - name: Setup NuGet
-              uses: NuGet/setup-nuget@v1
-
-            - name: Setup Yarn
-              run: npm install --global yarn && yarn
-
-            - name: Restore plugin packages
-              run: dotnet restore
-              working-directory: src-plugin
-
-            - name: Restore client packages
-              run: yarn install
-              working-directory: src-client
-
-            - name: Build
-              run: dotnet build -c Release
-              working-directory: src-plugin
-
-            - name: Make EliteVA-plugin
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: mkdir "EliteVA-plugin"
-              working-directory: src-plugin
-
-            - name: Copy to EliteVA-plugin
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-plugin" /Y /I
-              working-directory: src-plugin
-
-            - name: Add Costura.Fody
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: dotnet add package Costura.Fody
-              working-directory: src-plugin\EliteVA
-
-            - name: Build
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: dotnet build -c Release
-              working-directory: src-plugin
-
-            - name: Copy to EliteVA-plugin
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: xcopy "EliteVA\bin\Release\net472\" "EliteVA-plugin" /Y /I
-              working-directory: src-plugin
-
-            - name: Generate profile
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: dotnet run --project ProfileGenerator -c Release
-              working-directory: src-plugin
-
-            - name: Copy profile
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: copy "src-plugin/Profile.vap" "EliteVA.vap"
-
-            - name: Zip plugin
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: 7z a -tzip EliteVA.zip *
-              working-directory: src-plugin/EliteVA-plugin
-
-            - name: Copy EliteVA.zip
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              run: copy "EliteVA.zip" "..\..\EliteVA.zip"
-              working-directory: src-plugin/EliteVA-plugin
-
-            - name: Build updater
-              run: yarn tauri build
-
-            - name: Move updater
-              run: copy "src-tauri\target\release\EliteVA.exe" "EliteVA-updater.exe"
-
-            - name: Release
-              if: github.ref == 'refs/heads/main' && ${{ steps.VERSION.outputs.applicable == 'true' }}
-              uses: softprops/action-gh-release@v1
-              with:
-                  tag_name: ${{ steps.VERSION.outputs.semver }}
-                  files: |
-                      EliteVA.zip
-                      EliteVA.vap
-                      EliteVA-updater.exe
-                  prerelease: ${{ steps.extract_branch.outputs.branch != 'main' }}
-                  draft: true
+                files: bin\Release\net8.0\EliteVA.dll
+                token: ${{ secrets.GITHUB_TOKEN }}
+                tag_name: ${{ env.COMMITTER_TAG }}
+                body_path: ".env/COMMITTER_CHANGELOG"
+                draft: true
