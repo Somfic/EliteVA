@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using Newtonsoft.Json.Linq;
 
 namespace EliteVA.Variables;
 
@@ -30,18 +29,6 @@ public class VoiceAttackVariables
         }
         
         _setVariables = _setVariables.Where(x => !x.name.Split(':')[1].StartsWith(name)).ToList();
-    }
-
-    /// <summary>
-    /// Set a variable
-    /// </summary>
-    /// <typeparam name="T">The type of variable</typeparam>
-    /// <param name="name">The name of the variable</param>
-    /// <param name="value">The value of the variable</param>
-    public void Set(string category, string name, JToken value)
-    {
-        var code = value.Type;
-        Set(category, name, value, code);
     }
 
     /// <summary>
@@ -97,46 +84,6 @@ public class VoiceAttackVariables
         }
     }
     
-    /// <summary>
-    /// Set a variable
-    /// </summary>
-    /// <param name="name">The name of the variable</param>
-    /// <param name="value">The value of the variable</param>
-    /// <param name="code">The type of variable</param>
-    public void Set(string category, string name, object value, JTokenType code)
-    {
-        switch (code)
-        {
-            case JTokenType.Boolean:
-                SetBoolean(category, name, bool.Parse(value.ToString()));
-                break;
-
-            case JTokenType.Date:
-            case JTokenType.TimeSpan:
-                SetDate(category, name, DateTime.Parse(value.ToString().Trim('"')));
-                break;
-                
-            case JTokenType.Float:
-                SetDecimal(category, name, decimal.Parse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture));
-                break;
-
-            case JTokenType.String:
-                SetText(category, name, value.ToString().Trim('"'));
-                break;
-
-            case JTokenType.Integer:
-                try
-                {
-                    SetInt(category, name, int.Parse(value.ToString()));
-                }
-                catch (OverflowException)
-                {
-                    SetDecimal(category, name, decimal.Parse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture));
-                } 
-                break;
-        }
-    }
-
     /// <summary>
     /// Get a variable
     /// </summary>

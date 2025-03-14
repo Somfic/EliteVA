@@ -1,5 +1,4 @@
 ﻿using EliteVA.Logging;
-using Newtonsoft.Json;
 
 namespace EliteVA;
 
@@ -21,7 +20,7 @@ public class VoiceAttackPluginWrapper
         if(pluginType == null)
             throw new InvalidOperationException("No class found that inherits VoiceAttackPlugin.");
         
-        VoiceAttackPlugin.Instance = (VoiceAttackPlugin) Activator.CreateInstance(pluginType);
+        VoiceAttackPlugin.Instance = (VoiceAttackPlugin) Activator.CreateInstance(pluginType)!;
 
         if(VoiceAttackPlugin.Instance == null) 
             throw new InvalidOperationException("No VoiceAttackPlugin instance found.");
@@ -37,7 +36,7 @@ public class VoiceAttackPluginWrapper
             VoiceAttackPlugin.Instance.Log(VoiceAttackColor.Red, "Error during plugin initialisation. See logs for further information");
             var path = Path.Combine(VoiceAttackPlugin.Dir, "Logs", "STARTUP ERROR.log");
             Directory.CreateDirectory(Path.GetDirectoryName(path) ?? VoiceAttackPlugin.Dir);
-            File.WriteAllText(path, JsonConvert.SerializeObject(e, Formatting.Indented));
+            File.WriteAllText(path, e.ToString());
         }
     }
     
