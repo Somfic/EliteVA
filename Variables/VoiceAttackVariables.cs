@@ -6,26 +6,25 @@ public class VoiceAttackVariables
 {
     private readonly dynamic _proxy;
 
-    private List<(string category, string name, string value, TypeCode type)> _setVariables;
+    private List<(string name, string? value, TypeCode type)> _setVariables;
 
-    public IReadOnlyList<(string category, string name, string value, TypeCode type)> SetVariables => _setVariables.ToList();
+    public IReadOnlyList<(string name, string? value, TypeCode type)> SetVariables => _setVariables.ToList();
     
     public event EventHandler? OnVariablesSet;
 
     public VoiceAttackVariables(dynamic vaProxy)
     {
         _proxy = vaProxy;
-        _setVariables = new List<(string, string, string, TypeCode)>();
+        _setVariables = new List<(string, string?, TypeCode)>();
     }
     
-    public void ClearStartingWith(string category, string name)
+    public void ClearStartingWith( string name)
     {
-        // TODO: Clear all variables
-        var variablesToClear = _setVariables.Where(x => string.Equals(x.category, category, StringComparison.OrdinalIgnoreCase) && x.name.StartsWith(name)).ToList();
+        var variablesToClear = _setVariables.Where(x => x.name.Split(':')[1].StartsWith(name)).ToList();
         
         foreach (var variable in variablesToClear)
         {
-            Clear(variable.category, variable.name, variable.type);
+            Clear(variable.name, variable.type);
         }
         
         _setVariables = _setVariables.Where(x => !x.name.Split(':')[1].StartsWith(name)).ToList();
@@ -37,34 +36,34 @@ public class VoiceAttackVariables
     /// <param name="name">The name of the variable</param>
     /// <param name="value">The value of the variable</param>
     /// <param name="code">The type of variable</param>
-    public void Set(string category, string name, object value, TypeCode code)
+    public void Set(string name, string value, TypeCode code)
     {
         switch (code)
         {
             case TypeCode.Boolean:
-                SetBoolean(category, name, bool.Parse(value.ToString()));
+                SetBoolean(name, bool.Parse(value));
                 break;
 
             case TypeCode.DateTime:
-                SetDate(category, name, DateTime.Parse(value.ToString().Trim('"')));
+                SetDate(name, DateTime.Parse(value.Trim('"')));
                 break;
 
             case TypeCode.Single:
             case TypeCode.Decimal:
             case TypeCode.Double:
-                SetDecimal(category, name, decimal.Parse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture));
+                SetDecimal(name, decimal.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture));
                 break;
 
             case TypeCode.Char:
             case TypeCode.String:
-                SetText(category, name, value.ToString().Trim('"'));
+                SetText(name, value.Trim('"'));
                 break;
 
             case TypeCode.Byte:
             case TypeCode.Int16:
             case TypeCode.UInt16:
             case TypeCode.SByte:
-                SetShort(category, name, short.Parse(value.ToString()));
+                SetShort(name, short.Parse(value));
                 break;
 
             case TypeCode.Int32:
@@ -73,11 +72,11 @@ public class VoiceAttackVariables
             case TypeCode.UInt64:
                 try
                 {
-                    SetInt(category, name, int.Parse(value.ToString()));
+                    SetInt(name, int.Parse(value));
                 }
                 catch (OverflowException)
                 {
-                    SetDecimal(category, name, decimal.Parse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture));
+                    SetDecimal(name, decimal.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture));
                 }
 
                 break;
@@ -126,41 +125,41 @@ public class VoiceAttackVariables
         return value;
     }
     
-    public void Clear(string category, string name, TypeCode code)
+    public void Clear( string name, TypeCode code)
     {
         switch (code)
         {
             case TypeCode.Boolean:
-                ClearBoolean(category, name);
+                ClearBoolean(name);
                 break;
 
             case TypeCode.DateTime:
-                ClearDate(category, name);
+                ClearDate(name);
                 break;
 
             case TypeCode.Single:
             case TypeCode.Decimal:
             case TypeCode.Double:
-                ClearDecimal(category, name);
+                ClearDecimal(name);
                 break;
 
             case TypeCode.Char:
             case TypeCode.String:
-                ClearText(category, name);
+                ClearText(name);
                 break;
 
             case TypeCode.Byte:
             case TypeCode.Int16:
             case TypeCode.UInt16:
             case TypeCode.SByte:
-                ClearShort(category, name);
+                ClearShort(name);
                 break;
 
             case TypeCode.Int32:
             case TypeCode.UInt32:
             case TypeCode.Int64:
             case TypeCode.UInt64:
-                ClearInt(category, name);
+                ClearInt(name);
                 break;
         }
     }
@@ -195,118 +194,117 @@ public class VoiceAttackVariables
         return _proxy.GetDate(name);
     }
 
-    private void SetShort(string category, string name, short? value)
+    private void SetShort( string name, short? value)
     {
         var variable = $"{{SHORT:{name}}}";
-        SetVariable(category, variable, value.ToString(), TypeCode.Int16);
+        SetVariable(variable, value.ToString(), TypeCode.Int16);
 
         _proxy.SetSmallInt(name, value);
     }
     
-    private void ClearShort(string category, string name)
+    private void ClearShort( string name)
     {
         var variable = $"{{SHORT:{name}}}";
-        ClearVariable(category, variable);
+        ClearVariable(variable);
 
         _proxy.SetSmallInt(name, null);
     }
 
-    private void SetInt(string category, string name, int? value)
+    private void SetInt( string name, int? value)
     {
         var variable = $"{{INT:{name}}}";
-        SetVariable(category, variable, value.ToString(), TypeCode.Int32);
+        SetVariable(variable, value.ToString(), TypeCode.Int32);
 
         _proxy.SetInt(name, value);
     }
     
-    private void ClearInt(string category, string name)
+    private void ClearInt( string name)
     {
         var variable = $"{{INT:{name}}}";
-        ClearVariable(category, variable);
+        ClearVariable(variable);
 
         _proxy.SetInt(name, null);
     }
 
-    private void SetText(string category, string name, string value)
+    private void SetText( string name, string value)
     {
         var variable = $"{{TXT:{name}}}";
-        SetVariable(category, variable, value ?? "", TypeCode.String);
+        SetVariable(variable, value ?? "", TypeCode.String);
 
         _proxy.SetText(name, value);
     }
     
-    private void ClearText(string category, string name)
+    private void ClearText( string name)
     {
         var variable = $"{{TXT:{name}}}";
-        ClearVariable(category, variable);
+        ClearVariable(variable);
 
         _proxy.SetText(name, null);
     }
 
-    private void SetDecimal(string category, string name, decimal? value)
+    private void SetDecimal( string name, decimal? value)
     {
         var variable = $"{{DEC:{name}}}";
-        SetVariable(category, variable, value.ToString(), TypeCode.Decimal);
+        SetVariable(variable, value.ToString(), TypeCode.Decimal);
 
         _proxy.SetDecimal(name, value);
     }
     
-    private void ClearDecimal(string category, string name)
+    private void ClearDecimal( string name)
     {
         var variable = $"{{DEC:{name}}}";
-        ClearVariable(category, variable);
+        ClearVariable(variable);
 
         _proxy.SetDecimal(name, null);
     }
 
-    private void SetBoolean(string category, string name, bool? value)
+    private void SetBoolean( string name, bool? value)
     {
         var variable = $"{{BOOL:{name}}}";
-        SetVariable(category, variable, value.ToString(), TypeCode.Boolean);
+        SetVariable(variable, value.ToString(), TypeCode.Boolean);
 
         _proxy.SetBoolean(name, value);
     }
     
-    private void ClearBoolean(string category, string name)
+    private void ClearBoolean( string name)
     {
         var variable = $"{{BOOL:{name}}}";
-        ClearVariable(category, variable);
+        ClearVariable(variable);
 
         _proxy.SetBoolean(name, null);
     }
 
-    private void SetDate(string category, string name, DateTime? value)
+    private void SetDate(string name, DateTime? value)
     {
         var variable = $"{{DATE:{name}}}";
-        SetVariable(category, variable, value.ToString(), TypeCode.DateTime);
+        SetVariable(variable, value.ToString(), TypeCode.DateTime);
 
         _proxy.SetDate(name, value);
     }
     
-    private void ClearDate(string category, string name)
+    private void ClearDate( string name)
     {
         var variable = $"{{DATE:{name}}}";
-        ClearVariable(category, variable);
+        ClearVariable(variable);
 
         _proxy.SetDate(name, null);
     }
 
-    private void SetVariable(string category, string name, string value, TypeCode type)
+    private void SetVariable(string name, string? value, TypeCode type)
     {
         var index = _setVariables.FindIndex(x => x.name == name);
         
         if (index >= 0)
-            _setVariables[index] = (category, name, value, type);
+            _setVariables[index] = (name, value, type);
         else
-            _setVariables.Insert(0, (category, name, value, type));
+            _setVariables.Insert(0, (name, value, type));
         
         OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
     
-    private void ClearVariable(string category, string name)
+    private void ClearVariable(string name)
     {
-        _setVariables.RemoveAll(x => x.category == category && x.name == name);
-        
+        _setVariables.RemoveAll(x => x.name == name);
         OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
 }
