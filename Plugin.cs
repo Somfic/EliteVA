@@ -54,8 +54,6 @@ public class Plugin : VoiceAttackPlugin
             
             if (data.VariablesEvent is { } variablesEvent)
             {
-                Log(VoiceAttackColor.Gray, $"Event: {variablesEvent.Event}");
-                
                 foreach (var variable in variablesEvent.Variables)
                 {
                     var typeCode = variable.ValueType switch
@@ -64,21 +62,17 @@ public class Plugin : VoiceAttackPlugin
                         ValueType.Single => TypeCode.Single,
                         ValueType.String => TypeCode.String,
                         ValueType.Boolean => TypeCode.Boolean,
-                        ValueType.Date => TypeCode.DateTime,
+                        ValueType.DateTime => TypeCode.DateTime,
                         _ => throw new ArgumentOutOfRangeException()
                     };
 
                     Proxy.Variables.Set(variable.Path, variable.EncodedValue, typeCode);
-                    
-                    Log(VoiceAttackColor.Gray, $"Set {variable.Path} to {variable.EncodedValue}");
                 }
 
-                var command = $"((EliteAPI{variablesEvent.Event}))";
+                var command = $"((EliteAPI.{variablesEvent.Event}))";
                 
                 if (Proxy.Commands.Exists(command))
                     Proxy.Commands.Invoke(command);
-                
-                Log(VoiceAttackColor.Orange, $"Invoked command {command}");
             }
         }
     }

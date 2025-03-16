@@ -31,8 +31,8 @@ public class Variable
     public string EncodedValue { get; init;  }
 
     [JsonPropertyName("value_type")]
-    public System.ValueType ValueType { get; init;  }
+    public ValueType ValueType { get; init;  }
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum ValueType { Int32, Single, String, Boolean, Date };
+public enum ValueType { Int32, Single, String, Boolean, DateTime };
