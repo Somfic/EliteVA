@@ -17,12 +17,15 @@ public class VariablesEvent
     [JsonPropertyName("event")]
     public string Event { get; init;  }
 
-    [JsonPropertyName("variables")]
-    public Variable[] Variables { get; init;  }
+    [JsonPropertyName("set_variables")]
+    public SetVariable[] SetVariables { get; init;  }
+    
+    [JsonPropertyName("unset_variables")]
+    public UnsetVariable[] UnsetVariables { get; init;  }
 }
 
 
-public class Variable
+public class SetVariable
 {
     [JsonPropertyName("path")]
     public string Path { get; init;  }
@@ -32,6 +35,11 @@ public class Variable
 
     [JsonPropertyName("value_type")]
     public ValueType ValueType { get; init;  }
+}
+
+public class UnsetVariable
+{
+    [JsonPropertyName("path")] public string Path { get; init; }
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]

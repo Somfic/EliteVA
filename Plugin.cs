@@ -54,9 +54,14 @@ public class Plugin : VoiceAttackPlugin
             
             if (data.VariablesEvent is { } variablesEvent)
             {
-                foreach (var variable in variablesEvent.Variables)
+                foreach (var unsetVariable in variablesEvent.UnsetVariables)
                 {
-                    var typeCode = variable.ValueType switch
+                    Proxy.Variables.ClearStartingWith(unsetVariable.Path);
+                }
+                
+                foreach (var setVariable in variablesEvent.SetVariables)
+                {
+                    var typeCode = setVariable.ValueType switch
                     {
                         ValueType.Int32 => TypeCode.Int32,
                         ValueType.Single => TypeCode.Single,
@@ -66,7 +71,7 @@ public class Plugin : VoiceAttackPlugin
                         _ => throw new ArgumentOutOfRangeException()
                     };
 
-                    Proxy.Variables.Set(variable.Path, variable.EncodedValue, typeCode);
+                    Proxy.Variables.Set(setVariable.Path, setVariable.EncodedValue, typeCode);
                 }
 
                 var command = $"((EliteAPI.{variablesEvent.Event}))";

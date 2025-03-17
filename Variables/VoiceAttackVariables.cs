@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using EliteVA.Logging;
 
 namespace EliteVA.Variables;
 
@@ -6,28 +7,28 @@ public class VoiceAttackVariables
 {
     private readonly dynamic _proxy;
 
-    private List<(string name, string? value, TypeCode type)> _setVariables;
+    public record Variable(string Name, dynamic Value, TypeCode Type);
 
-    public IReadOnlyList<(string name, string? value, TypeCode type)> SetVariables => _setVariables.ToList();
+    private List<Variable> _setVariables;
+
+    public IReadOnlyList<Variable> SetVariables => _setVariables.ToList();
     
     public event EventHandler? OnVariablesSet;
 
     public VoiceAttackVariables(dynamic vaProxy)
     {
         _proxy = vaProxy;
-        _setVariables = new List<(string, string?, TypeCode)>();
+        _setVariables = [];
     }
     
-    public void ClearStartingWith( string name)
+    public void ClearStartingWith(string name)
     {
-        var variablesToClear = _setVariables.Where(x => x.name.Split(':')[1].StartsWith(name)).ToList();
+        var variablesToClear = _setVariables.Where(x => x.Name.StartsWith(name)).ToList();
         
         foreach (var variable in variablesToClear)
-        {
-            Clear(variable.name, variable.type);
-        }
+            Clear(variable.Name, variable.Type);
         
-        _setVariables = _setVariables.Where(x => !x.name.Split(':')[1].StartsWith(name)).ToList();
+        _setVariables = _setVariables.Where(x => !x.Name.StartsWith(name)).ToList();
     }
 
     /// <summary>
@@ -88,10 +89,10 @@ public class VoiceAttackVariables
     /// </summary>
     /// <typeparam name="T">The type of variable</typeparam>
     /// <param name="name">The name of the variable</param>
-    public T? Get<T>(string name, T @default = default)
+    public T? Get<T>(string name, T? @default = default)
     {
         var code = Type.GetTypeCode(typeof(T));
-        T value = @default;
+        T? value = @default;
         switch (code)
         {
             case TypeCode.Boolean:
@@ -194,117 +195,93 @@ public class VoiceAttackVariables
         return _proxy.GetDate(name);
     }
 
-    private void SetShort( string name, short? value)
+    private void SetShort(string name, short? value)
     {
-        var variable = $"{{SHORT:{name}}}";
-        SetVariable(variable, value.ToString(), TypeCode.Int16);
-
+        SetVariable(name, value, TypeCode.Int16);
         _proxy.SetSmallInt(name, value);
     }
     
-    private void ClearShort( string name)
+    private void ClearShort(string name)
     {
-        var variable = $"{{SHORT:{name}}}";
-        ClearVariable(variable);
-
+        ClearVariable(name);
         _proxy.SetSmallInt(name, null);
     }
 
-    private void SetInt( string name, int? value)
+    private void SetInt(string name, int? value)
     {
-        var variable = $"{{INT:{name}}}";
-        SetVariable(variable, value.ToString(), TypeCode.Int32);
-
+        SetVariable(name, value, TypeCode.Int32);
         _proxy.SetInt(name, value);
     }
     
-    private void ClearInt( string name)
+    private void ClearInt(string name)
     {
-        var variable = $"{{INT:{name}}}";
-        ClearVariable(variable);
-
+        ClearVariable(name);
         _proxy.SetInt(name, null);
     }
 
-    private void SetText( string name, string value)
+    private void SetText(string name, string value)
     {
-        var variable = $"{{TXT:{name}}}";
-        SetVariable(variable, value ?? "", TypeCode.String);
-
+        SetVariable(name, value, TypeCode.String);
         _proxy.SetText(name, value);
     }
     
-    private void ClearText( string name)
+    private void ClearText(string name)
     {
-        var variable = $"{{TXT:{name}}}";
-        ClearVariable(variable);
-
+        ClearVariable(name);
         _proxy.SetText(name, null);
     }
 
-    private void SetDecimal( string name, decimal? value)
+    private void SetDecimal(string name, decimal? value)
     {
-        var variable = $"{{DEC:{name}}}";
-        SetVariable(variable, value.ToString(), TypeCode.Decimal);
-
+        SetVariable(name, value, TypeCode.Decimal);
         _proxy.SetDecimal(name, value);
     }
     
-    private void ClearDecimal( string name)
+    private void ClearDecimal(string name)
     {
-        var variable = $"{{DEC:{name}}}";
-        ClearVariable(variable);
-
+        ClearVariable(name);
         _proxy.SetDecimal(name, null);
     }
 
-    private void SetBoolean( string name, bool? value)
+    private void SetBoolean(string name, bool? value)
     {
-        var variable = $"{{BOOL:{name}}}";
-        SetVariable(variable, value.ToString(), TypeCode.Boolean);
-
+        SetVariable(name, value, TypeCode.Boolean);
         _proxy.SetBoolean(name, value);
     }
     
-    private void ClearBoolean( string name)
+    private void ClearBoolean(string name)
     {
-        var variable = $"{{BOOL:{name}}}";
-        ClearVariable(variable);
-
+        ClearVariable(name);
         _proxy.SetBoolean(name, null);
     }
 
     private void SetDate(string name, DateTime? value)
     {
-        var variable = $"{{DATE:{name}}}";
-        SetVariable(variable, value.ToString(), TypeCode.DateTime);
-
+        SetVariable(name, value, TypeCode.DateTime);
         _proxy.SetDate(name, value);
     }
     
     private void ClearDate( string name)
     {
-        var variable = $"{{DATE:{name}}}";
-        ClearVariable(variable);
-
+        ClearVariable(name);
         _proxy.SetDate(name, null);
     }
 
-    private void SetVariable(string name, string? value, TypeCode type)
+    private void SetVariable(string name, dynamic? value, TypeCode type)
     {
-        var index = _setVariables.FindIndex(x => x.name == name);
+        var index = _setVariables.FindIndex(x => x.Name == name);
         
         if (index >= 0)
-            _setVariables[index] = (name, value, type);
+            _setVariables[index] = new(name, value, type);
         else
-            _setVariables.Insert(0, (name, value, type));
+            _setVariables.Insert(0, new(name, value, type));
         
         OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
     
     private void ClearVariable(string name)
     {
-        _setVariables.RemoveAll(x => x.name == name);
+        _setVariables.RemoveAll(x => x.Name == name);
         OnVariablesSet?.Invoke(this, EventArgs.Empty);
     }
 }
