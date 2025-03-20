@@ -2,9 +2,7 @@ name: release
 permissions: write-all
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+
 jobs:
     release:
         runs-on: windows-latest
