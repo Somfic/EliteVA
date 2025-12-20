@@ -1,4 +1,8 @@
- <img src="https://repository-images.githubusercontent.com/529349259/227c444b-984e-48b3-8a09-5ad9282b36a5"/>
+> [!CAUTION]
+> This project has moved to [Somfic/EliteAPI](
+https://github.com/Somfic/EliteAPI/)!
+
+<img src="https://repository-images.githubusercontent.com/529349259/227c444b-984e-48b3-8a09-5ad9282b36a5"/>
 
 <div style="text-align: center;">
   <h1 align="center">EliteVA</h1>
